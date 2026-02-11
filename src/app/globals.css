@@ -5,6 +5,7 @@
   --color-background-light: #f7f7f6;
   --color-background-dark: #1c1816;
   --color-accent-tan: #d7cdc6;
+  --color-warm-cream: #d7cdc6;
   --color-text-dark: #171412;
 
   --font-display: "Manrope", sans-serif;
@@ -31,4 +32,23 @@ body {
 .glass-nav {
   backdrop-filter: blur(12px);
   background-color: rgba(247, 247, 246, 0.8);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(153, 111, 86, 0.1);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #996f56;
+  border-radius: 10px;
 }
