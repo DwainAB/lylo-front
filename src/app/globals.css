@@ -8,8 +8,10 @@
   --color-warm-cream: #d7cdc6;
   --color-secondary: #d7cdc6;
   --color-text-dark: #171412;
+  --color-brand-light: #fdfbf9;
 
   --font-display: "Manrope", sans-serif;
+  --font-serif: "Didot", "Bodoni MT", "Noto Serif Display", serif;
 
   --radius: 0.25rem;
   --radius-lg: 0.5rem;
@@ -75,4 +77,29 @@ body {
 
 .mic-pulse {
   animation: pulse-ring 2s infinite;
+}
+
+.luxury-title {
+  font-family: var(--font-serif);
+  letter-spacing: 0.05em;
+  color: #333;
+}
+
+.brand-text {
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.card-shadow {
+  box-shadow: 0 10px 30px -10px rgba(154, 111, 86, 0.2);
+}
+
+.toggle-checkbox:checked {
+  right: 0;
+  border-color: #996f56;
+}
+
+.toggle-checkbox:checked + .toggle-label {
+  background-color: #996f56;
 }
