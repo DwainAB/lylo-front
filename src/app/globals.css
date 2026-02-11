@@ -6,6 +6,7 @@
   --color-background-dark: #1c1816;
   --color-accent-tan: #d7cdc6;
   --color-warm-cream: #d7cdc6;
+  --color-secondary: #d7cdc6;
   --color-text-dark: #171412;
 
   --font-display: "Manrope", sans-serif;
@@ -51,4 +52,27 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #996f56;
   border-radius: 10px;
+}
+
+.ai-glow {
+  box-shadow: 0 0 40px 10px rgba(153, 111, 86, 0.15);
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(153, 111, 86, 0.6);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 12px rgba(153, 111, 86, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(153, 111, 86, 0);
+  }
+}
+
+.mic-pulse {
+  animation: pulse-ring 2s infinite;
 }
