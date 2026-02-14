@@ -1,7 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import LanguageSelector from "@/components/ui/LanguageSelector";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 export default function InteractionHeader() {
+  const { t } = useTranslation();
+
   return (
     <header className="flex items-center justify-between px-8 py-4 z-20 shrink-0">
       <Link href="/" className="flex items-center gap-3">
@@ -22,11 +28,12 @@ export default function InteractionHeader() {
           </svg>
         </div>
         <h2 className="text-lg font-light tracking-[0.25em] uppercase">
-          Le studio des parfums
+          {t("interaction.brand")}
         </h2>
       </Link>
 
       <div className="flex items-center gap-4">
+        <LanguageSelector />
         <button className="cursor-pointer hover:scale-110 transition-transform">
           <MaterialIcon name="menu" className="text-primary" />
         </button>

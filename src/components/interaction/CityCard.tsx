@@ -20,8 +20,8 @@ export default function CityCard({ name, imageUrl, selected, onSelect }: CityCar
         style={{ backgroundImage: `url('${imageUrl}')` }}
       />
       <div className="absolute inset-0 bg-stone-900/10 group-hover:bg-transparent transition-colors duration-500" />
-      <div className="absolute bottom-4 left-0 right-0 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <span className="text-white text-xs tracking-widest uppercase font-semibold">
+      <div className="absolute bottom-0 left-0 right-0 bg-white/30 backdrop-blur-sm py-3 text-center">
+        <span className="text-white text-xs tracking-widest uppercase font-semibold drop-shadow-md">
           {name}
         </span>
       </div>

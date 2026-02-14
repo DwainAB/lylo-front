@@ -1,4 +1,10 @@
+"use client";
+
+import { useTranslation } from "@/i18n/LanguageContext";
+
 export default function VoiceButton() {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col items-center gap-2">
       <button className="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-primary/85 transition-all transform active:scale-95">
@@ -8,7 +14,7 @@ export default function VoiceButton() {
         </svg>
       </button>
       <span className="brand-text text-[0.65rem] text-primary font-bold uppercase">
-        Answer
+        {t("recommendations.answer")}
       </span>
     </div>
   );

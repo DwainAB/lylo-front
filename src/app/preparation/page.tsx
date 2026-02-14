@@ -1,0 +1,98 @@
+"use client";
+
+import Navbar from "@/components/layout/Navbar";
+import MaterialIcon from "@/components/ui/MaterialIcon";
+import { useTranslation } from "@/i18n/LanguageContext";
+
+export default function PreparationPage() {
+  const { t } = useTranslation();
+
+  return (
+    <div className="relative flex h-screen w-full flex-col overflow-hidden">
+      <Navbar showActions={false} transparent />
+
+      <main className="flex-1 flex flex-col items-center justify-between px-6 pb-12 pt-2 max-w-4xl mx-auto w-full min-h-0 relative z-10">
+        {/* Avatar */}
+        <div className="flex flex-col items-center gap-6 mt-8">
+          <div className="relative group">
+            <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse" />
+            <div className="relative size-48 md:size-56 rounded-full border-4 border-secondary overflow-hidden bg-white ai-glow">
+              <div
+                className="w-full h-full bg-cover bg-center"
+                style={{
+                  backgroundImage:
+                    "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCvR1G0XXVpXJIn-bdcM6-mDlAIbLOPWzv_DfXbXcr0cwkN6A07OhWaIMAyBhuoVm5DRBQZh_JXXLnG2GNCSTtCqkHtR12lzb7CO9u9jPT-Dl4f_DlSiglxwJqAZwcF9TPYKpxuj9dyBbhDkecL3T2SMJ8hRTWEljha1iNsrk3C7gRu9mKrjMDKRAav6OjMQt46f6sVohpcYKMCKS9WhtefSJ7r3wMYGZn67IFU2tRXH5sIAmt3o68YUe597Qq7DXh6Nshbsle-47Q')",
+                  transform: "scale(1.4)",
+                  transformOrigin: "top center",
+                }}
+              />
+            </div>
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary text-white text-[10px] font-bold tracking-wider uppercase rounded-full">
+              Rose AI
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="w-full space-y-8 text-center">
+          <div className="space-y-3">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-primary">
+              {t("preparation.title")}
+            </h1>
+            <p className="text-[#7f6f66] max-w-md mx-auto text-base">
+              {t("preparation.subtitle")}
+            </p>
+          </div>
+
+          {/* Instruction cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 text-left">
+            <div className="glass-panel p-6 rounded-xl flex flex-col items-center md:items-start text-center md:text-left gap-3">
+              <MaterialIcon name="mic" className="text-primary text-3xl" />
+              <div>
+                <h3 className="font-bold text-primary text-sm uppercase tracking-wide">
+                  {t("preparation.speakTitle")}
+                </h3>
+                <p className="text-xs text-[#7f6f66] mt-1 leading-relaxed">
+                  {t("preparation.speakDesc")}
+                </p>
+              </div>
+            </div>
+            <div className="glass-panel p-6 rounded-xl flex flex-col items-center md:items-start text-center md:text-left gap-3">
+              <MaterialIcon name="volume_off" className="text-primary text-3xl" />
+              <div>
+                <h3 className="font-bold text-primary text-sm uppercase tracking-wide">
+                  {t("preparation.quietTitle")}
+                </h3>
+                <p className="text-xs text-[#7f6f66] mt-1 leading-relaxed">
+                  {t("preparation.quietDesc")}
+                </p>
+              </div>
+            </div>
+            <div className="glass-panel p-6 rounded-xl flex flex-col items-center md:items-start text-center md:text-left gap-3">
+              <MaterialIcon name="wifi" className="text-primary text-3xl" />
+              <div>
+                <h3 className="font-bold text-primary text-sm uppercase tracking-wide">
+                  {t("preparation.connectionTitle")}
+                </h3>
+                <p className="text-xs text-[#7f6f66] mt-1 leading-relaxed">
+                  {t("preparation.connectionDesc")}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <footer className="w-full max-w-md">
+          <p className="text-center text-[10px] text-[#7f6f66] uppercase tracking-[0.2em] font-medium opacity-60">
+            {t("preparation.footer")}
+          </p>
+        </footer>
+      </main>
+
+      {/* Background decorations */}
+      <div className="absolute top-[-10%] left-[-5%] size-[400px] bg-secondary/20 rounded-full blur-[100px] -z-10" />
+      <div className="absolute bottom-[-10%] right-[-5%] size-[400px] bg-primary/10 rounded-full blur-[100px] -z-10" />
+    </div>
+  );
+}

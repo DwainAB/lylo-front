@@ -1,13 +1,18 @@
+"use client";
+
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 const techPartners = [
+  { icon: "auto_awesome", name: "Mistral" },
+  { icon: "cloud_queue", name: "AWS" },
   { icon: "psychology", name: "OpenAI" },
-  { icon: "data_object", name: "TensorFlow" },
-  { icon: "cloud_queue", name: "Azure AI" },
-  { icon: "science", name: "LabVantage" },
+  { icon: "search", name: "Google" },
 ];
 
 export default function TechBar() {
+  const { t } = useTranslation();
+
   return (
     <section className="py-4 px-6 bg-white/50 border-y border-primary/5">
       <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
@@ -33,10 +38,10 @@ export default function TechBar() {
           </div>
           <div>
             <p className="text-[10px] font-bold tracking-widest text-primary uppercase">
-              Rose Assistant
+              {t("techBar.roseAssistant")}
             </p>
             <p className="text-xs italic font-medium">
-              &ldquo;Matching 3 notes for your morning in Paris.&rdquo;
+              &ldquo;{t("techBar.roseMessage")}&rdquo;
             </p>
           </div>
         </div>

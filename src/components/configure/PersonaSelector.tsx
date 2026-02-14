@@ -1,23 +1,26 @@
 "use client";
 
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 interface PersonaSelectorProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-const personas = [
-  { value: "male", label: "Male", icon: "male" },
-  { value: "female", label: "Female", icon: "female" },
-];
-
 export default function PersonaSelector({ value, onChange }: PersonaSelectorProps) {
+  const { t } = useTranslation();
+
+  const personas = [
+    { value: "male", label: t("configure.male"), icon: "male" },
+    { value: "female", label: t("configure.female"), icon: "female" },
+  ];
+
   return (
     <section>
-      <h3 className="text-primary text-sm font-bold uppercase tracking-widest leading-tight mb-4 flex items-center gap-2">
+      <h3 className="text-text-dark text-sm font-bold uppercase tracking-widest leading-tight mb-4 flex items-center gap-2">
         <MaterialIcon name="psychology" className="text-base" />
-        AI Persona selection
+        {t("configure.personaTitle")}
       </h3>
       <div className="grid grid-cols-2 gap-3">
         {personas.map((persona) => (

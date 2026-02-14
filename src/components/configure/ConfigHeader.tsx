@@ -1,7 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import LanguageSelector from "@/components/ui/LanguageSelector";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 export default function ConfigHeader() {
+  const { t } = useTranslation();
+
   return (
     <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-primary/10 px-6 lg:px-40 py-4 absolute top-0 w-full z-10 bg-background-light/80 backdrop-blur-sm">
       <Link href="/" className="flex items-center gap-4 text-primary">
@@ -22,11 +28,12 @@ export default function ConfigHeader() {
           </svg>
         </div>
         <h2 className="text-primary text-xl font-bold leading-tight tracking-tight font-display">
-          Le studio des parfums
+          {t("configure.brand")}
         </h2>
       </Link>
 
-      <div className="flex gap-4">
+      <div className="flex items-center gap-4">
+        <LanguageSelector className="text-primary" />
         <button className="flex items-center justify-center rounded-lg h-10 w-10 bg-warm-cream/30 text-primary hover:bg-warm-cream transition-colors">
           <MaterialIcon name="person" className="text-lg" />
         </button>

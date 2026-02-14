@@ -1,32 +1,35 @@
-import InteractionHeader from "@/components/interaction/InteractionHeader";
+"use client";
+
+import Navbar from "@/components/layout/Navbar";
 import AvatarSection from "@/components/interaction/AvatarSection";
 import StepProgress from "@/components/interaction/StepProgress";
 import CityGrid from "@/components/interaction/CityGrid";
 import WaitingIndicator from "@/components/interaction/WaitingIndicator";
 import AnswerButton from "@/components/interaction/AnswerButton";
-
-const ROSE_AVATAR_URL =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuDiC-Pa7yaj4UGsi4uwZJCxjTuCb5gcHKC2ITbD6eDi8U1NIpbEsrJwV4pGKeq4rocGN6FmwOi7ONXxoHEmRQZBboSbzkNzcH9Z9it9FJSArCHMu_VXOU3NXZ3a3pD0zloCtoHOtQXyHxZDozU3Fhv5NYXWGTdGuhp4FgxqbxqdxBhSPfXDCpJ0QiBTxNVGuxwFObZmlG3n0CEgtBCSUa6dOjTo9olTSk63eWHElpkGO5F5KcRKD5_bpkd0XnrSDsWiAzSeSh9hBXE";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 export default function InteractionPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="relative flex h-screen w-full flex-col">
-      <InteractionHeader />
+      <Navbar showActions={false} transparent />
 
       <main className="flex-1 flex flex-col items-center justify-between px-6 pb-6 pt-2 max-w-6xl mx-auto w-full min-h-0 relative z-10">
-        {/* Avatar */}
-        <AvatarSection
-          name="Rose"
-          role="Fragrance Curator"
-          imageUrl={ROSE_AVATAR_URL}
-        />
-
-        {/* Question section */}
-        <div className="w-full flex flex-col items-center gap-4 shrink-0">
+        {/* Avatar + Question section */}
+        <div className="w-full flex flex-col items-center gap-2 shrink-0 mt-12">
+          <AvatarSection
+            name=""
+            role=""
+            imageUrl="https://lh3.googleusercontent.com/aida-public/AB6AXuDiC-Pa7yaj4UGsi4uwZJCxjTuCb5gcHKC2ITbD6eDi8U1NIpbEsrJwV4pGKeq4rocGN6FmwOi7ONXxoHEmRQZBboSbzkNzcH9Z9it9FJSArCHMu_VXOU3NXZ3a3pD0zloCtoHOtQXyHxZDozU3Fhv5NYXWGTdGuhp4FgxqbxqdxBhSPfXDCpJ0QiBTxNVGuxwFObZmlG3n0CEgtBCSUa6dOjTo9olTSk63eWHElpkGO5F5KcRKD5_bpkd0XnrSDsWiAzSeSh9hBXE"
+          />
           <StepProgress currentStep={2} totalSteps={4} />
           <h3 className="text-3xl md:text-4xl font-extralight tracking-tight text-center max-w-2xl leading-tight">
-            Which city speaks to your{" "}
-            <span className="italic font-normal text-primary">essence</span>?
+            {t("interaction.questionPrefix")}{" "}
+            <span className="italic font-normal text-primary">
+              {t("interaction.questionHighlight")}
+            </span>
+            ?
           </h3>
         </div>
 

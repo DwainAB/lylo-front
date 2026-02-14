@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "brand": "Le studio des parfums",
+    "collections": "Collections",
+    "aiExperience": "The AI Experience",
+    "atelier": "Atelier",
+    "login": "Login",
+    "getStarted": "Get started"
+  },
+  "home": {
+    "badge": "AI Personal Perfumer",
+    "title": "Le studio des parfums",
+    "subtitle": "Rose, your virtual assistant.",
+    "cta": "Click on 'Introduction' to learn more.",
+    "getStarted": "Get started",
+    "introduction": "Introduction",
+    "playing": "Now playing...",
+    "floatingLabel": "Scent Mapping Engine v1.0"
+  },
+  "techBar": {
+    "roseAssistant": "Rose Assistant",
+    "roseMessage": "Matching 3 notes for your morning in Paris."
+  },
+  "configure": {
+    "brand": "Le studio des parfums",
+    "label": "Configuration",
+    "title": "Customize your experience",
+    "subtitle": "Fine-tune your AI olfactive consultant",
+    "personaTitle": "AI Persona selection",
+    "male": "Male",
+    "female": "Female",
+    "depthTitle": "Depth of Analysis",
+    "quick": "Quick",
+    "standard": "Standard",
+    "deep": "Deep",
+    "continue": "Continue",
+    "footer": "Handcrafted by Le Studio Des Parfums © 2024"
+  },
+  "interaction": {
+    "brand": "Le studio des parfums",
+    "rose": "Rose",
+    "fragranceCurator": "Fragrance Curator",
+    "step": "Step",
+    "questionPrefix": "Which city speaks to your",
+    "questionHighlight": "essence",
+    "waiting": "I am waiting for your answer...",
+    "answer": "Answer"
+  },
+  "preparation": {
+    "title": "Preparing your olfactory journey",
+    "subtitle": "To create your bespoke fragrance, I need to hear your story clearly.",
+    "speakTitle": "Speak aloud",
+    "speakDesc": "Your answers must be spoken clearly and distinctly.",
+    "quietTitle": "Quiet environment",
+    "quietDesc": "Ensure a quiet place for the best voice recognition.",
+    "connectionTitle": "Stable connection",
+    "connectionDesc": "A good connection ensures a smooth conversation.",
+    "footer": "Experience powered by Studio Olfactif AI",
+    "startingIn": "Starting in"
+  },
+  "recommendations": {
+    "brand": "Le Studio Des Parfums",
+    "rose": "Rose",
+    "aiCurator": "AI Fragrance Curator",
+    "title": "Here are two perfume formula variations that match your profile.",
+    "selectSize": "SELECT SIZE",
+    "answer": "Answer",
+    "returnHome": "Return to homepage",
+    "noteLabels": {
+      "top": "Top Notes",
+      "heart": "Heart Notes",
+      "base": "Base Notes"
+    },
+    "formulas": {
+      "mysticBloom": {
+        "name": "Mystic Bloom",
+        "top": "Italian Bergamot, Pink Pepper, Saffron",
+        "heart": "Damask Rose, Midnight Jasmine, Patchouli",
+        "base": "White Oud, Amber Resin, Creamy Vanilla"
+      },
+      "citrusElegance": {
+        "name": "Citrus Elegance",
+        "top": "Sicilian Lemon, Neroli, Crisp Apple",
+        "heart": "Orange Blossom, Sea Salt, White Tea",
+        "base": "Cedarwood, Vetiver, Clean Musk"
+      }
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "brand": "Le studio des parfums",
+    "collections": "Collections",
+    "aiExperience": "L'Expérience IA",
+    "atelier": "Atelier",
+    "login": "Connexion",
+    "getStarted": "Commencer"
+  },
+  "home": {
+    "badge": "Parfumeur Personnel IA",
+    "title": "Le studio des parfums",
+    "subtitle": "Rose, votre assistante virtuelle.",
+    "cta": "Cliquez sur 'Introduction' pour en savoir plus.",
+    "getStarted": "Commencer",
+    "introduction": "Introduction",
+    "playing": "Lecture en cours...",
+    "floatingLabel": "Moteur de Cartographie Olfactive v1.0"
+  },
+  "techBar": {
+    "roseAssistant": "Assistante Rose",
+    "roseMessage": "Sélection de 3 notes pour votre matin à Paris."
+  },
+  "configure": {
+    "brand": "Le studio des parfums",
+    "label": "Configuration",
+    "title": "Personnalisez votre expérience",
+    "subtitle": "Affinez votre consultant olfactif IA",
+    "personaTitle": "Sélection du persona IA",
+    "male": "Homme",
+    "female": "Femme",
+    "depthTitle": "Profondeur d'analyse",
+    "quick": "Rapide",
+    "standard": "Standard",
+    "deep": "Approfondi",
+    "continue": "Continuer",
+    "footer": "Fait main par Le Studio Des Parfums © 2024"
+  },
+  "interaction": {
+    "brand": "Le studio des parfums",
+    "rose": "Rose",
+    "fragranceCurator": "Curatrice de Parfums",
+    "step": "Étape",
+    "questionPrefix": "Quelle ville parle à votre",
+    "questionHighlight": "essence",
+    "waiting": "J'attends votre réponse...",
+    "answer": "Répondre"
+  },
+  "preparation": {
+    "title": "Préparation de votre voyage olfactif",
+    "subtitle": "Pour créer votre parfum sur mesure, j'ai besoin d'entendre clairement votre histoire.",
+    "speakTitle": "Parlez à voix haute",
+    "speakDesc": "Vos réponses doivent être prononcées clairement et distinctement.",
+    "quietTitle": "Environnement calme",
+    "quietDesc": "Assurez-vous d'être dans un endroit calme pour une meilleure reconnaissance vocale.",
+    "connectionTitle": "Connexion stable",
+    "connectionDesc": "Une bonne connexion garantit une conversation fluide.",
+    "footer": "Expérience propulsée par Studio Olfactif IA",
+    "startingIn": "Démarrage dans"
+  },
+  "recommendations": {
+    "brand": "Le Studio Des Parfums",
+    "rose": "Rose",
+    "aiCurator": "Curatrice de Parfums IA",
+    "title": "Voici deux variations de formules de parfum correspondant à votre profil.",
+    "selectSize": "CHOISIR LA TAILLE",
+    "answer": "Répondre",
+    "returnHome": "Retour à l'accueil",
+    "noteLabels": {
+      "top": "Notes de tête",
+      "heart": "Notes de cœur",
+      "base": "Notes de fond"
+    },
+    "formulas": {
+      "mysticBloom": {
+        "name": "Mystic Bloom",
+        "top": "Bergamote d'Italie, Poivre rose, Safran",
+        "heart": "Rose de Damas, Jasmin de nuit, Patchouli",
+        "base": "Oud blanc, Résine d'ambre, Vanille crémeuse"
+      },
+      "citrusElegance": {
+        "name": "Élégance Agrumes",
+        "top": "Citron de Sicile, Néroli, Pomme croquante",
+        "heart": "Fleur d'oranger, Sel marin, Thé blanc",
+        "base": "Bois de cèdre, Vétiver, Musc blanc"
+      }
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
+import { LanguageProvider } from "@/i18n/LanguageContext";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -20,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light">
+    <html lang="en" className="light" suppressHydrationWarning>
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
@@ -29,8 +30,9 @@ export default function RootLayout({
       </head>
       <body
         className={`${manrope.variable} bg-background-light text-text-dark h-screen overflow-hidden antialiased`}
+        suppressHydrationWarning
       >
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

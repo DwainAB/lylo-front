@@ -1,60 +1,45 @@
+"use client";
+
 import Link from "next/link";
-import MaterialIcon from "@/components/ui/MaterialIcon";
+import Image from "next/image";
 import Button from "@/components/ui/Button";
+import LanguageSelector from "@/components/ui/LanguageSelector";
+import { useTranslation } from "@/i18n/LanguageContext";
 
-const navLinks = [
-  { label: "Collections", href: "/collections" },
-  { label: "The AI Experience", href: "/ai-experience" },
-  { label: "Atelier", href: "/atelier" },
-];
+interface NavbarProps {
+  showActions?: boolean;
+  transparent?: boolean;
+}
 
-export default function Navbar() {
+export default function Navbar({ showActions = true, transparent = false }: NavbarProps) {
+  const { t } = useTranslation();
+
   return (
-    <header className="fixed top-0 z-50 w-full glass-nav border-b border-primary/10 px-6 lg:px-20 py-2">
+    <header className={`fixed top-0 z-50 w-full px-6 lg:px-20 py-2 ${transparent ? "" : "glass-nav border-b border-primary/10"}`}>
       <div className="max-w-[1440px] mx-auto flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3">
-          <div className="text-primary">
-            <MaterialIcon name="storm" className="text-3xl" />
-          </div>
+          <Image src="/logo-sdp.png" alt="Logo SDP" width={40} height={40} />
           <h1 className="text-lg font-bold tracking-tight text-text-dark">
-            Le studio des parfums
+            {t("nav.brand")}
           </h1>
         </Link>
 
         {/* Right side */}
-        <div className="flex items-center gap-8">
-          {/* Navigation links */}
-          <nav className="hidden md:flex items-center gap-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium hover:text-primary transition-colors uppercase tracking-widest"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="h-4 w-[1px] bg-primary/20 hidden md:block" />
-
-          {/* Actions */}
-          <div className="flex items-center gap-6">
-            <Link
-              href="#"
-              className="text-xs font-bold tracking-tighter hover:text-primary transition-colors"
-            >
-              FR / EN
-            </Link>
-            <div className="flex gap-3">
-              <Button variant="outline" className="hidden sm:flex">
-                Login
-              </Button>
-              <Button variant="primary">Get started</Button>
+        {showActions && (
+          <div className="flex items-center gap-8">
+            {/* Actions */}
+            <div className="flex items-center gap-6">
+              <LanguageSelector />
+              <div className="flex gap-3">
+                <Button variant="outline" className="hidden sm:flex">
+                  {t("nav.login")}
+                </Button>
+                <Button variant="primary">{t("nav.getStarted")}</Button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </header>
   );

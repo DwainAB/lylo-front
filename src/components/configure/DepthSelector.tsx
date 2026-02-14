@@ -1,24 +1,27 @@
 "use client";
 
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 interface DepthSelectorProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-const depths = [
-  { value: "1", label: "1", sublabel: "Quick" },
-  { value: "4", label: "4", sublabel: "Standard" },
-  { value: "12", label: "12", sublabel: "Deep" },
-];
-
 export default function DepthSelector({ value, onChange }: DepthSelectorProps) {
+  const { t } = useTranslation();
+
+  const depths = [
+    { value: "1", label: "1", sublabel: t("configure.quick") },
+    { value: "4", label: "4", sublabel: t("configure.standard") },
+    { value: "12", label: "12", sublabel: t("configure.deep") },
+  ];
+
   return (
     <section>
-      <h3 className="text-primary text-sm font-bold uppercase tracking-widest leading-tight mb-4 flex items-center gap-2">
+      <h3 className="text-text-dark text-sm font-bold uppercase tracking-widest leading-tight mb-4 flex items-center gap-2">
         <MaterialIcon name="query_stats" className="text-base" />
-        Depth of Analysis
+        {t("configure.depthTitle")}
       </h3>
       <div className="grid grid-cols-3 gap-2">
         {depths.map((depth) => (

@@ -1,7 +1,31 @@
+"use client";
+
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 export default function HeroSection() {
+  const router = useRouter();
+  const { t, locale } = useTranslation();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const handlePlayAudio = () => {
+    if (isPlaying && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+      return;
+    }
+    const audio = new Audio("/téléchargement.wav");
+    audioRef.current = audio;
+    setIsPlaying(true);
+    audio.play();
+    audio.onended = () => setIsPlaying(false);
+  };
+
   return (
     <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden">
       {/* Background */}
@@ -15,33 +39,37 @@ export default function HeroSection() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
           </span>
-          AI Personal Perfumer
+          {t("home.badge")}
         </div>
 
         {/* Title */}
         <h1 className="text-white text-4xl md:text-5xl lg:text-7xl font-light tracking-tight mb-6 font-display">
-          Le studio des parfums
+          {t("home.title")}
         </h1>
 
         {/* Subtitle */}
         <div className="flex flex-col gap-2 mb-6">
           <p className="text-white/90 text-xl md:text-2xl font-light italic">
-            Rose, your virtual assistant.
+            {t("home.subtitle")}
           </p>
           <p className="text-white/70 text-sm md:text-base tracking-wide uppercase">
-            Click on &apos;Introduction&apos; to learn more.
+            {t("home.cta")}
           </p>
         </div>
 
         {/* CTA Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <Button variant="primary" size="lg" className="shadow-2xl shadow-black/20 hover:scale-[1.02]">
+          <Button variant="primary" size="lg" className="shadow-2xl shadow-black/20 hover:scale-[1.02]" onClick={() => { localStorage.setItem("language", locale); router.push("/configure"); }}>
             <MaterialIcon name="auto_awesome" />
-            Get started
+            {t("home.getStarted")}
           </Button>
-          <Button variant="ghost" size="lg">
-            <MaterialIcon name="play_circle" />
-            Introduction
+          <Button variant="ghost" size="lg" onClick={handlePlayAudio}>
+            {isPlaying ? (
+              <span className="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <MaterialIcon name="play_circle" />
+            )}
+            {isPlaying ? t("home.playing") : t("home.introduction")}
           </Button>
         </div>
       </div>
@@ -49,7 +77,7 @@ export default function HeroSection() {
       {/* Floating tech element */}
       <div className="absolute bottom-10 left-10 hidden lg:block">
         <div className="p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 text-white/60 text-[10px] tracking-widest uppercase">
-          Scent Mapping Engine v4.2
+          {t("home.floatingLabel")}
         </div>
       </div>
     </div>
