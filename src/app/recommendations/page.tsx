@@ -3,9 +3,10 @@
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import AvatarSection from "@/components/interaction/AvatarSection";
-import AnswerButton from "@/components/interaction/AnswerButton";
+
 import FormulaCard from "@/components/recommendations/FormulaCard";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { useSession } from "@/context/SessionContext";
 
 const ROSE_AVATAR_URL =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuCIjXIXxFHeF0IZ1fGfF2SkT_DOMGHF13GvAeKVjmEc8d7kEFrp1ptpN8bbF0db9LBI1sIhbzIh37IBuhGgu8ZRENOJDESI2ePdufvyAlrVNWDpVTgMkYVhXmEqQLCEddI6bB_3rJ45Dk2SO_H5TgxI3We52-1o2yMu4ZU-i5j0LlIyejnZpqCaHNNFZo_FrU-ITbryhbGUg6pMd7I_N6ZNRxWJYotXb4-lH9Ci63Or4mGQjZ-6370Y4X3R6U3pDewybfy73SRyO4c";
@@ -13,27 +14,17 @@ const ROSE_AVATAR_URL =
 export default function RecommendationsPage() {
   const router = useRouter();
   const { t } = useTranslation();
+  const { formulas: sessionFormulas } = useSession();
 
-  const formulas = [
-    {
-      key: "mysticBloom",
-      name: t("recommendations.formulas.mysticBloom.name"),
-      noteGroups: [
-        { label: t("recommendations.noteLabels.top"), notes: t("recommendations.formulas.mysticBloom.top") },
-        { label: t("recommendations.noteLabels.heart"), notes: t("recommendations.formulas.mysticBloom.heart") },
-        { label: t("recommendations.noteLabels.base"), notes: t("recommendations.formulas.mysticBloom.base") },
-      ],
-    },
-    {
-      key: "citrusElegance",
-      name: t("recommendations.formulas.citrusElegance.name"),
-      noteGroups: [
-        { label: t("recommendations.noteLabels.top"), notes: t("recommendations.formulas.citrusElegance.top") },
-        { label: t("recommendations.noteLabels.heart"), notes: t("recommendations.formulas.citrusElegance.heart") },
-        { label: t("recommendations.noteLabels.base"), notes: t("recommendations.formulas.citrusElegance.base") },
-      ],
-    },
-  ];
+  const formulas = sessionFormulas.map((f, i) => ({
+    key: `formula-${i}`,
+    name: f.profile,
+    noteGroups: [
+      { label: t("recommendations.noteLabels.top"), notes: f.top_notes.join(", ") },
+      { label: t("recommendations.noteLabels.heart"), notes: f.heart_notes.join(", ") },
+      { label: t("recommendations.noteLabels.base"), notes: f.base_notes.join(", ") },
+    ],
+  }));
 
   return (
     <div className="relative flex h-screen w-full flex-col">
@@ -53,21 +44,24 @@ export default function RecommendationsPage() {
         </div>
 
         {/* Formula cards */}
-        <div className="flex flex-row gap-6 w-full max-w-5xl justify-center">
-          {formulas.map((formula) => (
-            <FormulaCard
-              key={formula.key}
-              name={formula.name}
-              noteGroups={formula.noteGroups}
-            />
-          ))}
-        </div>
+        {formulas.length > 0 ? (
+          <div className="flex flex-row gap-6 w-full max-w-5xl justify-center">
+            {formulas.map((formula) => (
+              <FormulaCard
+                key={formula.key}
+                name={formula.name}
+                noteGroups={formula.noteGroups}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-400 text-center text-lg font-light">
+            {t("recommendations.noFormulas")}
+          </p>
+        )}
 
         {/* Bottom controls */}
         <div className="w-full flex flex-col items-center gap-6 shrink-0 pt-4">
-          <div className="flex flex-col items-center gap-2">
-            <AnswerButton />
-          </div>
           <button onClick={() => router.push("/")} className="text-gray-400 brand-text text-[0.7rem] hover:text-primary transition-colors cursor-pointer">
             {t("recommendations.returnHome")}
           </button>

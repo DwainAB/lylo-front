@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import { LanguageProvider } from "@/i18n/LanguageContext";
+import { SessionProvider } from "@/context/SessionContext";
+import LiveKitSession from "@/components/livekit/LiveKitSession";
+import TranscriptPanel from "@/components/livekit/TranscriptPanel";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -32,7 +35,14 @@ export default function RootLayout({
         className={`${manrope.variable} bg-background-light text-text-dark h-screen overflow-hidden antialiased`}
         suppressHydrationWarning
       >
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          <SessionProvider>
+            <LiveKitSession>
+              {children}
+              <TranscriptPanel />
+            </LiveKitSession>
+          </SessionProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

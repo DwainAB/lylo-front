@@ -34,17 +34,16 @@
     "standard": "Standard",
     "deep": "Deep",
     "continue": "Continue",
-    "footer": "Handcrafted by Le Studio Des Parfums © 2024"
+    "footer": "Created by Le Studio Des Parfums © 2025"
   },
   "interaction": {
     "brand": "Le studio des parfums",
     "rose": "Rose",
     "fragranceCurator": "Fragrance Curator",
     "step": "Step",
-    "questionPrefix": "Which city speaks to your",
-    "questionHighlight": "essence",
     "waiting": "I am waiting for your answer...",
-    "answer": "Answer"
+    "agentSpeaking": "{name} is speaking...",
+    "connecting": "Connecting..."
   },
   "preparation": {
     "title": "Preparing your olfactory journey",
@@ -56,7 +55,19 @@
     "connectionTitle": "Stable connection",
     "connectionDesc": "A good connection ensures a smooth conversation.",
     "footer": "Experience powered by Studio Olfactif AI",
-    "startingIn": "Starting in"
+    "startingIn": "Starting in",
+    "connecting": "Connecting to Rose...",
+    "connected": "Connected — Rose is listening",
+    "pleaseWait": "Please wait a moment..."
+  },
+  "transcript": {
+    "toggle": "Conversation",
+    "title": "Conversation",
+    "empty": "The conversation will appear here..."
+  },
+  "generating": {
+    "title": "Crafting your formulas",
+    "subtitle": "Rose is composing two bespoke fragrance formulas based on your unique olfactory profile."
   },
   "recommendations": {
     "brand": "Le Studio Des Parfums",
@@ -64,26 +75,12 @@
     "aiCurator": "AI Fragrance Curator",
     "title": "Here are two perfume formula variations that match your profile.",
     "selectSize": "SELECT SIZE",
-    "answer": "Answer",
     "returnHome": "Return to homepage",
+    "noFormulas": "No formulas available at the moment.",
     "noteLabels": {
       "top": "Top Notes",
       "heart": "Heart Notes",
       "base": "Base Notes"
-    },
-    "formulas": {
-      "mysticBloom": {
-        "name": "Mystic Bloom",
-        "top": "Italian Bergamot, Pink Pepper, Saffron",
-        "heart": "Damask Rose, Midnight Jasmine, Patchouli",
-        "base": "White Oud, Amber Resin, Creamy Vanilla"
-      },
-      "citrusElegance": {
-        "name": "Citrus Elegance",
-        "top": "Sicilian Lemon, Neroli, Crisp Apple",
-        "heart": "Orange Blossom, Sea Salt, White Tea",
-        "base": "Cedarwood, Vetiver, Clean Musk"
-      }
     }
   }
 }

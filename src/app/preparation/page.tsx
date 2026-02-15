@@ -1,15 +1,55 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { useSession } from "@/context/SessionContext";
 
 export default function PreparationPage() {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { sessionState, startSession, sessionData } = useSession();
+  const hasStarted = useRef(false);
+
+  // Start session on mount
+  useEffect(() => {
+    if (!hasStarted.current && !sessionData) {
+      hasStarted.current = true;
+      startSession();
+    }
+  }, [startSession, sessionData]);
+
+  // Navigate when state changes
+  useEffect(() => {
+    if (sessionState === "questionnaire") {
+      router.push("/interaction");
+    } else if (sessionState === "completed") {
+      router.push("/recommendations");
+    }
+  }, [sessionState, router]);
+
+  const isConnecting = sessionState === "idle" || sessionState === "connecting";
 
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden">
       <Navbar showActions={false} transparent />
+
+      {/* Loading overlay */}
+      {isConnecting && (
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-background-light/80 backdrop-blur-sm">
+          <div className="relative mb-6">
+            <div className="size-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+          </div>
+          <p className="text-primary font-semibold text-lg">
+            {t("preparation.connecting")}
+          </p>
+          <p className="text-[#7f6f66] text-sm mt-1">
+            {t("preparation.pleaseWait")}
+          </p>
+        </div>
+      )}
 
       <main className="flex-1 flex flex-col items-center justify-between px-6 pb-12 pt-2 max-w-4xl mx-auto w-full min-h-0 relative z-10">
         {/* Avatar */}
@@ -82,8 +122,24 @@ export default function PreparationPage() {
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Connection status footer */}
         <footer className="w-full max-w-md">
+          {sessionState === "connecting" && (
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <div className="size-2 rounded-full bg-primary animate-pulse" />
+              <p className="text-sm text-primary font-medium">
+                {t("preparation.connecting")}
+              </p>
+            </div>
+          )}
+          {sessionState === "collecting_profile" && (
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <div className="size-2 rounded-full bg-green-500" />
+              <p className="text-sm text-green-700 font-medium">
+                {t("preparation.connected")}
+              </p>
+            </div>
+          )}
           <p className="text-center text-[10px] text-[#7f6f66] uppercase tracking-[0.2em] font-medium opacity-60">
             {t("preparation.footer")}
           </p>

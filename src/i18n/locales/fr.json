@@ -34,17 +34,16 @@
     "standard": "Standard",
     "deep": "Approfondi",
     "continue": "Continuer",
-    "footer": "Fait main par Le Studio Des Parfums © 2024"
+    "footer": "Créé par Le Studio Des Parfums © 2025"
   },
   "interaction": {
     "brand": "Le studio des parfums",
     "rose": "Rose",
     "fragranceCurator": "Curatrice de Parfums",
     "step": "Étape",
-    "questionPrefix": "Quelle ville parle à votre",
-    "questionHighlight": "essence",
     "waiting": "J'attends votre réponse...",
-    "answer": "Répondre"
+    "agentSpeaking": "{name} est en train de parler...",
+    "connecting": "Connexion en cours..."
   },
   "preparation": {
     "title": "Préparation de votre voyage olfactif",
@@ -56,7 +55,19 @@
     "connectionTitle": "Connexion stable",
     "connectionDesc": "Une bonne connexion garantit une conversation fluide.",
     "footer": "Expérience propulsée par Studio Olfactif IA",
-    "startingIn": "Démarrage dans"
+    "startingIn": "Démarrage dans",
+    "connecting": "Connexion à Rose...",
+    "connected": "Connecté — Rose vous écoute",
+    "pleaseWait": "Veuillez patienter un instant..."
+  },
+  "transcript": {
+    "toggle": "Conversation",
+    "title": "Conversation",
+    "empty": "La conversation apparaîtra ici..."
+  },
+  "generating": {
+    "title": "Création de vos formules",
+    "subtitle": "Rose compose deux formules de parfum sur mesure basées sur votre profil olfactif unique."
   },
   "recommendations": {
     "brand": "Le Studio Des Parfums",
@@ -64,26 +75,12 @@
     "aiCurator": "Curatrice de Parfums IA",
     "title": "Voici deux variations de formules de parfum correspondant à votre profil.",
     "selectSize": "CHOISIR LA TAILLE",
-    "answer": "Répondre",
     "returnHome": "Retour à l'accueil",
+    "noFormulas": "Aucune formule disponible pour le moment.",
     "noteLabels": {
       "top": "Notes de tête",
       "heart": "Notes de cœur",
       "base": "Notes de fond"
-    },
-    "formulas": {
-      "mysticBloom": {
-        "name": "Mystic Bloom",
-        "top": "Bergamote d'Italie, Poivre rose, Safran",
-        "heart": "Rose de Damas, Jasmin de nuit, Patchouli",
-        "base": "Oud blanc, Résine d'ambre, Vanille crémeuse"
-      },
-      "citrusElegance": {
-        "name": "Élégance Agrumes",
-        "top": "Citron de Sicile, Néroli, Pomme croquante",
-        "heart": "Fleur d'oranger, Sel marin, Thé blanc",
-        "base": "Bois de cèdre, Vétiver, Musc blanc"
-      }
     }
   }
 }

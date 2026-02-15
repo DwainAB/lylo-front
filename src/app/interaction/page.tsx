@@ -1,15 +1,36 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import AvatarSection from "@/components/interaction/AvatarSection";
 import StepProgress from "@/components/interaction/StepProgress";
+import SpeakingIndicator from "@/components/interaction/SpeakingIndicator";
 import CityGrid from "@/components/interaction/CityGrid";
-import WaitingIndicator from "@/components/interaction/WaitingIndicator";
-import AnswerButton from "@/components/interaction/AnswerButton";
+import GeneratingLoader from "@/components/livekit/GeneratingLoader";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { useSession } from "@/context/SessionContext";
 
 export default function InteractionPage() {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { sessionState, answers, questionCount, questions, currentQuestionIndex } = useSession();
+
+  // Navigate when state changes
+  useEffect(() => {
+    if (sessionState === "completed") {
+      router.push("/recommendations");
+    }
+  }, [sessionState, router]);
+
+  const currentStep = currentQuestionIndex + 1;
+  const totalSteps = questionCount || 4;
+  const currentQuestion = questions[currentQuestionIndex];
+
+  // Show generating loader overlay
+  if (sessionState === "generating_formulas") {
+    return <GeneratingLoader />;
+  }
 
   return (
     <div className="relative flex h-screen w-full flex-col">
@@ -23,25 +44,18 @@ export default function InteractionPage() {
             role=""
             imageUrl="https://lh3.googleusercontent.com/aida-public/AB6AXuDiC-Pa7yaj4UGsi4uwZJCxjTuCb5gcHKC2ITbD6eDi8U1NIpbEsrJwV4pGKeq4rocGN6FmwOi7ONXxoHEmRQZBboSbzkNzcH9Z9it9FJSArCHMu_VXOU3NXZ3a3pD0zloCtoHOtQXyHxZDozU3Fhv5NYXWGTdGuhp4FgxqbxqdxBhSPfXDCpJ0QiBTxNVGuxwFObZmlG3n0CEgtBCSUa6dOjTo9olTSk63eWHElpkGO5F5KcRKD5_bpkd0XnrSDsWiAzSeSh9hBXE"
           />
-          <StepProgress currentStep={2} totalSteps={4} />
+          <StepProgress currentStep={currentStep} totalSteps={totalSteps} />
           <h3 className="text-3xl md:text-4xl font-extralight tracking-tight text-center max-w-2xl leading-tight">
-            {t("interaction.questionPrefix")}{" "}
-            <span className="italic font-normal text-primary">
-              {t("interaction.questionHighlight")}
-            </span>
-            ?
+            {currentQuestion?.question || t("interaction.waiting")}
           </h3>
         </div>
 
-        {/* City selection grid */}
-        <CityGrid />
+        {/* Choice selection grid */}
+        <CityGrid choices={currentQuestion?.choices || []} />
 
         {/* Bottom controls */}
         <div className="w-full flex flex-col items-center gap-6 shrink-0 pt-4">
-          <WaitingIndicator />
-          <div className="flex flex-col items-center gap-2">
-            <AnswerButton />
-          </div>
+          <SpeakingIndicator />
         </div>
       </main>
 
