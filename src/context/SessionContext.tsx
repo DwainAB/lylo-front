@@ -14,7 +14,8 @@ export type SessionState =
   | "collecting_profile"
   | "questionnaire"
   | "generating_formulas"
-  | "completed";
+  | "completed"
+  | "customization";
 
 export interface ProfileUpdate {
   field: string;
@@ -30,12 +31,20 @@ export interface AnswerSaved {
 }
 
 export interface FormulaNote {
-  position: number;
   name: string;
-  family: string;
-  description: string;
-  note_type: string;
-  priority: string;
+  ml: number;
+  family?: string;
+  description?: string;
+  note_type?: string;
+  priority?: string;
+}
+
+export interface FormulaSize {
+  target_ml: number;
+  top_notes: FormulaNote[];
+  heart_notes: FormulaNote[];
+  base_notes: FormulaNote[];
+  boosters: FormulaNote[];
 }
 
 export interface Formula {
@@ -45,10 +54,10 @@ export interface Formula {
   top_notes: string[];
   heart_notes: string[];
   base_notes: string[];
-  details: {
-    top_notes: FormulaNote[];
-    heart_notes: FormulaNote[];
-    base_notes: FormulaNote[];
+  sizes: {
+    "10ml": FormulaSize;
+    "30ml": FormulaSize;
+    "50ml": FormulaSize;
   };
 }
 
@@ -187,6 +196,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         case "formulas_generated":
           setFormulas(event.formulas || []);
           setSessionState("completed");
+          break;
+
+        case "formula_selected":
+          setFormulas([event.formula]);
+          setSessionState("customization");
+          break;
+
+        case "formula_updated":
+          setFormulas([event.formula]);
           break;
       }
     } catch {

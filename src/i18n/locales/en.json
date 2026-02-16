@@ -80,7 +80,8 @@
     "noteLabels": {
       "top": "Top Notes",
       "heart": "Heart Notes",
-      "base": "Base Notes"
+      "base": "Base Notes",
+      "boosters": "Boosters"
     }
   }
 }

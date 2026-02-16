@@ -80,7 +80,8 @@
     "noteLabels": {
       "top": "Notes de tête",
       "heart": "Notes de cœur",
-      "base": "Notes de fond"
+      "base": "Notes de fond",
+      "boosters": "Boosters"
     }
   }
 }

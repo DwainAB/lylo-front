@@ -19,11 +19,7 @@ export default function RecommendationsPage() {
   const formulas = sessionFormulas.map((f, i) => ({
     key: `formula-${i}`,
     name: f.profile,
-    noteGroups: [
-      { label: t("recommendations.noteLabels.top"), notes: f.top_notes.join(", ") },
-      { label: t("recommendations.noteLabels.heart"), notes: f.heart_notes.join(", ") },
-      { label: t("recommendations.noteLabels.base"), notes: f.base_notes.join(", ") },
-    ],
+    sizes: f.sizes,
   }));
 
   return (
@@ -50,7 +46,7 @@ export default function RecommendationsPage() {
               <FormulaCard
                 key={formula.key}
                 name={formula.name}
-                noteGroups={formula.noteGroups}
+                sizes={formula.sizes}
               />
             ))}
           </div>
