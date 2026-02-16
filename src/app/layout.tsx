@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   title: "Le studio des parfums | AI-Powered Perfumery",
   description:
     "Discover your perfect scent with Rose, your AI personal perfumer. Luxury fragrances crafted with cutting-edge technology.",
+  icons: {
+    icon: "/logo-sdp.png",
+  },
 };
 
 export default function RootLayout({

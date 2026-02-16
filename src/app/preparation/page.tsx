@@ -10,7 +10,7 @@ import { useSession } from "@/context/SessionContext";
 export default function PreparationPage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { sessionState, startSession, sessionData } = useSession();
+  const { sessionState, startSession, sessionData, agentName } = useSession();
   const hasStarted = useRef(false);
 
   // Start session on mount
@@ -68,7 +68,7 @@ export default function PreparationPage() {
               />
             </div>
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary text-white text-[10px] font-bold tracking-wider uppercase rounded-full">
-              Rose AI
+              {agentName} AI
             </div>
           </div>
         </div>
@@ -136,7 +136,7 @@ export default function PreparationPage() {
             <div className="flex items-center justify-center gap-2 mb-3">
               <div className="size-2 rounded-full bg-green-500" />
               <p className="text-sm text-green-700 font-medium">
-                {t("preparation.connected")}
+                {t("preparation.connected").replace("{name}", agentName)}
               </p>
             </div>
           )}

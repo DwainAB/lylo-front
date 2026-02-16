@@ -90,6 +90,7 @@ interface SessionContextType {
   currentQuestionIndex: number;
   questionCount: number;
   agentName: string;
+  hiddenChoices: string[];
   startSession: () => Promise<void>;
   setSessionState: (state: SessionState) => void;
   handleDataMessage: (payload: Uint8Array) => void;
@@ -112,6 +113,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [questionCount, setQuestionCount] = useState(0);
   const [agentName, setAgentName] = useState("Rose");
+  const [hiddenChoices, setHiddenChoices] = useState<string[]>([]);
 
   const startSession = useCallback(async () => {
     setSessionState("connecting");
@@ -160,7 +162,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           setSessionState(event.state as SessionState);
           break;
 
+        case "top_2_selected":
+          setHiddenChoices(event.top_2 || []);
+          break;
+
         case "answer_saved":
+          setHiddenChoices([]);
           setAnswers((prev) => {
             const isNew = !prev.some((a) => a.question_id === event.question_id);
             if (isNew) {
@@ -213,6 +220,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         currentQuestionIndex,
         questionCount,
         agentName,
+        hiddenChoices,
         startSession,
         setSessionState,
         handleDataMessage,

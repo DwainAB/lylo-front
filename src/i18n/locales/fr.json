@@ -56,8 +56,8 @@
     "connectionDesc": "Une bonne connexion garantit une conversation fluide.",
     "footer": "Expérience propulsée par Studio Olfactif IA",
     "startingIn": "Démarrage dans",
-    "connecting": "Connexion à Rose...",
-    "connected": "Connecté — Rose vous écoute",
+    "connecting": "Connexion en cours...",
+    "connected": "Connecté — {name} vous écoute",
     "pleaseWait": "Veuillez patienter un instant..."
   },
   "transcript": {

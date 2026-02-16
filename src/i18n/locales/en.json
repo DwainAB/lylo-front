@@ -56,8 +56,8 @@
     "connectionDesc": "A good connection ensures a smooth conversation.",
     "footer": "Experience powered by Studio Olfactif AI",
     "startingIn": "Starting in",
-    "connecting": "Connecting to Rose...",
-    "connected": "Connected — Rose is listening",
+    "connecting": "Connecting...",
+    "connected": "Connected — {name} is listening",
     "pleaseWait": "Please wait a moment..."
   },
   "transcript": {

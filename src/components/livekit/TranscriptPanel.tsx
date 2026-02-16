@@ -25,7 +25,9 @@ export default function TranscriptPanel() {
       {/* Toggle button */}
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="fixed right-4 top-1/2 -translate-y-1/2 z-50 size-12 rounded-full bg-primary text-white shadow-lg shadow-primary/30 flex items-center justify-center hover:bg-primary/90 transition-all cursor-pointer"
+        className={`fixed top-1/2 -translate-y-1/2 z-50 size-12 rounded-full bg-primary text-white shadow-lg shadow-primary/30 flex items-center justify-center hover:bg-primary/90 transition-all duration-300 ease-in-out cursor-pointer ${
+          open ? "right-[21rem]" : "right-4"
+        }`}
         aria-label={t("transcript.toggle")}
       >
         <MaterialIcon name={open ? "close" : "chat"} className="text-xl" />
