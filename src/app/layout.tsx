@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
+import { EB_Garamond } from "next/font/google";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { SessionProvider } from "@/context/SessionContext";
 import LiveKitSession from "@/components/livekit/LiveKitSession";
 import TranscriptPanel from "@/components/livekit/TranscriptPanel";
 import "./globals.css";
 
-const manrope = Manrope({
+const garamond = EB_Garamond({
   subsets: ["latin"],
   variable: "--font-display",
-  weight: ["200", "300", "400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -35,7 +35,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${manrope.variable} bg-background-light text-text-dark h-screen overflow-hidden antialiased`}
+        className={`${garamond.variable} bg-background-light text-text-dark h-screen overflow-hidden antialiased`}
         suppressHydrationWarning
       >
         <LanguageProvider>

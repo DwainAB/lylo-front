@@ -20,9 +20,6 @@ export default function Navbar({ showActions = true, transparent = false }: Navb
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3">
           <Image src="/logo-sdp.png" alt="Logo SDP" width={40} height={40} />
-          <h1 className="text-lg font-bold tracking-tight text-text-dark">
-            {t("nav.brand")}
-          </h1>
         </Link>
 
         {/* Right side */}
