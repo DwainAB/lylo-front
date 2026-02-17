@@ -35,7 +35,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${garamond.variable} bg-background-light text-text-dark h-screen overflow-hidden antialiased`}
+        className={`${garamond.variable} bg-background-light text-text-dark h-screen overflow-y-auto lg:overflow-hidden antialiased`}
         suppressHydrationWarning
       >
         <LanguageProvider>

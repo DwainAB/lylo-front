@@ -24,7 +24,7 @@ export default function SizeToggle({ selected, onSelect }: SizeToggleProps) {
           <button
             key={size}
             onClick={() => onSelect(size)}
-            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors cursor-pointer ${
+            className={`px-3 py-2 sm:py-1.5 rounded-full text-xs font-bold transition-colors cursor-pointer ${
               selected === size
                 ? "bg-primary text-white"
                 : "bg-secondary/10 text-gray-500 hover:bg-secondary/20"

@@ -14,7 +14,7 @@ const ROSE_AVATAR_URL =
 export default function RecommendationsPage() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { formulas: sessionFormulas } = useSession();
+  const { formulas: sessionFormulas, endSession } = useSession();
 
   const formulas = sessionFormulas.map((f, i) => ({
     key: `formula-${i}`,
@@ -41,7 +41,7 @@ export default function RecommendationsPage() {
 
         {/* Formula cards */}
         {formulas.length > 0 ? (
-          <div className="flex flex-row gap-6 w-full max-w-5xl justify-center">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full max-w-5xl justify-center overflow-y-auto md:overflow-visible">
             {formulas.map((formula) => (
               <FormulaCard
                 key={formula.key}
@@ -58,7 +58,7 @@ export default function RecommendationsPage() {
 
         {/* Bottom controls */}
         <div className="w-full flex flex-col items-center gap-6 shrink-0 pt-4">
-          <button onClick={() => router.push("/")} className="text-gray-400 brand-text text-[0.7rem] hover:text-primary transition-colors cursor-pointer">
+          <button onClick={() => { endSession(); router.push("/"); }} className="text-gray-400 brand-text text-xs sm:text-[0.7rem] hover:text-primary transition-colors cursor-pointer py-3">
             {t("recommendations.returnHome")}
           </button>
         </div>

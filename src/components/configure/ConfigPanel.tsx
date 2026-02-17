@@ -16,9 +16,9 @@ export default function ConfigPanel() {
   const isFormComplete = persona !== "" && depth !== "";
 
   return (
-    <div className="glass-panel w-full max-w-lg rounded-xl p-8 shadow-2xl relative z-10 border border-primary/5">
+    <div className="glass-panel w-full max-w-lg rounded-xl p-5 sm:p-8 shadow-2xl relative z-10 border border-primary/5">
       {/* Header */}
-      <div className="text-center mb-10">
+      <div className="text-center mb-6 sm:mb-10">
         <div className="inline-flex items-center gap-2 mb-4">
           <span className="h-px w-8 bg-primary/40" />
           <span className="text-xs uppercase tracking-[0.3em] text-primary font-bold">

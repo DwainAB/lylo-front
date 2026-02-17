@@ -51,12 +51,12 @@ export default function PreparationPage() {
         </div>
       )}
 
-      <main className="flex-1 flex flex-col items-center justify-between px-6 pb-12 pt-2 max-w-4xl mx-auto w-full min-h-0 relative z-10">
+      <main className="flex-1 flex flex-col items-center justify-between px-4 sm:px-6 pb-8 sm:pb-12 pt-2 max-w-4xl mx-auto w-full min-h-0 relative z-10">
         {/* Avatar */}
         <div className="flex flex-col items-center gap-6 mt-8">
           <div className="relative group">
             <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse" />
-            <div className="relative size-48 md:size-56 rounded-full border-4 border-secondary overflow-hidden bg-white ai-glow">
+            <div className="relative size-32 sm:size-48 md:size-56 rounded-full border-4 border-secondary overflow-hidden bg-white ai-glow">
               <div
                 className="w-full h-full bg-cover bg-center"
                 style={{
@@ -67,7 +67,7 @@ export default function PreparationPage() {
                 }}
               />
             </div>
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary text-white text-[10px] font-bold tracking-wider uppercase rounded-full">
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-primary text-white text-[10px] sm:text-xs font-bold tracking-wider uppercase rounded-full">
               {agentName} AI
             </div>
           </div>
@@ -140,7 +140,7 @@ export default function PreparationPage() {
               </p>
             </div>
           )}
-          <p className="text-center text-[10px] text-[#7f6f66] uppercase tracking-[0.2em] font-medium opacity-60">
+          <p className="text-center text-[10px] sm:text-xs text-[#7f6f66] uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium opacity-60">
             {t("preparation.footer")}
           </p>
         </footer>

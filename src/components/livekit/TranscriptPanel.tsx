@@ -26,7 +26,7 @@ export default function TranscriptPanel() {
       <button
         onClick={() => setOpen((prev) => !prev)}
         className={`fixed top-1/2 -translate-y-1/2 z-50 size-12 rounded-full bg-primary text-white shadow-lg shadow-primary/30 flex items-center justify-center hover:bg-primary/90 transition-all duration-300 ease-in-out cursor-pointer ${
-          open ? "right-[21rem]" : "right-4"
+          open ? "right-[85vw] sm:right-[21rem]" : "right-4"
         }`}
         aria-label={t("transcript.toggle")}
       >
@@ -35,7 +35,7 @@ export default function TranscriptPanel() {
 
       {/* Slide-in panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-80 z-40 transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 right-0 h-full w-[85vw] sm:w-80 z-40 transform transition-transform duration-300 ease-in-out ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >

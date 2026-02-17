@@ -24,9 +24,9 @@ export default function Navbar({ showActions = true, transparent = false }: Navb
 
         {/* Right side */}
         {showActions && (
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-4 sm:gap-8">
             {/* Actions */}
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3 sm:gap-6">
               <LanguageSelector />
               <div className="flex gap-3">
                 <Button variant="outline" className="hidden sm:flex">

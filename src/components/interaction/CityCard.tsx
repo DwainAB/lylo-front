@@ -26,8 +26,8 @@ export default function CityCard({ name, imageUrl, selected, onSelect }: CityCar
       ) : (
         <div className="w-full h-full bg-gradient-to-br from-stone-800 to-stone-900 group-hover:from-stone-700 group-hover:to-stone-800 transition-colors duration-500" />
       )}
-      <div className="absolute bottom-0 left-0 right-0 bg-white/30 backdrop-blur-sm py-3 text-center">
-        <span className="text-white text-xs tracking-widest uppercase font-semibold drop-shadow-md">
+      <div className="absolute bottom-0 left-0 right-0 bg-white/30 backdrop-blur-sm py-2 sm:py-3 text-center">
+        <span className="text-white text-[10px] sm:text-xs tracking-widest uppercase font-semibold drop-shadow-md">
           {name}
         </span>
       </div>

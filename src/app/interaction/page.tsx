@@ -38,7 +38,7 @@ export default function InteractionPage() {
 
       <main className="flex-1 flex flex-col items-center justify-between px-6 pb-6 pt-2 max-w-6xl mx-auto w-full min-h-0 relative z-10">
         {/* Avatar + Question section */}
-        <div className="w-full flex flex-col items-center gap-2 shrink-0 mt-12">
+        <div className="w-full flex flex-col items-center gap-2 shrink-0 mt-16 sm:mt-12">
           <AvatarSection
             name=""
             role=""

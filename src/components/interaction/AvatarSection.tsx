@@ -24,7 +24,7 @@ export default function AvatarSection({ name, role, imageUrl }: AvatarSectionPro
             <h1 className="text-sm font-light tracking-wide italic text-primary">
               {name}
             </h1>
-            <p className="text-stone-400 text-[8px] tracking-[0.3em] uppercase">
+            <p className="text-stone-400 text-[9px] sm:text-[8px] tracking-[0.3em] uppercase">
               {role}
             </p>
           </div>

@@ -101,6 +101,7 @@ interface SessionContextType {
   agentName: string;
   hiddenChoices: string[];
   startSession: () => Promise<void>;
+  endSession: () => void;
   setSessionState: (state: SessionState) => void;
   handleDataMessage: (payload: Uint8Array) => void;
   upsertTranscript: (msg: TranscriptMessage) => void;
@@ -212,6 +213,25 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const endSession = useCallback(() => {
+    // Fire-and-forget : on nettoie en fond, pas besoin d'attendre
+    if (sessionData?.session_id) {
+      fetch(`${API_BASE}/api/session/${sessionData.session_id}`, {
+        method: "DELETE",
+      });
+    }
+    setSessionData(null);
+    setSessionState("idle");
+    setProfile({});
+    setMissingFields([]);
+    setAnswers([]);
+    setFormulas([]);
+    setTranscripts([]);
+    setQuestions([]);
+    setCurrentQuestionIndex(0);
+    setHiddenChoices([]);
+  }, [sessionData]);
+
   const upsertTranscript = useCallback((msg: TranscriptMessage) => {
     setTranscripts((prev) => {
       const idx = prev.findIndex((m) => m.id === msg.id);
@@ -240,6 +260,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         agentName,
         hiddenChoices,
         startSession,
+        endSession,
         setSessionState,
         handleDataMessage,
         upsertTranscript,
