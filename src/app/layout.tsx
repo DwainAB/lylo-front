@@ -4,6 +4,7 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
 import { SessionProvider } from "@/context/SessionContext";
 import LiveKitSession from "@/components/livekit/LiveKitSession";
 import TranscriptPanel from "@/components/livekit/TranscriptPanel";
+import DevNavigator from "@/components/dev/DevNavigator";
 import "./globals.css";
 
 const garamond = EB_Garamond({
@@ -43,6 +44,7 @@ export default function RootLayout({
             <LiveKitSession>
               {children}
               <TranscriptPanel />
+              <DevNavigator />
             </LiveKitSession>
           </SessionProvider>
         </LanguageProvider>

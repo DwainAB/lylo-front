@@ -67,12 +67,12 @@ export default function TranscriptPanel() {
                   <div
                     className={`max-w-[85%] rounded-xl px-3 py-2 text-xs leading-relaxed ${
                       msg.sender === "user"
-                        ? "bg-primary text-white rounded-br-sm"
-                        : "bg-white/80 text-text-dark border border-primary/10 rounded-bl-sm"
+                        ? "bg-accent-tan text-text-dark rounded-br-sm"
+                        : "bg-primary text-white rounded-bl-sm"
                     }`}
                   >
                     {msg.sender === "agent" && (
-                      <span className="block text-[9px] font-bold text-primary mb-0.5 uppercase tracking-wider">
+                      <span className="block text-[9px] font-bold text-white/70 mb-0.5 uppercase tracking-wider">
                         {agentName}
                       </span>
                     )}

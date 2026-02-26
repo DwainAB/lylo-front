@@ -9,6 +9,7 @@ import {
 } from "@livekit/components-react";
 import { RoomEvent, TranscriptionSegment, Participant } from "livekit-client";
 import { useSession } from "@/context/SessionContext";
+import MaterialIcon from "@/components/ui/MaterialIcon";
 
 function DataChannelListener() {
   const { handleDataMessage } = useSession();
@@ -25,6 +26,30 @@ function DataChannelListener() {
   return null;
 }
 
+function ResumeButton() {
+  const { sessionState } = useSession();
+  const { send } = useDataChannel("control");
+
+  if (sessionState !== "standby") return null;
+
+  const handleClick = () => {
+    const msg = new TextEncoder().encode(JSON.stringify({ type: "resume" }));
+    send(msg, { reliable: true });
+  };
+
+  return (
+    <div className="fixed bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 z-50">
+      <button
+        onClick={handleClick}
+        className="flex items-center gap-2.5 px-5 sm:px-7 py-2.5 sm:py-3 rounded-full bg-white/90 backdrop-blur-sm text-primary text-sm sm:text-base font-medium border border-primary/25 cursor-pointer shadow-lg shadow-primary/10 hover:bg-white hover:border-primary/40 transition-all"
+      >
+        <MaterialIcon name="mic" className="text-[18px]" />
+        J&apos;ai une question
+      </button>
+    </div>
+  );
+}
+
 function TranscriptionListener() {
   const room = useRoomContext();
   const { upsertTranscript } = useSession();
@@ -34,9 +59,9 @@ function TranscriptionListener() {
       segments: TranscriptionSegment[],
       participant?: Participant
     ) => {
-      const sender = participant?.identity?.startsWith("agent_")
-        ? ("agent" as const)
-        : ("user" as const);
+      const sender = participant?.isLocal
+        ? ("user" as const)
+        : ("agent" as const);
 
       for (const segment of segments) {
         upsertTranscript({
@@ -79,6 +104,7 @@ export default function LiveKitSession({ children }: LiveKitSessionProps) {
       <RoomAudioRenderer />
       <DataChannelListener />
       <TranscriptionListener />
+      <ResumeButton />
       {children}
     </LiveKitRoom>
   );

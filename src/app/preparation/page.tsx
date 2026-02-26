@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
-import { useSession } from "@/context/SessionContext";
+import { useSession, DEV_MODE } from "@/context/SessionContext";
 
 export default function PreparationPage() {
   const { t } = useTranslation();
@@ -15,6 +15,7 @@ export default function PreparationPage() {
 
   // Start session on mount
   useEffect(() => {
+    if (DEV_MODE) return;
     if (!hasStarted.current && !sessionData) {
       hasStarted.current = true;
       startSession();
@@ -23,6 +24,7 @@ export default function PreparationPage() {
 
   // Navigate when state changes
   useEffect(() => {
+    if (DEV_MODE) return;
     if (sessionState === "questionnaire") {
       router.push("/interaction");
     } else if (sessionState === "completed") {

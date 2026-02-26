@@ -7,6 +7,9 @@ import {
   useCallback,
   ReactNode,
 } from "react";
+import { MOCK_FORMULAS, MOCK_QUESTIONS } from "@/lib/mockData";
+
+export const DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === "true";
 
 export type SessionState =
   | "idle"
@@ -15,7 +18,8 @@ export type SessionState =
   | "questionnaire"
   | "generating_formulas"
   | "completed"
-  | "customization";
+  | "customization"
+  | "standby";
 
 export interface ProfileUpdate {
   field: string;
@@ -100,6 +104,8 @@ interface SessionContextType {
   questionCount: number;
   agentName: string;
   hiddenChoices: string[];
+  requestingEmail: boolean;
+  devMode: boolean;
   startSession: () => Promise<void>;
   endSession: () => void;
   setSessionState: (state: SessionState) => void;
@@ -113,33 +119,36 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [sessionData, setSessionData] = useState<SessionData | null>(null);
-  const [sessionState, setSessionState] = useState<SessionState>("idle");
+  const [sessionState, setSessionState] = useState<SessionState>(DEV_MODE ? "completed" : "idle");
   const [profile, setProfile] = useState<Record<string, string>>({});
   const [missingFields, setMissingFields] = useState<string[]>([]);
   const [answers, setAnswers] = useState<AnswerSaved[]>([]);
-  const [formulas, setFormulas] = useState<Formula[]>([]);
+  const [formulas, setFormulas] = useState<Formula[]>(DEV_MODE ? MOCK_FORMULAS : []);
   const [transcripts, setTranscripts] = useState<TranscriptMessage[]>([]);
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, setQuestions] = useState<Question[]>(DEV_MODE ? MOCK_QUESTIONS : []);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [questionCount, setQuestionCount] = useState(0);
+  const [questionCount, setQuestionCount] = useState(DEV_MODE ? MOCK_QUESTIONS.length : 0);
   const [agentName, setAgentName] = useState("Rose");
   const [hiddenChoices, setHiddenChoices] = useState<string[]>([]);
+  const [requestingEmail, setRequestingEmail] = useState(false);
 
   const startSession = useCallback(async () => {
+    if (DEV_MODE) return;
     setSessionState("connecting");
 
-    const language = (localStorage.getItem("locale") as "fr" | "en") || "en";
+    const language = (localStorage.getItem("avatarLocale") as "fr" | "en") || "fr";
     const voice_gender =
       (localStorage.getItem("persona") as "female" | "male") || "female";
     setAgentName(voice_gender === "male" ? "Carlosse" : "Rose");
     const depth = localStorage.getItem("depth") || "1";
     const question_count = parseInt(depth, 10);
     setQuestionCount(question_count);
+    const mode = localStorage.getItem("mode") || "guided";
 
     const res = await fetch(`${API_BASE}/api/session/start`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ language, voice_gender, question_count }),
+      body: JSON.stringify({ language, voice_gender, question_count, mode }),
     });
 
     const data: SessionData = await res.json();
@@ -207,6 +216,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         case "formula_updated":
           setFormulas([event.formula]);
           break;
+
+        case "requesting_email":
+          if (event.requesting_email) setRequestingEmail(true);
+          break;
       }
     } catch {
       // ignore malformed messages
@@ -230,6 +243,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setQuestions([]);
     setCurrentQuestionIndex(0);
     setHiddenChoices([]);
+    setRequestingEmail(false);
   }, [sessionData]);
 
   const upsertTranscript = useCallback((msg: TranscriptMessage) => {
@@ -259,6 +273,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         questionCount,
         agentName,
         hiddenChoices,
+        requestingEmail,
+        devMode: DEV_MODE,
         startSession,
         endSession,
         setSessionState,

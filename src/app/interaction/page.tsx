@@ -9,7 +9,7 @@ import SpeakingIndicator from "@/components/interaction/SpeakingIndicator";
 import CityGrid from "@/components/interaction/CityGrid";
 import GeneratingLoader from "@/components/livekit/GeneratingLoader";
 import { useTranslation } from "@/i18n/LanguageContext";
-import { useSession } from "@/context/SessionContext";
+import { useSession, DEV_MODE } from "@/context/SessionContext";
 
 export default function InteractionPage() {
   const { t } = useTranslation();
@@ -18,6 +18,7 @@ export default function InteractionPage() {
 
   // Navigate when state changes
   useEffect(() => {
+    if (DEV_MODE) return;
     if (sessionState === "completed") {
       router.push("/recommendations");
     }

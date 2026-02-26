@@ -22,7 +22,7 @@ export default function CityGrid({ choices }: CityGridProps) {
   );
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 w-full max-w-5xl py-4 flex-1 min-h-0 max-h-[50vh] sm:max-h-[40vh]">
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 w-full max-w-5xl py-4 flex-1 min-h-0 max-h-[62vh] sm:max-h-[55vh]">
       {visibleChoices.map((choice) => (
         <CityCard
           key={choice.label}
