@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import AvatarSection from "@/components/interaction/AvatarSection";
+import AvatarVideo from "@/components/interaction/AvatarVideo";
 
 import FormulaCard from "@/components/recommendations/FormulaCard";
 import { useTranslation } from "@/i18n/LanguageContext";
@@ -118,14 +119,7 @@ export default function RecommendationsPage() {
                 {/* Avatar */}
                 <div className="relative shrink-0">
                   <div className="size-28 sm:size-36 rounded-full overflow-hidden border-4 border-white ai-glow">
-                    <div
-                      className="w-full h-full bg-cover bg-center"
-                      style={{
-                        backgroundImage: `url('${avatarUrl}')`,
-                        transform: "scale(1.4)",
-                        transformOrigin: "top center",
-                      }}
-                    />
+                    <AvatarVideo fallbackUrl={avatarUrl} />
                   </div>
                   <div className="absolute bottom-1 right-1 size-4 bg-primary rounded-full border-2 border-white" />
                 </div>

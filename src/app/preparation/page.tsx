@@ -6,6 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useSession, DEV_MODE } from "@/context/SessionContext";
+import AvatarVideo from "@/components/interaction/AvatarVideo";
 
 export default function PreparationPage() {
   const { t } = useTranslation();
@@ -59,13 +60,8 @@ export default function PreparationPage() {
           <div className="relative group">
             <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse" />
             <div className="relative size-32 sm:size-48 md:size-56 rounded-full border-4 border-secondary overflow-hidden bg-white ai-glow">
-              <div
-                className="w-full h-full bg-cover bg-center"
-                style={{
-                  backgroundImage: `url('${typeof window !== "undefined" && localStorage.getItem("persona") === "male" ? "/avatar-h.jpg" : "/avatar-f.jpg"}')`,
-                  transform: "scale(1.4)",
-                  transformOrigin: "top center",
-                }}
+              <AvatarVideo
+                fallbackUrl={typeof window !== "undefined" && localStorage.getItem("persona") === "male" ? "/avatar-h.jpg" : "/avatar-f.jpg"}
               />
             </div>
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-primary text-white text-[10px] sm:text-xs font-bold tracking-wider uppercase rounded-full">
