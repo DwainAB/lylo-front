@@ -62,8 +62,7 @@ export default function PreparationPage() {
               <div
                 className="w-full h-full bg-cover bg-center"
                 style={{
-                  backgroundImage:
-                    "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCvR1G0XXVpXJIn-bdcM6-mDlAIbLOPWzv_DfXbXcr0cwkN6A07OhWaIMAyBhuoVm5DRBQZh_JXXLnG2GNCSTtCqkHtR12lzb7CO9u9jPT-Dl4f_DlSiglxwJqAZwcF9TPYKpxuj9dyBbhDkecL3T2SMJ8hRTWEljha1iNsrk3C7gRu9mKrjMDKRAav6OjMQt46f6sVohpcYKMCKS9WhtefSJ7r3wMYGZn67IFU2tRXH5sIAmt3o68YUe597Qq7DXh6Nshbsle-47Q')",
+                  backgroundImage: `url('${typeof window !== "undefined" && localStorage.getItem("persona") === "male" ? "/avatar-h.jpg" : "/avatar-f.jpg"}')`,
                   transform: "scale(1.4)",
                   transformOrigin: "top center",
                 }}

@@ -12,9 +12,6 @@ import MaterialIcon from "@/components/ui/MaterialIcon";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
-const ROSE_AVATAR_URL =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuCIjXIXxFHeF0IZ1fGfF2SkT_DOMGHF13GvAeKVjmEc8d7kEFrp1ptpN8bbF0db9LBI1sIhbzIh37IBuhGgu8ZRENOJDESI2ePdufvyAlrVNWDpVTgMkYVhXmEqQLCEddI6bB_3rJ45Dk2SO_H5TgxI3We52-1o2yMu4ZU-i5j0LlIyejnZpqCaHNNFZo_FrU-ITbryhbGUg6pMd7I_N6ZNRxWJYotXb4-lH9Ci63Or4mGQjZ-6370Y4X3R6U3pDewybfy73SRyO4c";
-
 export default function RecommendationsPage() {
   const router = useRouter();
   const { t } = useTranslation();
@@ -23,6 +20,9 @@ export default function RecommendationsPage() {
   const [sendStatus, setSendStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   const [devSingleFormula, setDevSingleFormula] = useState(false);
+
+  const persona = typeof window !== "undefined" ? localStorage.getItem("persona") : null;
+  const avatarUrl = persona === "male" ? "/avatar-h.jpg" : "/avatar-f.jpg";
 
   const handleSendEmail = async () => {
     if (!sessionData?.session_id || !email) return;
@@ -60,7 +60,7 @@ export default function RecommendationsPage() {
         {/* ── Avatar + Titre ── visible uniquement en vue 2 formules ── */}
         {!isSingle && (
           <div className="shrink-0 flex flex-col items-center gap-1 mt-1 sm:mt-3 mb-2 sm:mb-3 [@media(max-height:580px)]:hidden">
-            <AvatarSection name="" role="" imageUrl={ROSE_AVATAR_URL} />
+            <AvatarSection name="" role="" imageUrl={avatarUrl} />
             <h3 className="text-xl sm:text-2xl md:text-3xl font-extralight tracking-tight text-center max-w-2xl leading-tight mt-1 sm:mt-2">
               {t("recommendations.title")}
             </h3>
@@ -121,7 +121,7 @@ export default function RecommendationsPage() {
                     <div
                       className="w-full h-full bg-cover bg-center"
                       style={{
-                        backgroundImage: `url('${ROSE_AVATAR_URL}')`,
+                        backgroundImage: `url('${avatarUrl}')`,
                         transform: "scale(1.4)",
                         transformOrigin: "top center",
                       }}

@@ -139,7 +139,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const language = (localStorage.getItem("avatarLocale") as "fr" | "en") || "fr";
     const voice_gender =
       (localStorage.getItem("persona") as "female" | "male") || "female";
-    setAgentName(voice_gender === "male" ? "Carlosse" : "Rose");
+    setAgentName(voice_gender === "male" ? "Florian" : "Rose");
     const depth = localStorage.getItem("depth") || "1";
     const question_count = parseInt(depth, 10);
     setQuestionCount(question_count);

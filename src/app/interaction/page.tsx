@@ -28,6 +28,9 @@ export default function InteractionPage() {
   const totalSteps = questionCount || 4;
   const currentQuestion = questions[currentQuestionIndex];
 
+  const persona = typeof window !== "undefined" ? localStorage.getItem("persona") : null;
+  const avatarUrl = persona === "male" ? "/avatar-h.jpg" : "/avatar-f.jpg";
+
   // Show generating loader overlay
   if (sessionState === "generating_formulas") {
     return <GeneratingLoader />;
@@ -43,7 +46,7 @@ export default function InteractionPage() {
           <AvatarSection
             name=""
             role=""
-            imageUrl="https://lh3.googleusercontent.com/aida-public/AB6AXuDiC-Pa7yaj4UGsi4uwZJCxjTuCb5gcHKC2ITbD6eDi8U1NIpbEsrJwV4pGKeq4rocGN6FmwOi7ONXxoHEmRQZBboSbzkNzcH9Z9it9FJSArCHMu_VXOU3NXZ3a3pD0zloCtoHOtQXyHxZDozU3Fhv5NYXWGTdGuhp4FgxqbxqdxBhSPfXDCpJ0QiBTxNVGuxwFObZmlG3n0CEgtBCSUa6dOjTo9olTSk63eWHElpkGO5F5KcRKD5_bpkd0XnrSDsWiAzSeSh9hBXE"
+            imageUrl={avatarUrl}
           />
           <StepProgress currentStep={currentStep} totalSteps={totalSteps} />
           <h3 className="text-3xl md:text-4xl font-extralight tracking-tight text-center max-w-2xl leading-tight">
