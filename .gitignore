@@ -17,6 +17,10 @@
 /.next/
 /out/
 
+# docs (sous-projet Next.js)
+docs/node_modules/
+docs/.next/
+
 # production
 /build
 

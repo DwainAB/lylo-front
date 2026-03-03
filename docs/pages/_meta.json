@@ -1,0 +1,9 @@
+{
+  "index": "Introduction",
+  "getting-started": "Démarrage",
+  "architecture": "Architecture",
+  "user-flow": "Parcours utilisateur",
+  "components": "Composants",
+  "context": "Contextes & État",
+  "i18n": "Internationalisation"
+}

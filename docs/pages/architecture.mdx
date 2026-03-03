@@ -1,0 +1,125 @@
+---
+title: Architecture
+description: Structure du projet Lylo et ses dépendances
+---
+
+import { FileTree, Callout } from 'nextra/components'
+
+# Architecture
+
+## Structure des dossiers
+
+<FileTree>
+  <FileTree.Folder name="lylo-front" defaultOpen>
+    <FileTree.Folder name="src" defaultOpen>
+      <FileTree.Folder name="app" defaultOpen>
+        <FileTree.File name="layout.tsx" />
+        <FileTree.File name="page.tsx" />
+        <FileTree.Folder name="configure">
+          <FileTree.File name="page.tsx" />
+        </FileTree.Folder>
+        <FileTree.Folder name="preparation">
+          <FileTree.File name="page.tsx" />
+        </FileTree.Folder>
+        <FileTree.Folder name="interaction">
+          <FileTree.File name="page.tsx" />
+        </FileTree.Folder>
+        <FileTree.Folder name="recommendations">
+          <FileTree.File name="page.tsx" />
+        </FileTree.Folder>
+      </FileTree.Folder>
+      <FileTree.Folder name="components">
+        <FileTree.Folder name="ui" />
+        <FileTree.Folder name="layout" />
+        <FileTree.Folder name="home" />
+        <FileTree.Folder name="configure" />
+        <FileTree.Folder name="preparation" />
+        <FileTree.Folder name="interaction" />
+        <FileTree.Folder name="recommendations" />
+        <FileTree.Folder name="livekit" />
+        <FileTree.Folder name="dev" />
+      </FileTree.Folder>
+      <FileTree.Folder name="context">
+        <FileTree.File name="SessionContext.tsx" />
+      </FileTree.Folder>
+      <FileTree.Folder name="i18n">
+        <FileTree.File name="LanguageContext.tsx" />
+        <FileTree.Folder name="locales">
+          <FileTree.File name="fr.json" />
+          <FileTree.File name="en.json" />
+        </FileTree.Folder>
+      </FileTree.Folder>
+      <FileTree.Folder name="lib">
+        <FileTree.File name="mockData.ts" />
+      </FileTree.Folder>
+    </FileTree.Folder>
+    <FileTree.File name="next.config.ts" />
+    <FileTree.File name="package.json" />
+    <FileTree.File name="tsconfig.json" />
+  </FileTree.Folder>
+</FileTree>
+
+## Routes (App Router)
+
+| Route | Fichier | Description |
+|---|---|---|
+| `/` | `src/app/page.tsx` | Page d'accueil avec hero et TechBar |
+| `/configure` | `src/app/configure/page.tsx` | Configuration avant session (persona, profondeur, mode) |
+| `/preparation` | `src/app/preparation/page.tsx` | Préparation avant connexion (avatar, instructions) |
+| `/interaction` | `src/app/interaction/page.tsx` | Questionnaire interactif avec l'IA |
+| `/recommendations` | `src/app/recommendations/page.tsx` | Résultats : formules parfumées personnalisées |
+
+## Layout global
+
+Le fichier `src/app/layout.tsx` encapsule toute l'application avec :
+
+1. **`LanguageProvider`** — Fournit le système de traduction
+2. **`SessionProvider`** — Fournit l'état de la session
+3. **Police** — EB Garamond (serif, positionnement luxe)
+4. **CSS global** — `globals.css` avec les variables de couleur et classes utilitaires
+
+## Alias de chemin
+
+Le `tsconfig.json` configure l'alias `@/*` pointant vers `src/` :
+
+```ts
+// Import avec alias
+import { useSession } from '@/context/SessionContext'
+import Button from '@/components/ui/Button'
+```
+
+## Design system
+
+Les variables CSS sont définies dans `src/app/globals.css` :
+
+```css
+--color-primary: #996f56        /* Brun — couleur principale */
+--color-secondary: #d7cdc6      /* Crème chaude — accents */
+--color-background-light: #f7f7f6
+--color-background-dark: #1c1816
+--color-text-dark: #171412
+--font-display: EB Garamond     /* Police serif pour l'univers luxe */
+```
+
+### Classes CSS personnalisées
+
+| Classe | Effet |
+|---|---|
+| `.glass-panel` | Effet glassmorphism (blur + transparence) |
+| `.ai-glow` | Halo lumineux autour des avatars |
+| `.card-shadow` | Ombre douce pour les cartes |
+| `.brand-text` | Texte uppercase avec letter-spacing |
+| `.mic-pulse` | Animation pulsante pour l'indicateur micro |
+
+## Communication temps réel (LiveKit)
+
+```
+Navigateur ←→ LiveKit Server ←→ Agent IA (backend)
+     ↑                               ↑
+  Audio micro               Traitement NLP + TTS
+  Réception voix            Génération de réponses
+```
+
+<Callout>
+  L'agent IA envoie des **messages de données** (DataMessages) au client pour piloter l'état de la session (changement d'état, questions, formules générées). Ces messages sont traités par `handleDataMessage` dans `SessionContext`.
+</Callout>

@@ -1,0 +1,60 @@
+---
+title: Composants UI communs
+description: Button, MaterialIcon, LanguageSelector
+---
+
+# Composants UI
+
+**Dossier :** `src/components/ui/`
+
+Composants réutilisables partagés entre toutes les pages.
+
+---
+
+## Button
+
+**Fichier :** `src/components/ui/Button.tsx`
+
+Bouton principal réutilisable avec les styles de la charte graphique Lylo.
+
+```tsx
+import Button from '@/components/ui/Button'
+
+<Button onClick={() => {}}>
+  Commencer
+</Button>
+```
+
+---
+
+## MaterialIcon
+
+**Fichier :** `src/components/ui/MaterialIcon.tsx`
+
+Affiche une icône Material Design.
+
+```tsx
+import MaterialIcon from '@/components/ui/MaterialIcon'
+
+<MaterialIcon icon="mic" />
+<MaterialIcon icon="arrow_forward" />
+```
+
+La liste des icônes disponibles est celle de [Material Symbols](https://fonts.google.com/icons).
+
+---
+
+## LanguageSelector
+
+**Fichier :** `src/components/ui/LanguageSelector.tsx`
+
+Sélecteur de langue (FR / EN). S'appuie sur `useTranslation()` depuis `LanguageContext`.
+
+```tsx
+import LanguageSelector from '@/components/ui/LanguageSelector'
+
+// Utilisé dans la Navbar
+<LanguageSelector />
+```
+
+Modifie `localStorage.locale` et met à jour le contexte de langue global.

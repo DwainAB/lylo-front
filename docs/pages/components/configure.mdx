@@ -1,0 +1,92 @@
+---
+title: Composants Configuration
+description: Composants de la page /configure
+---
+
+import { Callout } from 'nextra/components'
+
+# Composants Configuration
+
+**Dossier :** `src/components/configure/`
+**Page :** `/configure`
+
+Ces composants constituent l'étape de configuration avant le démarrage d'une session.
+
+---
+
+## ConfigPanel
+
+**Fichier :** `src/components/configure/ConfigPanel.tsx`
+
+Composant racine de la page de configuration. Orchestre tous les sélecteurs et gère la progression entre les étapes.
+
+Sauvegarde les choix dans `localStorage` avant de naviguer vers `/preparation`.
+
+---
+
+## PersonaSelector
+
+**Fichier :** `src/components/configure/PersonaSelector.tsx`
+
+Permet de choisir le genre de l'IA parfumeuse :
+
+| Valeur | Nom de l'IA | Stockage |
+|---|---|---|
+| `female` | Rose | `localStorage.persona = "female"` |
+| `male` | Florian | `localStorage.persona = "male"` |
+
+---
+
+## DepthSelector
+
+**Fichier :** `src/components/configure/DepthSelector.tsx`
+
+Sélectionne la profondeur du questionnaire (nombre de questions posées par l'IA).
+
+- **Valeurs :** `1`, `2`, `3`, `4`
+- **Stockage :** `localStorage.depth`
+
+---
+
+## ModeSelector
+
+**Fichier :** `src/components/configure/ModeSelector.tsx`
+
+Choisit le mode de la session :
+
+| Mode | Description |
+|---|---|
+| `guided` | L'IA guide l'utilisateur avec des explications |
+| `advanced` | Mode expert, questions plus directes |
+
+**Stockage :** `localStorage.mode`
+
+---
+
+## LanguagePicker
+
+**Fichier :** `src/components/configure/LanguagePicker.tsx`
+
+Sélectionne la langue de l'interaction avec l'IA (distinct de la langue de l'interface).
+
+**Stockage :** `localStorage.avatarLocale` (`"fr"` ou `"en"`)
+
+<Callout>
+  `avatarLocale` est envoyé à l'API lors du `startSession()` pour que l'agent parle dans la bonne langue. C'est différent de `locale` (langue de l'interface UI).
+</Callout>
+
+---
+
+## StepIndicator
+
+**Fichier :** `src/components/configure/StepIndicator.tsx`
+
+Affiche la progression dans le formulaire de configuration (ex: étape 1/3, 2/3, etc.).
+
+---
+
+## ConfigHeader
+
+**Fichier :** `src/components/configure/ConfigHeader.tsx`
+
+En-tête de la page de configuration avec le titre et la description.

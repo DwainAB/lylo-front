@@ -1,0 +1,84 @@
+---
+title: Composants LiveKit
+description: Intégration LiveKit pour la communication audio temps réel
+---
+
+import { Callout } from 'nextra/components'
+
+# Composants LiveKit
+
+**Dossier :** `src/components/livekit/`
+
+Ces composants gèrent l'intégration LiveKit pour la communication audio/vidéo en temps réel entre l'utilisateur et l'agent IA.
+
+---
+
+## LiveKitSession
+
+**Fichier :** `src/components/livekit/LiveKitSession.tsx`
+
+Composant principal de gestion de la session LiveKit. Il :
+
+1. Reçoit les informations de connexion depuis `SessionContext` (`sessionData`)
+2. Établit la connexion à la salle LiveKit
+3. Gère le flux audio (microphone de l'utilisateur → agent IA)
+4. Écoute les messages de données (`DataChannel`) et les route vers `handleDataMessage`
+5. Gère la transcription via `upsertTranscript`
+
+```tsx
+// Placé dans /preparation et /interaction
+<LiveKitSession />
+```
+
+<Callout>
+  `LiveKitSession` s'appuie sur `@livekit/components-react` (v2.9.19) et `livekit-client` (v2.17.1).
+</Callout>
+
+**Flux de données :**
+
+```
+Microphone utilisateur → LiveKit Room → Agent IA (backend)
+Agent IA → DataChannel → handleDataMessage() → SessionContext
+Agent IA → Audio Track → Lecture vocale dans le navigateur
+```
+
+---
+
+## TranscriptPanel
+
+**Fichier :** `src/components/livekit/TranscriptPanel.tsx`
+
+Panneau affichant l'historique de la conversation (transcription en temps réel).
+
+Consomme `transcripts` depuis `SessionContext`. Chaque message a :
+
+```ts
+interface TranscriptMessage {
+  id: string
+  sender: 'agent' | 'user'
+  text: string
+  timestamp: number
+}
+```
+
+Les messages sont mis à jour en temps réel via `upsertTranscript` (les messages partiels sont fusionnés avec les mêmes `id`).
+
+---
+
+## GeneratingLoader
+
+**Fichier :** `src/components/livekit/GeneratingLoader.tsx`
+
+Indicateur de chargement affiché pendant la génération des formules (état `generating_formulas`).
+
+Remplace l'interface de questionnaire le temps que l'IA calcule les recommandations.
+
+---
+
+## MailPreviewButton
+
+**Fichier :** `src/components/livekit/MailPreviewButton.tsx`
+
+Bouton permettant de prévisualiser et envoyer la formule générée par email.
+
+S'active quand `requestingEmail` est `true` dans `SessionContext` (l'IA demande l'email de l'utilisateur).

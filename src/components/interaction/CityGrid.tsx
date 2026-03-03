@@ -17,7 +17,8 @@ export default function CityGrid({ choices }: CityGridProps) {
     setSelected(null);
   }, [choices]);
 
-  const normalize = (s: string) => s.normalize("NFC").trim();
+  const normalize = (s: string) =>
+    s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
   const visibleChoices = choices.filter(
     (choice) => !hiddenChoices.some((h) => normalize(h) === normalize(choice.label))
   );

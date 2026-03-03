@@ -1,0 +1,82 @@
+---
+title: Composants Recommandations
+description: Composants de la page /recommendations
+---
+
+# Composants Recommandations
+
+**Dossier :** `src/components/recommendations/`
+**Page :** `/recommendations`
+
+Ces composants affichent les formules de parfum personnalisées générées par l'IA.
+
+---
+
+## FormulaCard
+
+**Fichier :** `src/components/recommendations/FormulaCard.tsx`
+
+Carte principale d'affichage d'une formule parfumée. Affiche :
+
+- **Profil** — Description de l'accord olfactif
+- **Score** — Correspondance avec les préférences de l'utilisateur
+- **Notes** — Top, cœur et fond (selon la taille sélectionnée)
+- **Ingrédients** — Nom, quantité (ml) et description de chaque note
+
+```tsx
+// Consomme depuis SessionContext :
+const { formulas } = useSession()
+```
+
+**Structure d'une `Formula` :**
+
+```ts
+interface Formula {
+  profile: string       // "Boisé & Ambré"
+  description: string   // Description de l'accord
+  score: number         // 0-100
+  top_notes: string[]   // Noms des notes de tête
+  heart_notes: string[] // Noms des notes de cœur
+  base_notes: string[]  // Noms des notes de fond
+  sizes: {
+    '10ml': FormulaSize
+    '30ml': FormulaSize
+    '50ml': FormulaSize
+  }
+}
+```
+
+---
+
+## SizeToggle
+
+**Fichier :** `src/components/recommendations/SizeToggle.tsx`
+
+Boutons de bascule entre les tailles de flacon : **10ml**, **30ml**, **50ml**.
+
+Chaque taille a une composition légèrement différente (quantités adaptées).
+
+```tsx
+<SizeToggle
+  selectedSize="30ml"
+  onSizeChange={(size) => setSelectedSize(size)}
+/>
+```
+
+---
+
+## VoiceButton
+
+**Fichier :** `src/components/recommendations/VoiceButton.tsx`
+
+Bouton microphone pour poser une question vocale à l'IA après avoir reçu les recommandations (phase de customisation).
+
+Active le canal audio LiveKit pour permettre l'échange vocal.
+
+---
+
+## RecommendationsHeader
+
+**Fichier :** `src/components/recommendations/RecommendationsHeader.tsx`
+
+En-tête de la page des recommandations.

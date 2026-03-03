@@ -1,0 +1,111 @@
+---
+title: Parcours utilisateur
+description: Les 5 étapes du parcours Lylo de la home aux recommandations
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# Parcours utilisateur
+
+Lylo guide l'utilisateur à travers 5 étapes pour générer une formule de parfum personnalisée.
+
+## Vue d'ensemble
+
+```
+/ (Home) → /configure → /preparation → /interaction → /recommendations
+```
+
+---
+
+## Étapes détaillées
+
+<Steps>
+
+### Home (`/`)
+
+**Composants :** `HeroSection`, `TechBar`, `Navbar`
+
+La page d'accueil présente la plateforme et invite l'utilisateur à démarrer. Le bouton principal redirige vers `/configure`.
+
+### Configuration (`/configure`)
+
+**Composants :** `ConfigPanel`, `PersonaSelector`, `DepthSelector`, `ModeSelector`, `LanguagePicker`, `StepIndicator`
+
+L'utilisateur configure sa session avant de commencer :
+
+| Paramètre | Valeurs | Stockage |
+|---|---|---|
+| **Persona** | `female` (Rose) / `male` (Florian) | `localStorage.persona` |
+| **Profondeur** | `1` à `4` (nombre de questions) | `localStorage.depth` |
+| **Mode** | `guided` / `advanced` | `localStorage.mode` |
+| **Langue** | `fr` / `en` | `localStorage.avatarLocale` |
+
+### Préparation (`/preparation`)
+
+**Composants :** `AvatarSection`, `AvatarVideo`, `MicCalibrator`, `LiveKitSession`
+
+Cette page :
+1. Affiche l'avatar de l'IA choisie
+2. Teste le microphone de l'utilisateur (`MicCalibrator`)
+3. Lance la connexion à la session LiveKit via `startSession()`
+4. Attend le passage de l'état `connecting` → `collecting_profile`
+
+<Callout type="info">
+  `startSession()` appelle `POST /api/session/start` avec les paramètres configurés, puis récupère les questions via `GET /api/session/{id}`.
+</Callout>
+
+### Interaction (`/interaction`)
+
+**Composants :** `InteractionHeader`, `AvatarSection`, `CityGrid`, `CityCard`, `SpeakingIndicator`, `WaitingIndicator`, `AnswerButton`, `StepProgress`, `TranscriptPanel`
+
+C'est la phase principale du dialogue :
+
+1. L'IA pose une question vocalement
+2. L'utilisateur voit des choix visuels (images de villes/ambiances)
+3. L'utilisateur répond vocalement ou clique sur un choix
+4. L'IA analyse la réponse (`answer_saved`) et passe à la question suivante
+5. Une fois toutes les questions répondues, l'IA génère les formules (`formulas_generated`)
+
+**Cycle de messages DataChannel :**
+```
+state_change: "questionnaire"
+  → top_2_selected (choix intermédiaires)
+  → answer_saved (réponse validée, currentQuestionIndex++)
+  → (répété N fois)
+state_change: "generating_formulas"
+  → formulas_generated (tableau de Formula[])
+state_change: "completed"
+```
+
+### Recommandations (`/recommendations`)
+
+**Composants :** `RecommendationsHeader`, `FormulaCard`, `SizeToggle`, `VoiceButton`, `MailPreviewButton`
+
+L'utilisateur découvre ses formules personnalisées :
+- Visualisation des notes de tête, de cœur et de fond
+- Toggle entre les tailles 10ml / 30ml / 50ml
+- Possibilité de demander des ajustements par la voix
+- Envoi de la formule par email
+
+</Steps>
+
+---
+
+## États de session (`SessionState`)
+
+Le `SessionContext` pilote la navigation via l'état de session :
+
+| État | Description | Page concernée |
+|---|---|---|
+| `idle` | Session non démarrée | `/` ou `/configure` |
+| `connecting` | Connexion à LiveKit en cours | `/preparation` |
+| `collecting_profile` | L'IA collecte les infos de base | `/preparation` |
+| `questionnaire` | Phase de questions-réponses | `/interaction` |
+| `generating_formulas` | L'IA génère les formules | `/interaction` (loader) |
+| `completed` | Formules générées | `/recommendations` |
+| `customization` | L'utilisateur affine une formule | `/recommendations` |
+| `standby` | Session en attente | — |
+
+<Callout type="warning">
+  La navigation entre les pages est manuelle (liens). L'état de session ne redirige pas automatiquement l'utilisateur — chaque page vérifie l'état via `useSession()` pour afficher le bon contenu.
+</Callout>

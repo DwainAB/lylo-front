@@ -1,0 +1,109 @@
+---
+title: Composants Interaction
+description: Composants de la page /interaction
+---
+
+import { Callout } from 'nextra/components'
+
+# Composants Interaction
+
+**Dossier :** `src/components/interaction/`
+**Page :** `/interaction`
+
+Ces composants gèrent la phase de dialogue vocal entre l'utilisateur et l'IA parfumeuse.
+
+---
+
+## CityGrid
+
+**Fichier :** `src/components/interaction/CityGrid.tsx`
+
+Grille d'affichage des choix de réponse sous forme de cartes visuelles (images d'ambiances, villes, paysages).
+
+- Disposition en 2 ou 3 colonnes selon le nombre de choix
+- Masque automatiquement les choix dans `hiddenChoices` (top_2 en cours de sélection)
+
+```tsx
+// Consomme depuis SessionContext :
+const { questions, currentQuestionIndex, hiddenChoices } = useSession()
+```
+
+---
+
+## CityCard
+
+**Fichier :** `src/components/interaction/CityCard.tsx`
+
+Carte individuelle représentant un choix de réponse. Affiche une image et un label.
+
+```tsx
+<CityCard
+  label="Forêt après la pluie"
+  image="/images/forest.jpg"
+  onClick={() => handleChoice(choice)}
+/>
+```
+
+---
+
+## AvatarSection
+
+**Fichier :** `src/components/interaction/AvatarSection.tsx`
+
+Affiche l'avatar de l'IA (Rose ou Florian) avec son nom et son rôle (parfumeuse/parfumeur).
+
+Consomme `agentName` depuis `SessionContext`.
+
+---
+
+## AvatarVideo
+
+**Fichier :** `src/components/interaction/AvatarVideo.tsx`
+
+Élément image/vidéo de l'avatar. Gère l'affichage de l'image statique ou animée selon l'état.
+
+---
+
+## SpeakingIndicator
+
+**Fichier :** `src/components/interaction/SpeakingIndicator.tsx`
+
+Indicateur visuel animé affiché lorsque l'IA est en train de parler.
+
+---
+
+## WaitingIndicator
+
+**Fichier :** `src/components/interaction/WaitingIndicator.tsx`
+
+Indicateur de chargement affiché pendant les transitions (connexion, génération, etc.).
+
+---
+
+## AnswerButton
+
+**Fichier :** `src/components/interaction/AnswerButton.tsx`
+
+Bouton de validation de réponse. Déclenche l'envoi de la réponse sélectionnée à l'IA.
+
+---
+
+## StepProgress
+
+**Fichier :** `src/components/interaction/StepProgress.tsx`
+
+Affiche la progression dans le questionnaire : `"Question 2 / 4"`.
+
+Consomme `currentQuestionIndex` et `questionCount` depuis `SessionContext`.
+
+---
+
+## InteractionHeader
+
+**Fichier :** `src/components/interaction/InteractionHeader.tsx`
+
+En-tête de la page d'interaction.
+
+<Callout type="info">
+  Tous les composants d'interaction consomment `useSession()` pour accéder à l'état courant de la session.
+</Callout>

@@ -1,0 +1,173 @@
+---
+title: Contextes & État
+description: Documentation de SessionContext et LanguageContext
+---
+
+import { Callout, Tabs, Tab } from 'nextra/components'
+
+# Contextes & État
+
+## SessionContext
+
+**Fichier :** `src/context/SessionContext.tsx`
+
+Le `SessionContext` est le cœur de l'application. Il gère l'intégralité de l'état de la session utilisateur et la communication avec l'API et LiveKit.
+
+### Utilisation
+
+```tsx
+import { useSession } from '@/context/SessionContext'
+
+function MyComponent() {
+  const { sessionState, formulas, startSession } = useSession()
+  // ...
+}
+```
+
+### Interface complète
+
+```ts
+interface SessionContextType {
+  sessionData: SessionData | null      // Données de connexion LiveKit
+  sessionState: SessionState           // État courant de la session
+  profile: Record<string, string>      // Profil collecté par l'IA
+  missingFields: string[]              // Champs de profil manquants
+  answers: AnswerSaved[]               // Réponses aux questions
+  formulas: Formula[]                  // Formules générées
+  transcripts: TranscriptMessage[]     // Historique du dialogue
+  questions: Question[]                // Questions du questionnaire
+  currentQuestionIndex: number         // Index de la question courante
+  questionCount: number                // Nombre total de questions
+  agentName: string                    // Nom de l'IA ("Rose" ou "Florian")
+  hiddenChoices: string[]              // Choix à masquer (top_2 en cours)
+  requestingEmail: boolean             // L'IA demande l'email de l'utilisateur
+  devMode: boolean                     // Mode développement actif
+  startSession: () => Promise<void>    // Lance la session
+  endSession: () => void               // Termine et réinitialise la session
+  setSessionState: (state: SessionState) => void
+  handleDataMessage: (payload: Uint8Array) => void  // Traite les messages LiveKit
+  upsertTranscript: (msg: TranscriptMessage) => void
+}
+```
+
+### Types
+
+```ts
+export type SessionState =
+  | 'idle' | 'connecting' | 'collecting_profile'
+  | 'questionnaire' | 'generating_formulas'
+  | 'completed' | 'customization' | 'standby'
+
+export interface Formula {
+  profile: string
+  description: string
+  score: number
+  top_notes: string[]
+  heart_notes: string[]
+  base_notes: string[]
+  sizes: {
+    '10ml': FormulaSize
+    '30ml': FormulaSize
+    '50ml': FormulaSize
+  }
+}
+
+export interface FormulaSize {
+  target_ml: number
+  top_notes: FormulaNote[]
+  heart_notes: FormulaNote[]
+  base_notes: FormulaNote[]
+  boosters: FormulaNote[]
+}
+
+export interface FormulaNote {
+  name: string
+  ml: number
+  family?: string
+  description?: string
+  note_type?: string
+  priority?: string
+}
+
+export interface Question {
+  id: number
+  question: string
+  choices: Choice[]
+}
+
+export interface Choice {
+  label: string
+  image: string
+}
+```
+
+### Messages DataChannel (`handleDataMessage`)
+
+L'agent IA envoie des messages JSON via le canal de données LiveKit. Voici les types d'événements gérés :
+
+| Type d'événement | Action effectuée |
+|---|---|
+| `profile_update` | Met à jour `profile` et `missingFields` |
+| `state_change` | Change `sessionState` |
+| `top_2_selected` | Définit `hiddenChoices` (masque les choix sélectionnés) |
+| `answer_saved` | Ajoute la réponse à `answers`, incrémente `currentQuestionIndex` |
+| `formulas_generated` | Définit `formulas`, passe à l'état `completed` |
+| `formula_selected` | Sélectionne une formule, passe à l'état `customization` |
+| `formula_updated` | Met à jour la formule en cours de customisation |
+| `requesting_email` | Active `requestingEmail` |
+
+### `startSession()`
+
+Lance une nouvelle session en appelant l'API :
+
+```
+POST /api/session/start
+Body: { language, voice_gender, question_count, mode }
+→ Retourne: { session_id, room_name, token, livekit_url, identity }
+
+GET /api/session/{session_id}
+→ Retourne: { questions: Question[] }
+```
+
+<Callout>
+  Les paramètres sont lus depuis `localStorage` (configurés à l'étape `/configure`).
+</Callout>
+
+---
+
+## LanguageContext
+
+**Fichier :** `src/i18n/LanguageContext.tsx`
+
+Gère la langue de l'interface (français / anglais).
+
+### Utilisation
+
+```tsx
+import { useTranslation } from '@/i18n/LanguageContext'
+
+function MyComponent() {
+  const { t, locale, setLocale } = useTranslation()
+
+  return (
+    <p>{t('home.hero.title')}</p>
+  )
+}
+```
+
+### Interface
+
+```ts
+interface LanguageContextType {
+  locale: 'en' | 'fr'
+  setLocale: (locale: Locale) => void
+  t: (key: string) => string          // Résout une clé de traduction (notation pointée)
+}
+```
+
+### Persistance
+
+- La langue est lue depuis `localStorage.locale` au montage
+- Tout changement est sauvegardé dans `localStorage` et appliqué sur `<html lang="...">`
+
+Voir la page [Internationalisation](/i18n) pour la structure des fichiers de traduction.

@@ -1,0 +1,28 @@
+---
+title: Composants — Vue d'ensemble
+description: Organisation des composants React du projet Lylo
+---
+
+# Composants
+
+Les composants sont organisés par fonctionnalité dans `src/components/`.
+
+## Organisation
+
+| Dossier | Composants | Rôle |
+|---|---|---|
+| `ui/` | `Button`, `MaterialIcon`, `LanguageSelector` | Composants réutilisables communs |
+| `layout/` | `Navbar` | Structure de page |
+| `home/` | `HeroSection`, `TechBar` | Page d'accueil |
+| `configure/` | `ConfigPanel`, `PersonaSelector`, `DepthSelector`, `ModeSelector`, `LanguagePicker`, `StepIndicator`, `ConfigHeader` | Étape de configuration |
+| `preparation/` | `MicCalibrator` | Étape de préparation |
+| `interaction/` | `CityGrid`, `CityCard`, `AvatarSection`, `AvatarVideo`, `SpeakingIndicator`, `WaitingIndicator`, `AnswerButton`, `StepProgress`, `InteractionHeader` | Étape d'interaction vocale |
+| `recommendations/` | `FormulaCard`, `SizeToggle`, `VoiceButton`, `RecommendationsHeader` | Étape des recommandations |
+| `livekit/` | `LiveKitSession`, `TranscriptPanel`, `GeneratingLoader`, `MailPreviewButton` | Intégration LiveKit |
+| `dev/` | `DevNavigator` | Outils de développement (DEV_MODE uniquement) |
+
+## Convention de nommage
+
+- Les composants sont en **PascalCase**
+- Chaque fichier exporte un composant par défaut
+- Les fichiers sont en `.tsx` (TypeScript + JSX)

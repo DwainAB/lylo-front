@@ -1,0 +1,55 @@
+---
+title: Introduction
+description: Documentation technique du projet Lylo — AI Perfumery Platform
+---
+
+import { Callout, Cards, Card } from 'nextra/components'
+
+# Bienvenue sur la documentation Lylo
+
+**Lylo** est une plateforme de recommandation de parfums personnalisée, propulsée par une IA conversationnelle en temps réel. Les utilisateurs interagissent vocalement avec une parfumeuse virtuelle (Rose ou Florian) pour obtenir des formules olfactives sur mesure.
+
+## Vue d'ensemble
+
+```
+Utilisateur → Configure ses préférences → Dialogue vocal avec l'IA → Reçoit sa formule
+```
+
+L'application est construite avec **Next.js 16** (App Router) et utilise **LiveKit** pour la communication audio temps réel entre l'utilisateur et l'agent IA.
+
+<Callout type="info">
+  Cette documentation couvre l'architecture frontend. L'API backend (`NEXT_PUBLIC_API_URL`) est documentée séparément.
+</Callout>
+
+## Technologies principales
+
+| Technologie | Version | Rôle |
+|---|---|---|
+| Next.js | 16.1.6 | Framework React (App Router) |
+| React | 19.2.3 | UI Library |
+| LiveKit | 2.17.1 | Audio/vidéo temps réel |
+| Tailwind CSS | 4 | Styles utilitaires |
+| TypeScript | 5 | Typage statique |
+
+## Navigation
+
+<Cards>
+  <Card title="Démarrage" href="/getting-started" arrow>
+    Installer et lancer le projet en local
+  </Card>
+  <Card title="Architecture" href="/architecture" arrow>
+    Structure des dossiers et des dépendances
+  </Card>
+  <Card title="Parcours utilisateur" href="/user-flow" arrow>
+    Les 5 étapes du parcours de l'utilisateur
+  </Card>
+  <Card title="Composants" href="/components" arrow>
+    Documentation de tous les composants React
+  </Card>
+  <Card title="Contextes & État" href="/context" arrow>
+    SessionContext et LanguageContext
+  </Card>
+  <Card title="Internationalisation" href="/i18n" arrow>
+    Support multilingue (fr / en)
+  </Card>
+</Cards>

@@ -1,0 +1,95 @@
+---
+title: Internationalisation
+description: Système i18n du projet Lylo — support français et anglais
+---
+
+import { FileTree, Callout } from 'nextra/components'
+
+# Internationalisation (i18n)
+
+Le projet supporte deux langues : **français (`fr`)** et **anglais (`en`)**.
+
+## Architecture
+
+<FileTree>
+  <FileTree.Folder name="src/i18n" defaultOpen>
+    <FileTree.File name="LanguageContext.tsx" />
+    <FileTree.Folder name="locales" defaultOpen>
+      <FileTree.File name="fr.json" />
+      <FileTree.File name="en.json" />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+
+## Fichiers de traduction
+
+Les traductions sont des objets JSON imbriqués. La fonction `t()` utilise la notation pointée pour résoudre les clés :
+
+```json
+// src/i18n/locales/fr.json (exemple de structure)
+{
+  "home": {
+    "hero": {
+      "title": "Votre parfum, créé par l'IA",
+      "subtitle": "...",
+      "cta": "Commencer"
+    }
+  },
+  "configure": {
+    "title": "Configurer votre session",
+    "persona": {
+      "label": "Choisissez votre parfumeur",
+      "rose": "Rose (féminin)",
+      "florian": "Florian (masculin)"
+    }
+  }
+}
+```
+
+## Utilisation dans les composants
+
+```tsx
+import { useTranslation } from '@/i18n/LanguageContext'
+
+function HeroSection() {
+  const { t } = useTranslation()
+
+  return (
+    <h1>{t('home.hero.title')}</h1>
+  )
+}
+```
+
+<Callout type="info">
+  Si une clé n'existe pas, la fonction `t()` retourne la clé elle-même comme fallback.
+</Callout>
+
+## Changer la langue
+
+```tsx
+import { useTranslation } from '@/i18n/LanguageContext'
+
+function LanguageSelector() {
+  const { locale, setLocale } = useTranslation()
+
+  return (
+    <button onClick={() => setLocale(locale === 'fr' ? 'en' : 'fr')}>
+      {locale === 'fr' ? 'EN' : 'FR'}
+    </button>
+  )
+}
+```
+
+## Ajouter une nouvelle clé de traduction
+
+1. Ajouter la clé dans `src/i18n/locales/fr.json`
+2. Ajouter la traduction correspondante dans `src/i18n/locales/en.json`
+3. Utiliser `t('ma.nouvelle.cle')` dans le composant
+
+<Callout type="warning">
+  Il n'y a pas de vérification TypeScript des clés. Assurez-vous que les deux fichiers (`fr.json` et `en.json`) sont synchronisés.
+</Callout>
+
+## Langue de la session LiveKit
+
+La langue de la session IA est configurée séparément via `localStorage.avatarLocale` (définie dans `/configure`). Elle est envoyée à l'API lors du `startSession()` pour que l'agent parle dans la bonne langue.

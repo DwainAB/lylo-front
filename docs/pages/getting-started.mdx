@@ -1,0 +1,85 @@
+---
+title: Démarrage
+description: Installation et lancement du projet Lylo en local
+---
+
+import { Callout, Steps, Tabs, Tab } from 'nextra/components'
+
+# Démarrage
+
+## Prérequis
+
+- **Node.js** >= 18.0.0
+- **npm** >= 9.0.0
+- Accès à l'API backend Lylo
+
+## Installation
+
+<Steps>
+
+### Cloner le dépôt
+
+```bash
+git clone https://github.com/your-org/lylo-front.git
+cd lylo-front
+```
+
+### Installer les dépendances
+
+```bash
+npm install
+```
+
+### Configurer les variables d'environnement
+
+Créer un fichier `.env.local` à la racine du projet :
+
+```env
+# URL de l'API backend
+NEXT_PUBLIC_API_URL=https://api.lylo.example.com
+
+# Mode développement (optionnel)
+# En mode DEV, les données mockées sont utilisées sans connexion à l'API
+NEXT_PUBLIC_DEV_MODE=true
+```
+
+### Lancer le serveur de développement
+
+```bash
+npm run dev
+```
+
+L'application est disponible sur [http://localhost:3000](http://localhost:3000).
+
+</Steps>
+
+## Scripts disponibles
+
+| Commande | Description |
+|---|---|
+| `npm run dev` | Démarre le serveur Next.js en mode développement |
+| `npm run build` | Compile le projet pour la production |
+| `npm run start` | Démarre le serveur de production (après `build`) |
+| `npm run lint` | Vérifie le code avec ESLint |
+
+## Mode développement (DEV_MODE)
+
+<Callout type="warning">
+  En mode DEV (`NEXT_PUBLIC_DEV_MODE=true`), l'application utilise des données mockées définies dans `src/lib/mockData.ts`. Aucune connexion à l'API ou à LiveKit n'est établie.
+</Callout>
+
+En DEV_MODE :
+- La session démarre directement à l'état `completed`
+- Les questions et formules proviennent des mocks
+- Le composant `DevNavigator` s'affiche pour naviguer entre les pages sans suivre le parcours normal
+
+## Structure du fichier `.env.local`
+
+```
+NEXT_PUBLIC_API_URL   → URL de base de l'API backend
+NEXT_PUBLIC_DEV_MODE  → "true" pour activer le mode mock (développement)
+```
+
+<Callout type="info">
+  Toutes les variables préfixées par `NEXT_PUBLIC_` sont exposées côté client (navigateur). Ne jamais y mettre de secrets.
+</Callout>
