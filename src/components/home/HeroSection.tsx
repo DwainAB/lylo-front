@@ -19,7 +19,8 @@ export default function HeroSection() {
       setIsPlaying(false);
       return;
     }
-    const audio = new Audio("/téléchargement.wav");
+    const audioFile = locale === "en" ? "/intro-boy-en.wav" : "/intro-girl-fr.wav";
+    const audio = new Audio(audioFile);
     audioRef.current = audio;
     setIsPlaying(true);
     audio.play();
