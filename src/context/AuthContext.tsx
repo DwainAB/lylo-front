@@ -21,6 +21,7 @@ interface AuthContextType {
   openLoginModal: () => void;
   closeLoginModal: () => void;
   isLoading: boolean;
+  isInitialized: boolean;
   error: string | null;
   clearError: () => void;
 }
@@ -32,6 +33,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
 
@@ -44,6 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem("auth_user");
       }
     }
+    setIsInitialized(true);
   }, []);
 
   const login = async (email: string): Promise<boolean> => {
@@ -91,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const closeLoginModal = () => setLoginModalOpen(false);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loginModalOpen, openLoginModal, closeLoginModal, isLoading, error, clearError }}>
+    <AuthContext.Provider value={{ user, login, logout, loginModalOpen, openLoginModal, closeLoginModal, isLoading, isInitialized, error, clearError }}>
       {children}
     </AuthContext.Provider>
   );

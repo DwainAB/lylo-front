@@ -1,20 +1,32 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import ConfigPanel from "@/components/configure/ConfigPanel";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useSession } from "@/context/SessionContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ConfigurePage() {
   const { t } = useTranslation();
   const { endSession, sessionData } = useSession();
+  const { user, isInitialized } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (sessionData) {
       endSession();
     }
   }, []);
+
+  useEffect(() => {
+    if (isInitialized && !user) {
+      router.replace("/");
+    }
+  }, [isInitialized, user]);
+
+  if (!isInitialized || !user) return null;
 
 
   return (
