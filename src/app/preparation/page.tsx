@@ -11,7 +11,7 @@ import AvatarVideo from "@/components/interaction/AvatarVideo";
 export default function PreparationPage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { sessionState, startSession, sessionData, agentName } = useSession();
+  const { sessionState, startSession, sessionData, agentName, noCreditsError } = useSession();
   const hasStarted = useRef(false);
 
   // Start session on mount
@@ -34,6 +34,20 @@ export default function PreparationPage() {
   }, [sessionState, router]);
 
   const isConnecting = sessionState === "idle" || sessionState === "connecting";
+
+  if (noCreditsError) {
+    return (
+      <div className="relative flex h-screen w-full flex-col items-center justify-center gap-4 px-6 text-center">
+        <p className="text-red-500 font-semibold text-lg">{t("auth.noSessions")}</p>
+        <button
+          onClick={() => router.push("/configure")}
+          className="text-primary text-sm font-medium underline underline-offset-4"
+        >
+          {t("preparation.back")}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden">

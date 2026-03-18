@@ -25,6 +25,28 @@ export default function ConfigPanel() {
     router.push("/preparation");
   };
 
+  const renderContinueLeft = () => (
+    <button
+      disabled={!isFormComplete}
+      onClick={handleContinue}
+      className="hidden [@media(max-height:620px)]:flex mt-5 w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-lg shadow-lg transition-all hover:scale-[1.02] items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+    >
+      <span className="text-sm">{t("configure.continue")}</span>
+      <MaterialIcon name="arrow_forward" className="text-sm" />
+    </button>
+  );
+
+  const renderContinueBottom = () => (
+    <button
+      disabled={!isFormComplete}
+      onClick={handleContinue}
+      className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3.5 rounded-lg shadow-xl transition-all hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+    >
+      <span>{t("configure.continue")}</span>
+      <MaterialIcon name="arrow_forward" />
+    </button>
+  );
+
   return (
     <div
       className={`
@@ -63,14 +85,7 @@ export default function ConfigPanel() {
         </div>
 
         {/* Continue — colonne gauche (petite hauteur) */}
-        <button
-          disabled={!isFormComplete}
-          onClick={handleContinue}
-          className="hidden [@media(max-height:620px)]:flex mt-5 w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-lg shadow-lg transition-all hover:scale-[1.02] items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-        >
-          <span className="text-sm">{t("configure.continue")}</span>
-          <MaterialIcon name="arrow_forward" className="text-sm" />
-        </button>
+        {renderContinueLeft()}
       </div>
 
       {/* ── BOTTOM (portrait/tall) / RIGHT (short height) : Form ── */}
@@ -90,14 +105,7 @@ export default function ConfigPanel() {
 
         {/* Continue — en bas (hauteur normale) */}
         <div className="pt-1 [@media(max-height:620px)]:hidden">
-          <button
-            disabled={!isFormComplete}
-            onClick={handleContinue}
-            className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3.5 rounded-lg shadow-xl transition-all hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-          >
-            <span>{t("configure.continue")}</span>
-            <MaterialIcon name="arrow_forward" />
-          </button>
+          {renderContinueBottom()}
         </div>
       </div>
     </div>

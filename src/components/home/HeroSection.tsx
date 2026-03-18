@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function HeroSection() {
   const router = useRouter();
   const { t, locale } = useTranslation();
+  const { user, openLoginModal } = useAuth();
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -60,10 +62,17 @@ export default function HeroSection() {
 
         {/* CTA Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <Button variant="primary" size="lg" className="shadow-2xl shadow-black/20 hover:scale-[1.02]" onClick={() => { localStorage.setItem("language", locale); router.push("/configure"); }}>
-            <MaterialIcon name="auto_awesome" />
-            {t("home.getStarted")}
-          </Button>
+          {user ? (
+            <Button variant="primary" size="lg" className="shadow-2xl shadow-black/20 hover:scale-[1.02]" onClick={() => { localStorage.setItem("language", locale); router.push("/configure"); }}>
+              <MaterialIcon name="auto_awesome" />
+              {t("home.getStarted")}
+            </Button>
+          ) : (
+            <Button variant="primary" size="lg" className="shadow-2xl shadow-black/20 hover:scale-[1.02]" onClick={openLoginModal}>
+              <MaterialIcon name="login" />
+              {t("nav.login")}
+            </Button>
+          )}
           <Button variant="ghost" size="lg" onClick={handlePlayAudio}>
             {isPlaying ? (
               <span className="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

@@ -70,6 +70,7 @@
     "connecting": "Connexion en cours...",
     "connected": "Connecté — {name} vous écoute",
     "pleaseWait": "Veuillez patienter un instant...",
+    "back": "Retour à la configuration",
     "micTitle": "Calibrage micro",
     "micDesc": "Testez votre microphone avant de commencer. Parlez et vérifiez que le niveau sonore est correct.",
     "micTest": "Démarrer le test",
@@ -95,6 +96,17 @@
   "generating": {
     "title": "Création de vos formules",
     "subtitle": "Rose compose deux formules de parfum sur mesure basées sur votre profil olfactif unique."
+  },
+  "auth": {
+    "modalTitle": "Connexion",
+    "modalSubtitle": "Connectez-vous pour accéder à votre espace",
+    "loading": "Vérification en cours...",
+    "unauthorized": "Accès refusé. Votre compte n'est pas autorisé.",
+    "noSessions": "Vous n'avez plus de sessions disponibles.",
+    "error": "Une erreur est survenue. Veuillez réessayer.",
+    "close": "Fermer",
+    "logout": "Déconnexion",
+    "welcome": "Bonjour"
   },
   "recommendations": {
     "brand": "Le Studio Des Parfums",

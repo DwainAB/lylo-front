@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { EB_Garamond } from "next/font/google";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { SessionProvider } from "@/context/SessionContext";
+import { AuthProvider } from "@/context/AuthContext";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import LiveKitSession from "@/components/livekit/LiveKitSession";
 import TranscriptPanel from "@/components/livekit/TranscriptPanel";
 import DevNavigator from "@/components/dev/DevNavigator";
@@ -39,15 +41,19 @@ export default function RootLayout({
         className={`${garamond.variable} bg-background-light text-text-dark h-screen overflow-y-auto lg:overflow-hidden antialiased`}
         suppressHydrationWarning
       >
-        <LanguageProvider>
-          <SessionProvider>
-            <LiveKitSession>
-              {children}
-              <TranscriptPanel />
-              <DevNavigator />
-            </LiveKitSession>
-          </SessionProvider>
-        </LanguageProvider>
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+          <LanguageProvider>
+            <AuthProvider>
+              <SessionProvider>
+                <LiveKitSession>
+                  {children}
+                  <TranscriptPanel />
+                  <DevNavigator />
+                </LiveKitSession>
+              </SessionProvider>
+            </AuthProvider>
+          </LanguageProvider>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

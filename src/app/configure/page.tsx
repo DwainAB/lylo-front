@@ -16,6 +16,7 @@ export default function ConfigurePage() {
     }
   }, []);
 
+
   return (
     <div className="relative h-dvh w-full flex flex-col bg-stone-50 overflow-hidden">
       <Navbar showActions={false} transparent />

@@ -70,6 +70,7 @@
     "connecting": "Connecting...",
     "connected": "Connected — {name} is listening",
     "pleaseWait": "Please wait a moment...",
+    "back": "Back to configuration",
     "micTitle": "Mic check",
     "micDesc": "Test your microphone before starting. Speak and check that the volume level is correct.",
     "micTest": "Start test",
@@ -95,6 +96,17 @@
   "generating": {
     "title": "Crafting your formulas",
     "subtitle": "Rose is composing two bespoke fragrance formulas based on your unique olfactory profile."
+  },
+  "auth": {
+    "modalTitle": "Sign in",
+    "modalSubtitle": "Sign in to access your space",
+    "loading": "Verifying...",
+    "unauthorized": "Access denied. Your account is not authorized.",
+    "noSessions": "You have no sessions remaining.",
+    "error": "An error occurred. Please try again.",
+    "close": "Close",
+    "logout": "Log out",
+    "welcome": "Hello"
   },
   "recommendations": {
     "brand": "Le Studio Des Parfums",

@@ -106,6 +106,7 @@ interface SessionContextType {
   hiddenChoices: string[];
   requestingEmail: boolean;
   devMode: boolean;
+  noCreditsError: boolean;
   startSession: () => Promise<void>;
   endSession: () => void;
   setSessionState: (state: SessionState) => void;
@@ -131,6 +132,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [agentName, setAgentName] = useState("Rose");
   const [hiddenChoices, setHiddenChoices] = useState<string[]>([]);
   const [requestingEmail, setRequestingEmail] = useState(false);
+  const [noCreditsError, setNoCreditsError] = useState(false);
 
   const startSession = useCallback(async () => {
     if (DEV_MODE) return;
@@ -144,12 +146,20 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const question_count = parseInt(depth, 10);
     setQuestionCount(question_count);
     const mode = localStorage.getItem("mode") || "guided";
+    const savedAuth = localStorage.getItem("auth_user");
+    const email = savedAuth ? JSON.parse(savedAuth).email : null;
 
     const res = await fetch(`${API_BASE}/api/session/start`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ language, voice_gender, question_count, mode }),
+      body: JSON.stringify({ language, voice_gender, question_count, mode, email }),
     });
+
+    if (res.status === 403) {
+      setNoCreditsError(true);
+      setSessionState("idle");
+      return;
+    }
 
     const data: SessionData = await res.json();
     setSessionData(data);
@@ -274,6 +284,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         agentName,
         hiddenChoices,
         requestingEmail,
+        noCreditsError,
         devMode: DEV_MODE,
         startSession,
         endSession,

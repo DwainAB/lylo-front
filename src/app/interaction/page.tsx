@@ -40,6 +40,15 @@ export default function InteractionPage() {
     <div className="relative flex h-screen w-full flex-col">
       <Navbar showActions={false} transparent />
 
+      {/* Bouton retour accueil */}
+      <button
+        onClick={() => router.push("/")}
+        className="fixed top-4 left-6 z-50 flex items-center gap-1.5 text-primary/50 hover:text-primary text-xs font-medium uppercase tracking-widest transition-colors cursor-pointer"
+      >
+        <span className="material-symbols-outlined text-sm">arrow_back</span>
+        Accueil
+      </button>
+
       <main className="flex-1 flex flex-col items-center justify-between px-6 pb-6 pt-2 max-w-6xl mx-auto w-full min-h-0 relative z-10">
         {/* Avatar + Question section */}
         <div className="w-full flex flex-col items-center gap-2 shrink-0 mt-16 sm:mt-12">
