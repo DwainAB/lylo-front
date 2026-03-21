@@ -5,7 +5,8 @@
     "aiExperience": "L'Expérience IA",
     "atelier": "Atelier",
     "login": "Connexion",
-    "getStarted": "Commencer"
+    "getStarted": "Commencer",
+    "home": "Accueil"
   },
   "home": {
     "badge": "Parfumeur Personnel IA",
@@ -54,6 +55,9 @@
     "step": "Étape",
     "waiting": "J'attends votre réponse...",
     "agentSpeaking": "{name} est en train de parler...",
+    "agentThinking": "Réflexion en cours...",
+    "agentListening": "À vous de parler",
+    "agentIdle": "Session en attente...",
     "connecting": "Connexion en cours..."
   },
   "preparation": {

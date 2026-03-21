@@ -48,6 +48,11 @@ export default function Navbar({ showActions = true, transparent = false }: Navb
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3" onClick={handleLogoClick}>
             <Image src="/logo-sdp.png" alt="Logo SDP" width={40} height={40} style={{ width: "auto", height: "auto" }} />
+            {!showActions && (
+              <span className="text-primary/50 hover:text-primary text-xs font-medium uppercase tracking-widest transition-colors">
+                {t("nav.home")}
+              </span>
+            )}
           </Link>
 
           {/* Right side */}

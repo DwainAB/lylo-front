@@ -21,6 +21,8 @@ export type SessionState =
   | "customization"
   | "standby";
 
+export type AgentState = "speaking" | "listening" | "thinking" | "idle" | "initializing";
+
 export interface ProfileUpdate {
   field: string;
   value: string;
@@ -94,6 +96,7 @@ interface SessionData {
 interface SessionContextType {
   sessionData: SessionData | null;
   sessionState: SessionState;
+  agentState: AgentState;
   profile: Record<string, string>;
   missingFields: string[];
   answers: AnswerSaved[];
@@ -133,6 +136,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [hiddenChoices, setHiddenChoices] = useState<string[]>([]);
   const [requestingEmail, setRequestingEmail] = useState(false);
   const [noCreditsError, setNoCreditsError] = useState(false);
+  const [agentState, setAgentState] = useState<AgentState>("initializing");
 
   const startSession = useCallback(async () => {
     if (DEV_MODE) return;
@@ -177,9 +181,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const handleDataMessage = useCallback((payload: Uint8Array) => {
     try {
       const event = JSON.parse(new TextDecoder().decode(payload));
+      console.log("[LiveKit] data channel event:", event);
 
       switch (event.type) {
         case "profile_update":
+          console.log("[LiveKit] profile_update →", event.field, "=", event.value, "| missing:", event.missing_fields);
           setProfile((prev) => ({
             ...prev,
             [event.field]: event.value,
@@ -188,14 +194,17 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           break;
 
         case "state_change":
+          console.log("[LiveKit] state_change →", event.state);
           setSessionState(event.state as SessionState);
           break;
 
         case "top_2_selected":
+          console.log("[LiveKit] top_2_selected →", event.top_2);
           setHiddenChoices(event.top_2 || []);
           break;
 
         case "answer_saved":
+          console.log("[LiveKit] answer_saved → question_id:", event.question_id, "top_2:", event.top_2, "bottom_2:", event.bottom_2);
           setHiddenChoices([]);
           setAnswers((prev) => {
             const isNew = !prev.some((a) => a.question_id === event.question_id);
@@ -214,22 +223,34 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           break;
 
         case "formulas_generated":
+          console.log("[LiveKit] formulas_generated →", event.formulas?.length, "formulas");
           setFormulas(event.formulas || []);
           setSessionState("completed");
           break;
 
         case "formula_selected":
+          console.log("[LiveKit] formula_selected →", event.formula?.profile);
           setFormulas([event.formula]);
           setSessionState("customization");
           break;
 
         case "formula_updated":
+          console.log("[LiveKit] formula_updated →", event.formula?.profile);
           setFormulas([event.formula]);
           break;
 
+        case "agent_state":
+          console.log("[LiveKit] agent_state →", event.state);
+          setAgentState(event.state as AgentState);
+          break;
+
         case "requesting_email":
+          console.log("[LiveKit] requesting_email →", event.requesting_email);
           if (event.requesting_email) setRequestingEmail(true);
           break;
+
+        default:
+          console.warn("[LiveKit] unknown event type:", event.type, event);
       }
     } catch {
       // ignore malformed messages
@@ -254,6 +275,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setCurrentQuestionIndex(0);
     setHiddenChoices([]);
     setRequestingEmail(false);
+    setAgentState("initializing");
   }, [sessionData]);
 
   const upsertTranscript = useCallback((msg: TranscriptMessage) => {
@@ -273,6 +295,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       value={{
         sessionData,
         sessionState,
+        agentState,
         profile,
         missingFields,
         answers,

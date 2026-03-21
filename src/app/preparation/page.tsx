@@ -7,6 +7,7 @@ import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useSession, DEV_MODE } from "@/context/SessionContext";
 import AvatarVideo from "@/components/interaction/AvatarVideo";
+import SpeakingIndicator from "@/components/interaction/SpeakingIndicator";
 
 export default function PreparationPage() {
   const { t } = useTranslation();
@@ -135,22 +136,9 @@ export default function PreparationPage() {
 
         {/* Connection status footer */}
         <footer className="w-full max-w-md">
-          {sessionState === "connecting" && (
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <div className="size-2 rounded-full bg-primary animate-pulse" />
-              <p className="text-sm text-primary font-medium">
-                {t("preparation.connecting")}
-              </p>
-            </div>
-          )}
-          {sessionState === "collecting_profile" && (
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <div className="size-2 rounded-full bg-green-500" />
-              <p className="text-sm text-green-700 font-medium">
-                {t("preparation.connected").replace("{name}", agentName)}
-              </p>
-            </div>
-          )}
+          <div className="flex justify-center mb-3">
+            <SpeakingIndicator />
+          </div>
           <p className="text-center text-[10px] sm:text-xs text-[#7f6f66] uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium opacity-60">
             {t("preparation.footer")}
           </p>

@@ -7,7 +7,7 @@ import {
   useDataChannel,
   useRoomContext,
 } from "@livekit/components-react";
-import { RoomEvent, TranscriptionSegment, Participant } from "livekit-client";
+import { RoomEvent, ParticipantEvent, TranscriptionSegment, Participant } from "livekit-client";
 import { useSession } from "@/context/SessionContext";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 
@@ -48,6 +48,63 @@ function ResumeButton() {
       </button>
     </div>
   );
+}
+
+function RoomEventLogger() {
+  const room = useRoomContext();
+
+  useEffect(() => {
+    const onConnected = () => console.log("[LiveKit] Room connected");
+    const onDisconnected = (reason?: unknown) => console.log("[LiveKit] Room disconnected, reason:", reason);
+    const onReconnecting = () => console.log("[LiveKit] Room reconnecting...");
+    const onReconnected = () => console.log("[LiveKit] Room reconnected");
+    const onConnectionStateChanged = (state: string) =>
+      console.log("[LiveKit] Connection state →", state);
+    const onActiveSpeakersChanged = (speakers: Participant[]) =>
+      console.log("[LiveKit] Active speakers:", speakers.map((p) => p.identity));
+
+    const onParticipantConnected = (p: Participant) => {
+      console.log("[LiveKit] Participant connected:", p.identity);
+      if (p.identity.startsWith("agent_")) {
+        p.on(ParticipantEvent.AttributesChanged, (attrs: Record<string, string>) => {
+          console.log("[LiveKit] Agent state →", attrs["lk.agent.state"], "| all attrs:", attrs);
+        });
+      }
+    };
+    const onParticipantDisconnected = (p: Participant) => console.log("[LiveKit] Participant disconnected:", p.identity);
+
+    room.on(RoomEvent.Connected, onConnected);
+    room.on(RoomEvent.Disconnected, onDisconnected);
+    room.on(RoomEvent.Reconnecting, onReconnecting);
+    room.on(RoomEvent.Reconnected, onReconnected);
+    room.on(RoomEvent.ConnectionStateChanged, onConnectionStateChanged);
+    room.on(RoomEvent.ActiveSpeakersChanged, onActiveSpeakersChanged);
+    room.on(RoomEvent.ParticipantConnected, onParticipantConnected);
+    room.on(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
+
+    // Si l'agent est déjà connecté au moment du mount
+    for (const p of room.remoteParticipants.values()) {
+      if (p.identity.startsWith("agent_")) {
+        console.log("[LiveKit] Agent already present:", p.identity, "| state:", p.attributes?.["lk.agent.state"]);
+        p.on(ParticipantEvent.AttributesChanged, (attrs: Record<string, string>) => {
+          console.log("[LiveKit] Agent state →", attrs["lk.agent.state"], "| all attrs:", attrs);
+        });
+      }
+    }
+
+    return () => {
+      room.off(RoomEvent.Connected, onConnected);
+      room.off(RoomEvent.Disconnected, onDisconnected);
+      room.off(RoomEvent.Reconnecting, onReconnecting);
+      room.off(RoomEvent.Reconnected, onReconnected);
+      room.off(RoomEvent.ConnectionStateChanged, onConnectionStateChanged);
+      room.off(RoomEvent.ActiveSpeakersChanged, onActiveSpeakersChanged);
+      room.off(RoomEvent.ParticipantConnected, onParticipantConnected);
+      room.off(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
+    };
+  }, [room]);
+
+  return null;
 }
 
 function TranscriptionListener() {
@@ -102,6 +159,7 @@ export default function LiveKitSession({ children }: LiveKitSessionProps) {
       connect={true}
     >
       <RoomAudioRenderer />
+      <RoomEventLogger />
       <DataChannelListener />
       <TranscriptionListener />
       <ResumeButton />

@@ -5,7 +5,8 @@
     "aiExperience": "The AI Experience",
     "atelier": "Atelier",
     "login": "Login",
-    "getStarted": "Get started"
+    "getStarted": "Get started",
+    "home": "Home"
   },
   "home": {
     "badge": "AI Personal Perfumer",
@@ -54,6 +55,9 @@
     "step": "Step",
     "waiting": "I am waiting for your answer...",
     "agentSpeaking": "{name} is speaking...",
+    "agentThinking": "Thinking...",
+    "agentListening": "Your turn to speak",
+    "agentIdle": "Session on hold...",
     "connecting": "Connecting..."
   },
   "preparation": {
