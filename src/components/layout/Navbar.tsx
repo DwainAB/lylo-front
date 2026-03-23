@@ -3,6 +3,7 @@
 import { useCallback, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import LanguageSelector from "@/components/ui/LanguageSelector";
 import { useTranslation } from "@/i18n/LanguageContext";
@@ -18,6 +19,7 @@ interface NavbarProps {
 export default function Navbar({ showActions = true, transparent = false }: NavbarProps) {
   const { t } = useTranslation();
   const { user, logout, loginModalOpen, openLoginModal, closeLoginModal } = useAuth();
+  const router = useRouter();
 
   const clickCountRef = useRef(0);
   const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -76,7 +78,7 @@ export default function Navbar({ showActions = true, transparent = false }: Navb
                       {t("nav.login")}
                     </Button>
                   )}
-                  {user && <Button variant="primary">{t("nav.getStarted")}</Button>}
+                  {user && <Button variant="primary" onClick={() => router.push("/configure")}>{t("nav.getStarted")}</Button>}
                 </div>
               </div>
             </div>

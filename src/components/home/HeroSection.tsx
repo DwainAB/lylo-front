@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Button from "@/components/ui/Button";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
@@ -36,6 +37,18 @@ export default function HeroSection() {
 
       {/* Content */}
       <div className="relative z-10 px-6 text-center max-w-4xl mx-auto">
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <Image src="/logo-sdp.png" alt="Logo SDP" width={72} height={72} style={{ width: "auto", height: "auto" }} />
+        </div>
+
+        {/* Title */}
+        <h1 className="text-white font-light tracking-tight mb-4 font-display flex flex-col items-center leading-tight">
+          <span className="text-4xl md:text-5xl lg:text-7xl">Lylo</span>
+          <span className="text-xl md:text-2xl lg:text-3xl font-medium">{locale === "en" ? "by" : "par"}</span>
+          <span className="text-4xl md:text-5xl lg:text-7xl">{t("home.title")}</span>
+        </h1>
+
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold tracking-widest uppercase mb-6">
           <span className="relative flex h-2 w-2">
@@ -43,21 +56,6 @@ export default function HeroSection() {
             <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
           </span>
           {t("home.badge")}
-        </div>
-
-        {/* Title */}
-        <h1 className="text-white text-4xl md:text-5xl lg:text-7xl font-light tracking-tight mb-6 font-display">
-          {t("home.title")}
-        </h1>
-
-        {/* Subtitle */}
-        <div className="flex flex-col gap-2 mb-6">
-          <p className="text-white/90 text-xl md:text-2xl font-light italic">
-            {t("home.subtitle")}
-          </p>
-          <p className="text-white/70 text-sm md:text-base tracking-wide uppercase">
-            {t("home.cta")}
-          </p>
         </div>
 
         {/* CTA Buttons */}
