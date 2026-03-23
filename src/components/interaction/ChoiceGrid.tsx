@@ -1,19 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import CityCard from "./CityCard";
+import ChoiceCard from "./ChoiceCard";
 import { Choice, useSession } from "@/context/SessionContext";
-import { useTranslation } from "@/i18n/LanguageContext";
 
-interface CityGridProps {
+interface ChoiceGridProps {
   choices: Choice[];
 }
 
-export default function CityGrid({ choices }: CityGridProps) {
+export default function ChoiceGrid({ choices }: ChoiceGridProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const [clickSelected, setClickSelected] = useState<string[]>([]);
   const { hiddenChoices, clickSelectionMode, submitClickAnswer } = useSession();
-  const { t } = useTranslation();
 
   // Reset selection when choices change (new question)
   useEffect(() => {
@@ -58,14 +56,9 @@ export default function CityGrid({ choices }: CityGridProps) {
 
   return (
     <div className="relative w-full max-w-5xl flex-1 min-h-0">
-      {clickSelectionMode !== null && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 px-4 py-1 rounded-full bg-primary text-white text-[11px] font-semibold tracking-wide shadow-md whitespace-nowrap">
-          {t("interaction.clickSelectHint")} ({clickSelected.length}/2)
-        </div>
-      )}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 w-full py-4 h-full max-h-[62vh] sm:max-h-[55vh]">
         {visibleChoices.map((choice) => (
-          <CityCard
+          <ChoiceCard
             key={choice.label}
             name={choice.label}
             imageUrl={choice.image ? `${process.env.NEXT_PUBLIC_API_URL}${choice.image}` : undefined}

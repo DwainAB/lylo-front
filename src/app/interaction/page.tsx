@@ -6,7 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 import AvatarSection from "@/components/interaction/AvatarSection";
 import StepProgress from "@/components/interaction/StepProgress";
 import SpeakingIndicator from "@/components/interaction/SpeakingIndicator";
-import CityGrid from "@/components/interaction/CityGrid";
+import ChoiceGrid from "@/components/interaction/ChoiceGrid";
 import GeneratingLoader from "@/components/livekit/GeneratingLoader";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useSession, DEV_MODE } from "@/context/SessionContext";
@@ -57,7 +57,7 @@ export default function InteractionPage() {
         </div>
 
         {/* Choice selection grid */}
-        <CityGrid choices={currentQuestion?.choices || []} />
+        <ChoiceGrid choices={currentQuestion?.choices || []} />
 
         {/* Bottom controls */}
         <div className="w-full flex flex-col items-center gap-6 shrink-0 pt-4">

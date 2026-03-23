@@ -1,6 +1,6 @@
 "use client";
 
-interface CityCardProps {
+interface ChoiceCardProps {
   name: string;
   imageUrl?: string;
   selected?: boolean;
@@ -8,7 +8,7 @@ interface CityCardProps {
   onSelect: (name: string) => void;
 }
 
-export default function CityCard({ name, imageUrl, selected, clickable = true, onSelect }: CityCardProps) {
+export default function ChoiceCard({ name, imageUrl, selected, clickable = true, onSelect }: ChoiceCardProps) {
   return (
     <div
       onClick={() => clickable && onSelect(name)}

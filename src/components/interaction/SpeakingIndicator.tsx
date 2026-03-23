@@ -15,8 +15,19 @@ function Dots() {
 }
 
 export default function SpeakingIndicator() {
-  const { agentName, agentState } = useSession();
+  const { agentName, agentState, clickSelectionMode } = useSession();
   const { t } = useTranslation();
+
+  if (clickSelectionMode !== null) {
+    return (
+      <div className="px-8 py-3 rounded-full border border-primary/30 bg-white/50 backdrop-blur-sm flex items-center gap-3 text-primary shadow-sm">
+        <MaterialIcon name="touch_app" className="text-[18px]" />
+        <span className="text-sm tracking-widest font-medium lowercase">
+          {t("interaction.clickSelectHint")}
+        </span>
+      </div>
+    );
+  }
 
   if (agentState === "initializing") {
     return (
