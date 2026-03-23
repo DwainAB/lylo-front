@@ -30,6 +30,7 @@ export default function InteractionPage() {
 
   const persona = typeof window !== "undefined" ? localStorage.getItem("persona") : null;
   const avatarUrl = persona === "male" ? "/avatar-h.jpg" : "/avatar-f.jpg";
+  const avatarEnabled = typeof window !== "undefined" ? localStorage.getItem("avatar") !== "false" : true;
 
   // Show generating loader overlay
   if (sessionState === "generating_formulas") {
@@ -47,6 +48,7 @@ export default function InteractionPage() {
             name=""
             role=""
             imageUrl={avatarUrl}
+            avatarEnabled={avatarEnabled}
           />
           <StepProgress currentStep={currentStep} totalSteps={totalSteps} />
           <h3 className="text-3xl md:text-4xl font-extralight tracking-tight text-center max-w-2xl leading-tight">

@@ -50,6 +50,33 @@ function ResumeButton() {
   );
 }
 
+function ClickModeController() {
+  const { clickSelectionMode, pendingClickAnswer, clearPendingClickAnswer } = useSession();
+  const { send } = useDataChannel("control");
+  const room = useRoomContext();
+
+  // Couper le micro quand l'agent attend une sélection par clic
+  useEffect(() => {
+    if (clickSelectionMode !== null) {
+      console.warn("🔇 [CLICK MODE] Micro coupé (clickSelectionMode:", clickSelectionMode, ")");
+      room.localParticipant.setMicrophoneEnabled(false);
+    }
+  }, [clickSelectionMode, room]);
+
+  // Envoyer la réponse et réactiver le micro
+  useEffect(() => {
+    if (!pendingClickAnswer) return;
+    console.warn("📤 [CLICK MODE] Envoi réponse via data channel 'control':", pendingClickAnswer);
+    room.localParticipant.setMicrophoneEnabled(true);
+    console.warn("🎙️ [CLICK MODE] Micro réactivé");
+    const msg = new TextEncoder().encode(JSON.stringify(pendingClickAnswer));
+    send(msg, { reliable: true });
+    clearPendingClickAnswer();
+  }, [pendingClickAnswer, room, send, clearPendingClickAnswer]);
+
+  return null;
+}
+
 function RoomEventLogger() {
   const room = useRoomContext();
 
@@ -162,6 +189,7 @@ export default function LiveKitSession({ children }: LiveKitSessionProps) {
       <RoomEventLogger />
       <DataChannelListener />
       <TranscriptionListener />
+      <ClickModeController />
       <ResumeButton />
       {children}
     </LiveKitRoom>

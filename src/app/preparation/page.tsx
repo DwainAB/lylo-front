@@ -77,6 +77,7 @@ export default function PreparationPage() {
             <div className="relative size-32 sm:size-48 md:size-56 rounded-full border-4 border-secondary overflow-hidden bg-white ai-glow">
               <AvatarVideo
                 fallbackUrl={typeof window !== "undefined" && localStorage.getItem("persona") === "male" ? "/avatar-h.jpg" : "/avatar-f.jpg"}
+                avatarEnabled={typeof window !== "undefined" ? localStorage.getItem("avatar") !== "false" : true}
               />
             </div>
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-primary text-white text-[10px] sm:text-xs font-bold tracking-wider uppercase rounded-full">

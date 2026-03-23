@@ -24,6 +24,7 @@ export default function RecommendationsPage() {
 
   const persona = typeof window !== "undefined" ? localStorage.getItem("persona") : null;
   const avatarUrl = persona === "male" ? "/avatar-h.jpg" : "/avatar-f.jpg";
+  const avatarEnabled = typeof window !== "undefined" ? localStorage.getItem("avatar") !== "false" : true;
 
   const handleSendEmail = async () => {
     if (!sessionData?.session_id || !email) return;
@@ -61,7 +62,7 @@ export default function RecommendationsPage() {
         {/* ── Avatar + Titre ── visible uniquement en vue 2 formules ── */}
         {!isSingle && (
           <div className="shrink-0 flex flex-col items-center gap-1 mt-1 sm:mt-3 mb-2 sm:mb-3 [@media(max-height:580px)]:hidden">
-            <AvatarSection name="" role="" imageUrl={avatarUrl} />
+            <AvatarSection name="" role="" imageUrl={avatarUrl} avatarEnabled={avatarEnabled} />
             <h3 className="text-xl sm:text-2xl md:text-3xl font-extralight tracking-tight text-center max-w-2xl leading-tight mt-1 sm:mt-2">
               {t("recommendations.title")}
             </h3>
@@ -119,7 +120,7 @@ export default function RecommendationsPage() {
                 {/* Avatar */}
                 <div className="relative shrink-0">
                   <div className="size-28 sm:size-36 rounded-full overflow-hidden border-4 border-white ai-glow">
-                    <AvatarVideo fallbackUrl={avatarUrl} />
+                    <AvatarVideo fallbackUrl={avatarUrl} avatarEnabled={avatarEnabled} />
                   </div>
                   <div className="absolute bottom-1 right-1 size-4 bg-primary rounded-full border-2 border-white" />
                 </div>

@@ -4,16 +4,17 @@ interface CityCardProps {
   name: string;
   imageUrl?: string;
   selected?: boolean;
+  clickable?: boolean;
   onSelect: (name: string) => void;
 }
 
-export default function CityCard({ name, imageUrl, selected, onSelect }: CityCardProps) {
+export default function CityCard({ name, imageUrl, selected, clickable = true, onSelect }: CityCardProps) {
   return (
     <div
-      onClick={() => onSelect(name)}
-      className={`h-full min-h-0 rounded-2xl overflow-hidden group cursor-pointer border-2 transition-all duration-500 relative bg-stone-200 ${
-        selected ? "border-primary" : "border-transparent hover:border-primary"
-      }`}
+      onClick={() => clickable && onSelect(name)}
+      className={`h-full min-h-0 rounded-2xl overflow-hidden group border-2 transition-all duration-500 relative bg-stone-200 ${
+        clickable ? "cursor-pointer" : "cursor-default"
+      } ${selected ? "border-primary scale-[1.03]" : clickable ? "border-transparent hover:border-primary" : "border-transparent"}`}
     >
       {imageUrl ? (
         <>

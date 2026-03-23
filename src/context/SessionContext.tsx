@@ -72,6 +72,13 @@ export interface Choice {
   image: string;
 }
 
+export interface PendingClickAnswer {
+  type: "questionnaire_top_2" | "questionnaire_bottom_2";
+  question_id: number;
+  values: string[];
+  top_2?: string[];
+}
+
 export interface Question {
   id: number;
   question: string;
@@ -110,11 +117,15 @@ interface SessionContextType {
   requestingEmail: boolean;
   devMode: boolean;
   noCreditsError: boolean;
+  clickSelectionMode: "top_2" | "bottom_2" | null;
+  pendingClickAnswer: PendingClickAnswer | null;
   startSession: () => Promise<void>;
   endSession: () => void;
   setSessionState: (state: SessionState) => void;
   handleDataMessage: (payload: Uint8Array) => void;
   upsertTranscript: (msg: TranscriptMessage) => void;
+  submitClickAnswer: (values: string[]) => void;
+  clearPendingClickAnswer: () => void;
 }
 
 const SessionContext = createContext<SessionContextType | null>(null);
@@ -137,6 +148,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [requestingEmail, setRequestingEmail] = useState(false);
   const [noCreditsError, setNoCreditsError] = useState(false);
   const [agentState, setAgentState] = useState<AgentState>("initializing");
+  const [clickSelectionMode, setClickSelectionMode] = useState<"top_2" | "bottom_2" | null>(null);
+  const [clickQuestionId, setClickQuestionId] = useState<number | null>(null);
+  const [clickTop2Values, setClickTop2Values] = useState<string[]>([]);
+  const [pendingClickAnswer, setPendingClickAnswer] = useState<PendingClickAnswer | null>(null);
 
   const startSession = useCallback(async () => {
     if (DEV_MODE) return;
@@ -150,13 +165,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const question_count = parseInt(depth, 10);
     setQuestionCount(question_count);
     const mode = localStorage.getItem("mode") || "guided";
+    const input_mode = (localStorage.getItem("input_mode") as "voice" | "click") || "voice";
+    const avatar = localStorage.getItem("avatar") !== "false";
     const savedAuth = localStorage.getItem("auth_user");
     const email = savedAuth ? JSON.parse(savedAuth).email : null;
 
     const res = await fetch(`${API_BASE}/api/session/start`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ language, voice_gender, question_count, mode, email }),
+      body: JSON.stringify({ language, voice_gender, question_count, mode, input_mode, email, avatar }),
     });
 
     if (res.status === 403) {
@@ -244,6 +261,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           setAgentState(event.state as AgentState);
           break;
 
+        case "waiting_for_top_2":
+          console.warn("🟡 [CLICK MODE] waiting_for_top_2 reçu → question_id:", event.question_id, "| clickSelectionMode → top_2");
+          setClickSelectionMode("top_2");
+          setClickQuestionId(event.question_id);
+          break;
+
+        case "waiting_for_bottom_2":
+          console.warn("🟡 [CLICK MODE] waiting_for_bottom_2 reçu → question_id:", event.question_id, "| clickSelectionMode → bottom_2");
+          setClickSelectionMode("bottom_2");
+          setClickQuestionId(event.question_id);
+          break;
+
         case "requesting_email":
           console.log("[LiveKit] requesting_email →", event.requesting_email);
           if (event.requesting_email) setRequestingEmail(true);
@@ -255,6 +284,30 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     } catch {
       // ignore malformed messages
     }
+  }, []);
+
+  const submitClickAnswer = useCallback((values: string[]) => {
+    if (clickSelectionMode === "top_2") {
+      setClickTop2Values(values);
+      setPendingClickAnswer({
+        type: "questionnaire_top_2",
+        question_id: clickQuestionId!,
+        values,
+      });
+    } else if (clickSelectionMode === "bottom_2") {
+      setPendingClickAnswer({
+        type: "questionnaire_bottom_2",
+        question_id: clickQuestionId!,
+        values,
+        top_2: clickTop2Values,
+      });
+      setClickTop2Values([]);
+    }
+    setClickSelectionMode(null);
+  }, [clickSelectionMode, clickQuestionId, clickTop2Values]);
+
+  const clearPendingClickAnswer = useCallback(() => {
+    setPendingClickAnswer(null);
   }, []);
 
   const endSession = useCallback(() => {
@@ -276,6 +329,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setHiddenChoices([]);
     setRequestingEmail(false);
     setAgentState("initializing");
+    setClickSelectionMode(null);
+    setClickQuestionId(null);
+    setClickTop2Values([]);
+    setPendingClickAnswer(null);
   }, [sessionData]);
 
   const upsertTranscript = useCallback((msg: TranscriptMessage) => {
@@ -309,11 +366,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         requestingEmail,
         noCreditsError,
         devMode: DEV_MODE,
+        clickSelectionMode,
+        pendingClickAnswer,
         startSession,
         endSession,
         setSessionState,
         handleDataMessage,
         upsertTranscript,
+        submitClickAnswer,
+        clearPendingClickAnswer,
       }}
     >
       {children}

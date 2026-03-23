@@ -6,6 +6,7 @@ import { Track } from "livekit-client";
 
 interface AvatarVideoProps {
   fallbackUrl: string;
+  avatarEnabled?: boolean;
 }
 
 function AvatarVideoStream({ fallbackUrl }: AvatarVideoProps) {
@@ -52,21 +53,22 @@ function AvatarVideoStream({ fallbackUrl }: AvatarVideoProps) {
   );
 }
 
-export default function AvatarVideo({ fallbackUrl }: AvatarVideoProps) {
+export default function AvatarVideo({ fallbackUrl, avatarEnabled = true }: AvatarVideoProps) {
   const room = useMaybeRoomContext();
 
-  if (!room) {
-    return (
-      <div
-        className="w-full h-full bg-cover bg-center"
-        style={{
-          backgroundImage: `url('${fallbackUrl}')`,
-          transform: "scale(1.4)",
-          transformOrigin: "top center",
-        }}
-      />
-    );
-  }
+  const staticImage = (
+    <div
+      className="w-full h-full bg-cover bg-center"
+      style={{
+        backgroundImage: `url('${fallbackUrl}')`,
+        transform: "scale(1.4)",
+        transformOrigin: "top center",
+      }}
+    />
+  );
+
+  if (!avatarEnabled) return staticImage;
+  if (!room) return staticImage;
 
   return <AvatarVideoStream fallbackUrl={fallbackUrl} />;
 }
