@@ -7,6 +7,7 @@ import AvatarSection from "@/components/interaction/AvatarSection";
 import AvatarVideo from "@/components/interaction/AvatarVideo";
 
 import FormulaCard from "@/components/recommendations/FormulaCard";
+import BottomBar from "@/components/livekit/BottomBar";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useSession, DEV_MODE } from "@/context/SessionContext";
 import MaterialIcon from "@/components/ui/MaterialIcon";
@@ -282,6 +283,9 @@ export default function RecommendationsPage() {
           </div>
         )}
 
+        <div className="flex justify-center shrink-0 py-3">
+          <BottomBar />
+        </div>
       </main>
 
       {/* Décorations fond */}

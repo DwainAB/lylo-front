@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import AvatarSection from "@/components/interaction/AvatarSection";
 import StepProgress from "@/components/interaction/StepProgress";
-import SpeakingIndicator from "@/components/interaction/SpeakingIndicator";
 import ChoiceGrid from "@/components/interaction/ChoiceGrid";
+import BottomBar from "@/components/livekit/BottomBar";
 import GeneratingLoader from "@/components/livekit/GeneratingLoader";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useSession, DEV_MODE } from "@/context/SessionContext";
@@ -14,9 +14,8 @@ import { useSession, DEV_MODE } from "@/context/SessionContext";
 export default function InteractionPage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { sessionState, answers, questionCount, questions, currentQuestionIndex } = useSession();
+  const { sessionState, questionCount, questions, currentQuestionIndex } = useSession();
 
-  // Navigate when state changes
   useEffect(() => {
     if (DEV_MODE) return;
     if (sessionState === "completed") {
@@ -32,7 +31,6 @@ export default function InteractionPage() {
   const avatarUrl = persona === "male" ? "/avatar-h.jpg" : "/avatar-f.jpg";
   const avatarEnabled = typeof window !== "undefined" ? localStorage.getItem("avatar") !== "false" : true;
 
-  // Show generating loader overlay
   if (sessionState === "generating_formulas") {
     return <GeneratingLoader />;
   }
@@ -41,9 +39,9 @@ export default function InteractionPage() {
     <div className="relative flex h-screen w-full flex-col">
       <Navbar showActions={false} transparent />
 
-<main className="flex-1 flex flex-col items-center justify-between px-6 pb-6 pt-2 max-w-6xl mx-auto w-full min-h-0 relative z-10">
-        {/* Avatar + Question section */}
-        <div className="w-full flex flex-col items-center gap-2 shrink-0 mt-16 sm:mt-12">
+      <main className="flex-1 flex flex-col items-center justify-between px-4 pb-2 pt-1 max-w-6xl mx-auto w-full min-h-0 relative z-10">
+        {/* Avatar + Question */}
+        <div className="w-full flex flex-col items-center gap-1 shrink-0 mt-14 sm:mt-10">
           <AvatarSection
             name=""
             role=""
@@ -51,7 +49,7 @@ export default function InteractionPage() {
             avatarEnabled={avatarEnabled}
           />
           <StepProgress currentStep={currentStep} totalSteps={totalSteps} />
-          <h3 className="text-3xl md:text-4xl font-extralight tracking-tight text-center max-w-2xl leading-tight">
+          <h3 className="text-2xl md:text-3xl font-extralight tracking-tight text-center max-w-2xl leading-tight">
             {currentQuestion?.question || t("interaction.waiting")}
           </h3>
         </div>
@@ -59,13 +57,12 @@ export default function InteractionPage() {
         {/* Choice selection grid */}
         <ChoiceGrid choices={currentQuestion?.choices || []} />
 
-        {/* Bottom controls */}
-        <div className="w-full flex flex-col items-center gap-6 shrink-0 pt-4">
-          <SpeakingIndicator />
+        {/* Barre de contrôle */}
+        <div className="flex justify-center shrink-0 py-3">
+          <BottomBar />
         </div>
       </main>
 
-      {/* Background decorations */}
       <div className="absolute top-0 right-0 -z-10 w-[40%] h-full opacity-[0.03] pointer-events-none bg-gradient-to-l from-primary to-transparent" />
       <div className="absolute bottom-0 left-0 -z-10 w-[40%] h-[60%] opacity-[0.05] pointer-events-none bg-gradient-to-tr from-primary to-transparent blur-[120px]" />
     </div>

@@ -7,7 +7,7 @@ import {
   useDataChannel,
   useRoomContext,
 } from "@livekit/components-react";
-import { RoomEvent, ParticipantEvent, TranscriptionSegment, Participant } from "livekit-client";
+import { RoomEvent, ParticipantEvent, TranscriptionSegment, Participant, Track, RoomOptions } from "livekit-client";
 import { useSession } from "@/context/SessionContext";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 
@@ -38,7 +38,7 @@ function ResumeButton() {
   };
 
   return (
-    <div className="fixed bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 z-50">
+    <div className="fixed bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 z-50">
       <button
         onClick={handleClick}
         className="flex items-center gap-2.5 px-5 sm:px-7 py-2.5 sm:py-3 rounded-full bg-white/90 backdrop-blur-sm text-primary text-sm sm:text-base font-medium border border-primary/25 cursor-pointer shadow-lg shadow-primary/10 hover:bg-white hover:border-primary/40 transition-all"
@@ -55,19 +55,17 @@ function ClickModeController() {
   const { send } = useDataChannel("control");
   const room = useRoomContext();
 
-  // Couper le micro quand l'agent attend une sélection par clic
   useEffect(() => {
     if (clickSelectionMode !== null) {
       console.warn("🔇 [CLICK MODE] Micro coupé (clickSelectionMode:", clickSelectionMode, ")");
-      room.localParticipant.setMicrophoneEnabled(false);
+      room.localParticipant.getTrackPublication(Track.Source.Microphone)?.mute();
     }
   }, [clickSelectionMode, room]);
 
-  // Envoyer la réponse et réactiver le micro
   useEffect(() => {
     if (!pendingClickAnswer) return;
     console.warn("📤 [CLICK MODE] Envoi réponse via data channel 'control':", pendingClickAnswer);
-    room.localParticipant.setMicrophoneEnabled(true);
+    room.localParticipant.getTrackPublication(Track.Source.Microphone)?.unmute();
     console.warn("🎙️ [CLICK MODE] Micro réactivé");
     const msg = new TextEncoder().encode(JSON.stringify(pendingClickAnswer));
     send(msg, { reliable: true });
@@ -79,9 +77,20 @@ function ClickModeController() {
 
 function RoomEventLogger() {
   const room = useRoomContext();
+  const { endSession, setConnectionError } = useSession();
 
   useEffect(() => {
-    const onConnected = () => console.log("[LiveKit] Room connected");
+    const timeout = setTimeout(() => {
+      if (room.state !== "connected") {
+        setConnectionError(true);
+        endSession();
+      }
+    }, 15000);
+
+    const onConnected = () => {
+      clearTimeout(timeout);
+      console.log("[LiveKit] Room connected");
+    };
     const onDisconnected = (reason?: unknown) => console.log("[LiveKit] Room disconnected, reason:", reason);
     const onReconnecting = () => console.log("[LiveKit] Room reconnecting...");
     const onReconnected = () => console.log("[LiveKit] Room reconnected");
@@ -109,7 +118,6 @@ function RoomEventLogger() {
     room.on(RoomEvent.ParticipantConnected, onParticipantConnected);
     room.on(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
 
-    // Si l'agent est déjà connecté au moment du mount
     for (const p of room.remoteParticipants.values()) {
       if (p.identity.startsWith("agent_")) {
         console.log("[LiveKit] Agent already present:", p.identity, "| state:", p.attributes?.["lk.agent.state"]);
@@ -120,6 +128,7 @@ function RoomEventLogger() {
     }
 
     return () => {
+      clearTimeout(timeout);
       room.off(RoomEvent.Connected, onConnected);
       room.off(RoomEvent.Disconnected, onDisconnected);
       room.off(RoomEvent.Reconnecting, onReconnecting);
@@ -129,7 +138,7 @@ function RoomEventLogger() {
       room.off(RoomEvent.ParticipantConnected, onParticipantConnected);
       room.off(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
     };
-  }, [room]);
+  }, [room, endSession, setConnectionError]);
 
   return null;
 }
@@ -177,6 +186,15 @@ export default function LiveKitSession({ children }: LiveKitSessionProps) {
     return <>{children}</>;
   }
 
+  const roomOptions: RoomOptions = {
+    reconnectPolicy: {
+      nextRetryDelayInMs: ({ retryCount, elapsedMs }) => {
+        if (elapsedMs > 120_000) return null;
+        return Math.min(1000 * 2 ** retryCount, 10_000);
+      },
+    },
+  };
+
   return (
     <LiveKitRoom
       serverUrl={sessionData.livekit_url}
@@ -184,6 +202,7 @@ export default function LiveKitSession({ children }: LiveKitSessionProps) {
       audio={true}
       video={false}
       connect={true}
+      options={roomOptions}
     >
       <RoomAudioRenderer />
       <RoomEventLogger />

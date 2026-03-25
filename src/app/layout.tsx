@@ -5,7 +5,6 @@ import { SessionProvider } from "@/context/SessionContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import LiveKitSession from "@/components/livekit/LiveKitSession";
-import TranscriptPanel from "@/components/livekit/TranscriptPanel";
 import DevNavigator from "@/components/dev/DevNavigator";
 import "./globals.css";
 
@@ -47,7 +46,6 @@ export default function RootLayout({
               <SessionProvider>
                 <LiveKitSession>
                   {children}
-                  <TranscriptPanel />
                   <DevNavigator />
                 </LiveKitSession>
               </SessionProvider>

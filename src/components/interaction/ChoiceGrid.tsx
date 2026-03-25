@@ -56,7 +56,7 @@ export default function ChoiceGrid({ choices }: ChoiceGridProps) {
 
   return (
     <div className="relative w-full max-w-5xl flex-1 min-h-0">
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 w-full py-4 h-full max-h-[62vh] sm:max-h-[55vh]">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 w-full py-2 h-full max-h-[52vh] sm:max-h-[48vh]">
         {visibleChoices.map((choice) => (
           <ChoiceCard
             key={choice.label}

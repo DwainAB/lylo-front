@@ -117,8 +117,10 @@ interface SessionContextType {
   requestingEmail: boolean;
   devMode: boolean;
   noCreditsError: boolean;
+  connectionError: boolean;
   clickSelectionMode: "top_2" | "bottom_2" | null;
   pendingClickAnswer: PendingClickAnswer | null;
+  setConnectionError: (v: boolean) => void;
   startSession: () => Promise<void>;
   endSession: () => void;
   setSessionState: (state: SessionState) => void;
@@ -147,6 +149,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [hiddenChoices, setHiddenChoices] = useState<string[]>([]);
   const [requestingEmail, setRequestingEmail] = useState(false);
   const [noCreditsError, setNoCreditsError] = useState(false);
+  const [connectionError, setConnectionError] = useState(false);
   const [agentState, setAgentState] = useState<AgentState>("initializing");
   const [clickSelectionMode, setClickSelectionMode] = useState<"top_2" | "bottom_2" | null>(null);
   const [clickQuestionId, setClickQuestionId] = useState<number | null>(null);
@@ -315,6 +318,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     if (sessionData?.session_id) {
       fetch(`${API_BASE}/api/session/${sessionData.session_id}`, {
         method: "DELETE",
+        keepalive: true,
       });
     }
     setSessionData(null);
@@ -328,6 +332,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setCurrentQuestionIndex(0);
     setHiddenChoices([]);
     setRequestingEmail(false);
+    setConnectionError(false);
     setAgentState("initializing");
     setClickSelectionMode(null);
     setClickQuestionId(null);
@@ -365,6 +370,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         hiddenChoices,
         requestingEmail,
         noCreditsError,
+        connectionError,
+        setConnectionError,
         devMode: DEV_MODE,
         clickSelectionMode,
         pendingClickAnswer,

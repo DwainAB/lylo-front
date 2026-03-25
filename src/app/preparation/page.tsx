@@ -7,7 +7,7 @@ import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useSession, DEV_MODE } from "@/context/SessionContext";
 import AvatarVideo from "@/components/interaction/AvatarVideo";
-import SpeakingIndicator from "@/components/interaction/SpeakingIndicator";
+import BottomBar from "@/components/livekit/BottomBar";
 
 export default function PreparationPage() {
   const { t } = useTranslation();
@@ -138,7 +138,7 @@ export default function PreparationPage() {
         {/* Connection status footer */}
         <footer className="w-full max-w-md">
           <div className="flex justify-center mb-3">
-            <SpeakingIndicator />
+            {sessionData && <BottomBar />}
           </div>
           <p className="text-center text-[10px] sm:text-xs text-[#7f6f66] uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium opacity-60">
             {t("preparation.footer")}
