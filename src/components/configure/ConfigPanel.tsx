@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import PersonaSelector from "./PersonaSelector";
@@ -19,6 +19,22 @@ export default function ConfigPanel() {
   const [inputMode, setInputMode] = useState<"voice" | "click">("voice");
   const [avatar, setAvatar] = useState(true);
   const { t } = useTranslation();
+
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", handler);
+    return () => document.removeEventListener("fullscreenchange", handler);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.documentElement.requestFullscreen();
+    }
+  };
 
   const isFormComplete = persona !== "" && depth !== "" && mode !== "";
 
@@ -89,6 +105,28 @@ export default function ConfigPanel() {
             <p className="text-[10px] text-[#9c8880] leading-relaxed px-1">
               {t("configure.avatarHint")}
             </p>
+          </div>
+
+          {/* Fullscreen toggle */}
+          <div className="space-y-1.5">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
+              Affichage
+            </p>
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-primary/15 bg-white/40 hover:bg-primary/5 transition-all"
+            >
+              <div className="flex items-center gap-2.5">
+                <MaterialIcon name={isFullscreen ? "fullscreen_exit" : "fullscreen"} className="text-primary text-[18px]" />
+                <span className="text-xs font-semibold text-primary">
+                  {isFullscreen ? "Quitter le plein écran" : "Plein écran"}
+                </span>
+              </div>
+              <div className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${isFullscreen ? "bg-primary" : "bg-primary/20"}`}>
+                <div className={`absolute top-0.5 size-4 rounded-full bg-white shadow transition-transform duration-200 ${isFullscreen ? "translate-x-4" : "translate-x-0.5"}`} />
+              </div>
+            </button>
           </div>
 
           <ConnectionTest />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -21,25 +21,9 @@ export default function Navbar({ showActions = true, transparent = false }: Navb
   const { user, logout, loginModalOpen, openLoginModal, closeLoginModal } = useAuth();
   const router = useRouter();
 
-  const clickCountRef = useRef(0);
-  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const handleLogoClick = useCallback(() => {
-    clickCountRef.current += 1;
-
-    if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
-
-    if (clickCountRef.current >= 3) {
-      clickCountRef.current = 0;
-      if (document.fullscreenElement) {
-        document.exitFullscreen();
-      } else {
-        document.documentElement.requestFullscreen();
-      }
-    } else {
-      clickTimerRef.current = setTimeout(() => {
-        clickCountRef.current = 0;
-      }, 600);
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
     }
   }, []);
 

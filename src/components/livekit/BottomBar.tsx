@@ -39,13 +39,15 @@ export default function BottomBar() {
   }, [clickSelectionMode]);
 
   // Question suivante → reset tout + réactiver le micro (sauf si on est en mode clic)
+  const clickSelectionModeRef = useRef(clickSelectionMode);
+  clickSelectionModeRef.current = clickSelectionMode;
   useEffect(() => {
-    if (clickSelectionMode === null) {
+    if (clickSelectionModeRef.current === null) {
       room.localParticipant.getTrackPublication(Track.Source.Microphone)?.unmute();
     }
     setInterrupted(false);
     setMuted(false);
-  }, [currentQuestionIndex, room]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentQuestionIndex, room]); // clickSelectionModeRef est stable, lu via ref pour éviter la stale closure
 
   const canInterrupt = !interrupted && agentState === "speaking" && clickSelectionMode === null;
 

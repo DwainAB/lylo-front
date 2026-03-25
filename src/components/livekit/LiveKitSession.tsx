@@ -65,12 +65,16 @@ function ClickModeController() {
   useEffect(() => {
     if (!pendingClickAnswer) return;
     console.warn("📤 [CLICK MODE] Envoi réponse via data channel 'control':", pendingClickAnswer);
-    room.localParticipant.getTrackPublication(Track.Source.Microphone)?.unmute();
-    console.warn("🎙️ [CLICK MODE] Micro réactivé");
+    if (clickSelectionMode === null) {
+      room.localParticipant.getTrackPublication(Track.Source.Microphone)?.unmute();
+      console.warn("🎙️ [CLICK MODE] Micro réactivé");
+    } else {
+      console.warn("🔇 [CLICK MODE] Micro maintenu coupé (nouvelle phase:", clickSelectionMode, ")");
+    }
     const msg = new TextEncoder().encode(JSON.stringify(pendingClickAnswer));
     send(msg, { reliable: true });
     clearPendingClickAnswer();
-  }, [pendingClickAnswer, room, send, clearPendingClickAnswer]);
+  }, [pendingClickAnswer, clickSelectionMode, room, send, clearPendingClickAnswer]);
 
   return null;
 }
