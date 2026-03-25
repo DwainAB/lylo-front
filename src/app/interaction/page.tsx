@@ -1,12 +1,15 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import AvatarSection from "@/components/interaction/AvatarSection";
 import StepProgress from "@/components/interaction/StepProgress";
 import ChoiceGrid from "@/components/interaction/ChoiceGrid";
-import BottomBar from "@/components/livekit/BottomBar";
+import nextDynamic from "next/dynamic";
+const BottomBar = nextDynamic(() => import("@/components/livekit/BottomBar"), { ssr: false });
 import GeneratingLoader from "@/components/livekit/GeneratingLoader";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useSession, DEV_MODE } from "@/context/SessionContext";

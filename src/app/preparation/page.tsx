@@ -7,7 +7,8 @@ import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useSession, DEV_MODE } from "@/context/SessionContext";
 import AvatarVideo from "@/components/interaction/AvatarVideo";
-import BottomBar from "@/components/livekit/BottomBar";
+import nextDynamic from "next/dynamic";
+const BottomBar = nextDynamic(() => import("@/components/livekit/BottomBar"), { ssr: false });
 
 export default function PreparationPage() {
   const { t } = useTranslation();
