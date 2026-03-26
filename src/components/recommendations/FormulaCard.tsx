@@ -28,7 +28,7 @@ function NoteList({ label, notes }: { label: string; notes: FormulaNote[] }) {
       <ul className="space-y-0">
         {visible.map((note) => (
           <li key={note.name} className="flex justify-between gap-1 text-gray-600 min-w-0">
-            <span className="truncate text-xs sm:text-sm">{note.name}</span>
+            <span className="text-xs sm:text-sm">{note.name}</span>
             <span className="font-medium text-primary/70 shrink-0 text-xs sm:text-sm">{note.ml} ml</span>
           </li>
         ))}
@@ -57,7 +57,7 @@ export default function FormulaCard({ name, sizes }: FormulaCardProps) {
         flex-1 min-h-0 overflow-hidden : la zone des notes prend tout l'espace restant
         entre le titre et le SizeToggle, et coupe proprement si le contenu dépasse.
       */}
-      <div className="flex-1 min-h-0 overflow-hidden flex flex-col gap-1 sm:gap-2 text-sm">
+      <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-1 sm:gap-2 text-sm">
         <NoteList label={t("recommendations.noteLabels.top")} notes={sizeData.top_notes} />
         <NoteList label={t("recommendations.noteLabels.heart")} notes={sizeData.heart_notes} />
         <NoteList label={t("recommendations.noteLabels.base")} notes={sizeData.base_notes} />

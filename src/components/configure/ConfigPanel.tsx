@@ -139,7 +139,7 @@ export default function ConfigPanel() {
         onClick={handleContinue}
         className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3.5 rounded-lg shadow-xl transition-all hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
       >
-        <span>{t("configure.continue")}</span>
+        <span>{t("configure.start")}</span>
         <MaterialIcon name="arrow_forward" />
       </button>
     </div>

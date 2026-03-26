@@ -7,7 +7,7 @@ import {
   useDataChannel,
   useRoomContext,
 } from "@livekit/components-react";
-import { RoomEvent, ParticipantEvent, TranscriptionSegment, Participant, Track, RoomOptions } from "livekit-client";
+import { RoomEvent, ParticipantEvent, TranscriptionSegment, Participant, RoomOptions } from "livekit-client";
 import { useSession } from "@/context/SessionContext";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 
@@ -51,45 +51,30 @@ function ResumeButton() {
 }
 
 function ClickModeController() {
-  const { clickSelectionMode, pendingClickAnswer, clearPendingClickAnswer } = useSession();
+  const { pendingClickAnswer, clearPendingClickAnswer } = useSession();
   const { send } = useDataChannel("control");
-  const room = useRoomContext();
-
-  useEffect(() => {
-    if (clickSelectionMode !== null) {
-      console.warn("🔇 [CLICK MODE] Micro coupé (clickSelectionMode:", clickSelectionMode, ")");
-      room.localParticipant.getTrackPublication(Track.Source.Microphone)?.mute();
-    }
-  }, [clickSelectionMode, room]);
 
   useEffect(() => {
     if (!pendingClickAnswer) return;
     console.warn("📤 [CLICK MODE] Envoi réponse via data channel 'control':", pendingClickAnswer);
-    if (clickSelectionMode === null) {
-      room.localParticipant.getTrackPublication(Track.Source.Microphone)?.unmute();
-      console.warn("🎙️ [CLICK MODE] Micro réactivé");
-    } else {
-      console.warn("🔇 [CLICK MODE] Micro maintenu coupé (nouvelle phase:", clickSelectionMode, ")");
-    }
     const msg = new TextEncoder().encode(JSON.stringify(pendingClickAnswer));
     send(msg, { reliable: true });
     clearPendingClickAnswer();
-  }, [pendingClickAnswer, clickSelectionMode, room, send, clearPendingClickAnswer]);
+  }, [pendingClickAnswer, send, clearPendingClickAnswer]);
 
   return null;
 }
 
 function RoomEventLogger() {
   const room = useRoomContext();
-  const { endSession, setConnectionError } = useSession();
+  const { handleConnectionTimeout } = useSession();
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (room.state !== "connected") {
-        setConnectionError(true);
-        endSession();
+        handleConnectionTimeout();
       }
-    }, 15000);
+    }, 10000);
 
     const onConnected = () => {
       clearTimeout(timeout);
@@ -142,7 +127,7 @@ function RoomEventLogger() {
       room.off(RoomEvent.ParticipantConnected, onParticipantConnected);
       room.off(RoomEvent.ParticipantDisconnected, onParticipantDisconnected);
     };
-  }, [room, endSession, setConnectionError]);
+  }, [room, handleConnectionTimeout]);
 
   return null;
 }
@@ -178,6 +163,7 @@ function TranscriptionListener() {
 
   return null;
 }
+
 
 interface LiveKitSessionProps {
   children: ReactNode;

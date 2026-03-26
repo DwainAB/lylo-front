@@ -5,6 +5,7 @@ import {
   useContext,
   useState,
   useCallback,
+  useRef,
   ReactNode,
 } from "react";
 import { MOCK_FORMULAS, MOCK_QUESTIONS } from "@/lib/mockData";
@@ -123,6 +124,7 @@ interface SessionContextType {
   setConnectionError: (v: boolean) => void;
   startSession: () => Promise<void>;
   endSession: () => void;
+  handleConnectionTimeout: () => void;
   setSessionState: (state: SessionState) => void;
   handleDataMessage: (payload: Uint8Array) => void;
   upsertTranscript: (msg: TranscriptMessage) => void;
@@ -151,6 +153,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [noCreditsError, setNoCreditsError] = useState(false);
   const [connectionError, setConnectionError] = useState(false);
   const [agentState, setAgentState] = useState<AgentState>("initializing");
+  const isRetryingRef = useRef(false);
   const [clickSelectionMode, setClickSelectionMode] = useState<"top_2" | "bottom_2" | null>(null);
   const [clickQuestionId, setClickQuestionId] = useState<number | null>(null);
   const [clickTop2Values, setClickTop2Values] = useState<string[]>([]);
@@ -314,6 +317,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const endSession = useCallback(() => {
+    isRetryingRef.current = false;
     // Fire-and-forget : on nettoie en fond, pas besoin d'attendre
     if (sessionData?.session_id) {
       fetch(`${API_BASE}/api/session/${sessionData.session_id}`, {
@@ -339,6 +343,21 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setClickTop2Values([]);
     setPendingClickAnswer(null);
   }, [sessionData]);
+
+  const handleConnectionTimeout = useCallback(() => {
+    if (!isRetryingRef.current) {
+      console.log("[LiveKit] Timeout connexion — relance de la session...");
+      isRetryingRef.current = true;
+      endSession();
+      isRetryingRef.current = true; // endSession remet à false, on remet à true
+      startSession();
+    } else {
+      console.log("[LiveKit] Timeout après retry — abandon");
+      isRetryingRef.current = false;
+      setConnectionError(true);
+      endSession();
+    }
+  }, [endSession, startSession]);
 
   const upsertTranscript = useCallback((msg: TranscriptMessage) => {
     setTranscripts((prev) => {
@@ -377,6 +396,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         pendingClickAnswer,
         startSession,
         endSession,
+        handleConnectionTimeout,
         setSessionState,
         handleDataMessage,
         upsertTranscript,

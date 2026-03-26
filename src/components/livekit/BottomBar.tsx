@@ -20,36 +20,26 @@ function Dots({ dim }: { dim?: boolean }) {
 }
 
 export default function BottomBar() {
-  const { agentState, clickSelectionMode, currentQuestionIndex, agentName } = useSession();
+  const { agentState, currentQuestionIndex, agentName } = useSession();
   const { t } = useTranslation();
   const { send } = useDataChannel("control");
   const room = useRoomContext();
   const [interrupted, setInterrupted] = useState(false);
   const [muted, setMuted] = useState(false);
   const [transcriptOpen, setTranscriptOpen] = useState(false);
-  const prevClickMode = useRef(clickSelectionMode);
 
-  // Sélection terminée → reset (ClickModeController a déjà réactivé le micro)
+  // Question suivante → reset état
+  const prevQuestionIndex = useRef(currentQuestionIndex);
   useEffect(() => {
-    if (prevClickMode.current !== null && clickSelectionMode === null) {
+    if (prevQuestionIndex.current !== currentQuestionIndex) {
+      prevQuestionIndex.current = currentQuestionIndex;
+      room.localParticipant.getTrackPublication(Track.Source.Microphone)?.unmute();
       setInterrupted(false);
       setMuted(false);
     }
-    prevClickMode.current = clickSelectionMode;
-  }, [clickSelectionMode]);
+  }, [currentQuestionIndex, room]);
 
-  // Question suivante → reset tout + réactiver le micro (sauf si on est en mode clic)
-  const clickSelectionModeRef = useRef(clickSelectionMode);
-  clickSelectionModeRef.current = clickSelectionMode;
-  useEffect(() => {
-    if (clickSelectionModeRef.current === null) {
-      room.localParticipant.getTrackPublication(Track.Source.Microphone)?.unmute();
-    }
-    setInterrupted(false);
-    setMuted(false);
-  }, [currentQuestionIndex, room]); // clickSelectionModeRef est stable, lu via ref pour éviter la stale closure
-
-  const canInterrupt = !interrupted && agentState === "speaking" && clickSelectionMode === null;
+  const canInterrupt = !interrupted && agentState === "speaking";
 
   const handleInterrupt = () => {
     send(new TextEncoder().encode(JSON.stringify({ type: "interrupt" })), { reliable: true });
@@ -71,16 +61,6 @@ export default function BottomBar() {
   };
 
   const renderStatus = () => {
-    if (clickSelectionMode !== null) {
-      return (
-        <>
-          <MaterialIcon name="touch_app" className="text-[15px] shrink-0" />
-          <span className="text-[11px] tracking-wider font-medium lowercase truncate">
-            {t("interaction.clickSelectHint")}
-          </span>
-        </>
-      );
-    }
     if (agentState === "initializing") {
       return (
         <>
@@ -138,7 +118,7 @@ export default function BottomBar() {
       <div className="flex items-center gap-0.5 px-2 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-primary/15 shadow-lg shadow-primary/10 text-primary w-80">
         {/* Gauche : Stop / Reprendre */}
         <div className="w-8 flex justify-center shrink-0">
-          {interrupted && clickSelectionMode === null ? (
+          {interrupted ? (
             <button onClick={handleResumeListen} className={iconBtn} title="Reprendre">
               <MaterialIcon name="play_circle" className="text-[20px]" />
             </button>
@@ -162,15 +142,13 @@ export default function BottomBar() {
 
         {/* Droite : micro + conversation */}
         <div className="flex items-center shrink-0">
-          {clickSelectionMode === null && (
-            <button
-              onClick={handleMicToggle}
-              className={`${iconBtn} ${muted ? "text-red-500 hover:bg-red-50" : "hover:bg-primary/10"}`}
-              title={muted ? "Activer le micro" : "Couper le micro"}
-            >
-              <MaterialIcon name={muted ? "mic_off" : "mic"} className="text-[20px]" />
-            </button>
-          )}
+          <button
+            onClick={handleMicToggle}
+            className={`${iconBtn} ${muted ? "text-red-500 hover:bg-red-50" : "hover:bg-primary/10"}`}
+            title={muted ? "Activer le micro" : "Couper le micro"}
+          >
+            <MaterialIcon name={muted ? "mic_off" : "mic"} className="text-[20px]" />
+          </button>
           <button
             onClick={() => setTranscriptOpen((p) => !p)}
             className={`${iconBtn} hover:bg-primary/10`}
