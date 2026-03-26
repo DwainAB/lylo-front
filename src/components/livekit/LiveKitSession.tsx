@@ -38,12 +38,12 @@ function ResumeButton() {
   };
 
   return (
-    <div className="fixed bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 z-50">
+    <div className="fixed bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 z-50">
       <button
         onClick={handleClick}
-        className="flex items-center gap-2.5 px-5 sm:px-7 py-2.5 sm:py-3 rounded-full bg-white/90 backdrop-blur-sm text-primary text-sm sm:text-base font-medium border border-primary/25 cursor-pointer shadow-lg shadow-primary/10 hover:bg-white hover:border-primary/40 transition-all"
+        className="flex items-center gap-4 px-12 sm:px-14 py-5 sm:py-6 rounded-full bg-white/90 backdrop-blur-sm text-primary text-lg sm:text-xl font-medium border border-primary/25 cursor-pointer shadow-lg shadow-primary/10 hover:bg-white hover:border-primary/40 transition-all"
       >
-        <MaterialIcon name="mic" className="text-[18px]" />
+        <MaterialIcon name="mic" className="text-[30px]" />
         J&apos;ai une question
       </button>
     </div>

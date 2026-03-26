@@ -111,34 +111,34 @@ export default function BottomBar() {
     );
   };
 
-  const iconBtn = "size-8 flex items-center justify-center rounded-full transition-colors cursor-pointer";
+  const iconBtn = "size-9 sm:size-11 flex items-center justify-center rounded-full transition-colors cursor-pointer";
 
   return (
     <>
-      <div className="flex items-center gap-0.5 px-2 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-primary/15 shadow-lg shadow-primary/10 text-primary w-80">
+      <div className="flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-2 sm:py-2.5 rounded-full bg-white/90 backdrop-blur-md border border-primary/15 shadow-lg shadow-primary/10 text-primary w-72 sm:w-96">
         {/* Gauche : Stop / Reprendre */}
-        <div className="w-8 flex justify-center shrink-0">
+        <div className="w-9 sm:w-11 flex justify-center shrink-0">
           {interrupted ? (
             <button onClick={handleResumeListen} className={iconBtn} title="Reprendre">
-              <MaterialIcon name="play_circle" className="text-[20px]" />
+              <MaterialIcon name="play_circle" className="text-[22px] sm:text-[26px]" />
             </button>
           ) : canInterrupt ? (
             <button onClick={handleInterrupt} className={iconBtn} title="Stop">
-              <MaterialIcon name="stop_circle" className="text-[20px]" />
+              <MaterialIcon name="stop_circle" className="text-[22px] sm:text-[26px]" />
             </button>
           ) : (
-            <div className="size-8" />
+            <div className="size-9 sm:size-11" />
           )}
         </div>
 
-        <div className="w-px h-4 bg-primary/20 shrink-0 mx-1" />
+        <div className="w-px h-4 sm:h-5 bg-primary/20 shrink-0 mx-1" />
 
         {/* Centre : statut */}
         <div className="flex items-center gap-1.5 px-1 flex-1 min-w-0">
           {renderStatus()}
         </div>
 
-        <div className="w-px h-4 bg-primary/20 shrink-0 mx-1" />
+        <div className="w-px h-4 sm:h-5 bg-primary/20 shrink-0 mx-1" />
 
         {/* Droite : micro + conversation */}
         <div className="flex items-center shrink-0">
@@ -147,14 +147,14 @@ export default function BottomBar() {
             className={`${iconBtn} ${muted ? "text-red-500 hover:bg-red-50" : "hover:bg-primary/10"}`}
             title={muted ? "Activer le micro" : "Couper le micro"}
           >
-            <MaterialIcon name={muted ? "mic_off" : "mic"} className="text-[20px]" />
+            <MaterialIcon name={muted ? "mic_off" : "mic"} className="text-[22px] sm:text-[26px]" />
           </button>
           <button
             onClick={() => setTranscriptOpen((p) => !p)}
             className={`${iconBtn} hover:bg-primary/10`}
             title="Conversation"
           >
-            <MaterialIcon name={transcriptOpen ? "close" : "chat"} className="text-[20px]" />
+            <MaterialIcon name={transcriptOpen ? "close" : "chat"} className="text-[22px] sm:text-[26px]" />
           </button>
         </div>
       </div>
