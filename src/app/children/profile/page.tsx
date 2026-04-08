@@ -59,7 +59,7 @@ export default function ChildProfilePage() {
         { icon: "auto_awesome", color: "#4ECDC4", cls: "top-36 right-[8%]",    delay: "1s",   size: "text-4xl" },
         { icon: "bubble_chart", color: "#FFD93D", cls: "bottom-16 left-[8%]",  delay: "0.5s", size: "text-5xl" },
         { icon: "favorite",     color: "#FF6B6B", cls: "bottom-32 right-[5%]", delay: "1.5s", size: "text-4xl", fill: true },
-      ] as const).map(({ icon, color, cls, delay, size, fill }) => (
+      ] as { icon: string; color: string; cls: string; delay: string; size: string; fill?: boolean }[]).map(({ icon, color, cls, delay, size, fill }) => (
         <div
           key={icon}
           className={`fixed ${cls} opacity-30 pointer-events-none`}
