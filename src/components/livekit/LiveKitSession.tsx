@@ -7,9 +7,8 @@ import {
   useDataChannel,
   useRoomContext,
 } from "@livekit/components-react";
-import { RoomEvent, ParticipantEvent, TranscriptionSegment, Participant, RoomOptions } from "livekit-client";
+import { RoomEvent, ParticipantEvent, TranscriptionSegment, Participant, RoomOptions, Track } from "livekit-client";
 import { useSession } from "@/context/SessionContext";
-import MaterialIcon from "@/components/ui/MaterialIcon";
 
 function DataChannelListener() {
   const { handleDataMessage } = useSession();
@@ -26,41 +25,28 @@ function DataChannelListener() {
   return null;
 }
 
-function ResumeButton() {
-  const { sessionState } = useSession();
-  const { send } = useDataChannel("control");
 
-  if (sessionState !== "standby") return null;
-
-  const handleClick = () => {
-    const msg = new TextEncoder().encode(JSON.stringify({ type: "resume" }));
-    send(msg, { reliable: true });
-  };
-
-  return (
-    <div className="fixed bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 z-50">
-      <button
-        onClick={handleClick}
-        className="flex items-center gap-4 px-12 sm:px-14 py-5 sm:py-6 rounded-full bg-white/90 backdrop-blur-sm text-primary text-lg sm:text-xl font-medium border border-primary/25 cursor-pointer shadow-lg shadow-primary/10 hover:bg-white hover:border-primary/40 transition-all"
-      >
-        <MaterialIcon name="mic" className="text-[30px]" />
-        J&apos;ai une question
-      </button>
-    </div>
-  );
-}
-
-function ClickModeController() {
-  const { pendingClickAnswer, clearPendingClickAnswer } = useSession();
-  const { send } = useDataChannel("control");
+function HybridMicMuter() {
+  const { inputMode } = useSession();
+  const room = useRoomContext();
 
   useEffect(() => {
-    if (!pendingClickAnswer) return;
-    console.warn("📤 [CLICK MODE] Envoi réponse via data channel 'control':", pendingClickAnswer);
-    const msg = new TextEncoder().encode(JSON.stringify(pendingClickAnswer));
-    send(msg, { reliable: true });
-    clearPendingClickAnswer();
-  }, [pendingClickAnswer, send, clearPendingClickAnswer]);
+    if (inputMode !== "click") return;
+
+    const muteIfMic = (pub: { source: typeof Track.Source.Microphone; mute: () => void }) => {
+      if (pub.source === Track.Source.Microphone) pub.mute();
+    };
+
+    // Mute any already-published mic track
+    const existing = room.localParticipant.getTrackPublication(Track.Source.Microphone);
+    if (existing) existing.mute();
+
+    // Also mute when the track gets published (slightly later)
+    room.localParticipant.on("localTrackPublished", muteIfMic as any);
+    return () => {
+      room.localParticipant.off("localTrackPublished", muteIfMic as any);
+    };
+  }, [inputMode, room]);
 
   return null;
 }
@@ -198,8 +184,7 @@ export default function LiveKitSession({ children }: LiveKitSessionProps) {
       <RoomEventLogger />
       <DataChannelListener />
       <TranscriptionListener />
-      <ClickModeController />
-      <ResumeButton />
+      <HybridMicMuter />
       {children}
     </LiveKitRoom>
   );

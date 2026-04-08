@@ -17,7 +17,8 @@ import { useSession, DEV_MODE } from "@/context/SessionContext";
 export default function InteractionPage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { sessionState, questionCount, questions, currentQuestionIndex } = useSession();
+  const { sessionState, questionCount, questions, currentQuestionIndex, questionnaireStepData } = useSession();
+  const { step, currentChoice } = questionnaireStepData;
 
   useEffect(() => {
     if (DEV_MODE) return;
@@ -53,7 +54,15 @@ export default function InteractionPage() {
           />
           <StepProgress currentStep={currentStep} totalSteps={totalSteps} />
           <h3 className="text-2xl md:text-3xl font-extralight tracking-tight text-center max-w-2xl leading-tight">
-            {currentQuestion?.question || t("interaction.waiting")}
+            {step === "asking_top_2" && (currentQuestion?.question || t("interaction.waiting"))}
+            {step === "justification_top_1" && currentChoice && `Pourquoi "${currentChoice}" ?`}
+            {step === "justification_top_2" && currentChoice && `Pourquoi "${currentChoice}" ?`}
+            {step === "asking_bottom_2" && "Et parmi les autres, lesquels vous attirent le moins ?"}
+            {step === "justification_bottom_1" && currentChoice && `Pourquoi pas "${currentChoice}" ?`}
+            {step === "justification_bottom_2" && currentChoice && `Pourquoi pas "${currentChoice}" ?`}
+            {step === "awaiting_confirmation" && "Est-ce que c'est bien ça ?"}
+            {step === "asking_intensity" && "Quel type de parfum vous correspond ?"}
+            {!step && (currentQuestion?.question || t("interaction.waiting"))}
           </h3>
         </div>
 

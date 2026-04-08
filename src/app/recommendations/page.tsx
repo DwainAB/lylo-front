@@ -7,6 +7,7 @@ import AvatarSection from "@/components/interaction/AvatarSection";
 import AvatarVideo from "@/components/interaction/AvatarVideo";
 
 import FormulaCard from "@/components/recommendations/FormulaCard";
+import PrintView from "@/components/recommendations/PrintView";
 import nextDynamic from "next/dynamic";
 const BottomBar = nextDynamic(() => import("@/components/livekit/BottomBar"), { ssr: false });
 import { useTranslation } from "@/i18n/LanguageContext";
@@ -21,12 +22,15 @@ export default function RecommendationsPage() {
   const { formulas: sessionFormulas, endSession, sessionData, requestingEmail, agentName } = useSession();
   const [email, setEmail] = useState("");
   const [sendStatus, setSendStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [showPrint, setShowPrint] = useState(false);
 
   const [devSingleFormula, setDevSingleFormula] = useState(false);
 
   const persona = typeof window !== "undefined" ? localStorage.getItem("persona") : null;
   const avatarUrl = persona === "male" ? "/avatar-h.jpg" : "/avatar-f.jpg";
   const avatarEnabled = typeof window !== "undefined" ? localStorage.getItem("avatar") !== "false" : true;
+
+  const handlePrint = () => setShowPrint(true);
 
   const handleSendEmail = async () => {
     if (!sessionData?.session_id || !email) return;
@@ -53,7 +57,7 @@ export default function RecommendationsPage() {
   const isSingle = formulas.length === 1;
   const showEmail = requestingEmail || (DEV_MODE && devSingleFormula);
   const showResumeButton = DEV_MODE && devSingleFormula;
-  const showMailButton = DEV_MODE && devSingleFormula;
+  const showMailButton = isSingle;
 
   return (
     <div className="relative flex h-dvh w-full flex-col overflow-hidden">
@@ -138,11 +142,14 @@ export default function RecommendationsPage() {
                   </button>
                 )}
 
-                {/* Bouton Voir l'email */}
+                {/* Bouton Imprimer */}
                 {showMailButton && (
-                  <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-primary text-white text-sm font-semibold shadow-lg shadow-primary/30 hover:brightness-110 transition-all">
-                    <MaterialIcon name="mail" className="text-[18px]" />
-                    Voir l&apos;email
+                  <button
+                    onClick={handlePrint}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-primary text-white text-sm font-semibold shadow-lg shadow-primary/30 hover:brightness-110 transition-all"
+                  >
+                    <MaterialIcon name="print" className="text-[18px]" />
+                    Imprimer
                   </button>
                 )}
 
@@ -292,6 +299,15 @@ export default function RecommendationsPage() {
       {/* Décorations fond */}
       <div className="absolute top-0 right-0 -z-10 w-[40%] h-full opacity-[0.03] pointer-events-none bg-gradient-to-l from-primary to-transparent" />
       <div className="absolute bottom-0 left-0 -z-10 w-[40%] h-[60%] opacity-[0.05] pointer-events-none bg-gradient-to-tr from-primary to-transparent blur-[120px]" />
+
+      {/* Vue d'impression */}
+      {showPrint && (
+        <PrintView
+          formulas={formulas}
+          agentName={agentName ?? "Lylo"}
+          onClose={() => setShowPrint(false)}
+        />
+      )}
     </div>
   );
 }

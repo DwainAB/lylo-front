@@ -8,6 +8,7 @@ import DepthSelector from "./DepthSelector";
 import LanguagePicker from "./LanguagePicker";
 import ModeSelector from "./ModeSelector";
 import InputModeSelector from "./InputModeSelector";
+import ChildModeSelector from "./ChildModeSelector";
 import ConnectionTest from "@/components/preparation/ConnectionTest";
 import { useTranslation } from "@/i18n/LanguageContext";
 
@@ -17,7 +18,8 @@ export default function ConfigPanel() {
   const [depth, setDepth] = useState("");
   const [mode, setMode] = useState("");
   const [inputMode, setInputMode] = useState<"voice" | "click">("voice");
-  const [avatar, setAvatar] = useState(true);
+  const [avatar] = useState(false);
+  const [childMode, setChildMode] = useState(false);
   const { t } = useTranslation();
 
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -36,15 +38,20 @@ export default function ConfigPanel() {
     }
   };
 
-  const isFormComplete = persona !== "" && depth !== "" && mode !== "";
+  const isFormComplete = childMode || (persona !== "" && depth !== "" && mode !== "");
 
   const handleContinue = () => {
-    localStorage.setItem("persona", persona);
-    localStorage.setItem("depth", depth);
-    localStorage.setItem("mode", mode);
-    localStorage.setItem("input_mode", inputMode);
-    localStorage.setItem("avatar", String(avatar));
-    router.push("/preparation");
+    if (childMode) {
+      router.push("/children/profile");
+    } else {
+      localStorage.setItem("child_mode", "false");
+      localStorage.setItem("persona", persona);
+      localStorage.setItem("depth", depth);
+      localStorage.setItem("mode", mode);
+      localStorage.setItem("input_mode", inputMode);
+      localStorage.setItem("avatar", String(avatar));
+      router.push("/preparation");
+    }
   };
 
   return (
@@ -72,40 +79,26 @@ export default function ConfigPanel() {
 
         {/* Left */}
         <div className="space-y-4">
-          <LanguagePicker />
-          <PersonaSelector value={persona} onChange={setPersona} />
-          <DepthSelector value={depth} onChange={setDepth} />
-          <ModeSelector value={mode} onChange={setMode} />
+          <ChildModeSelector value={childMode} onChange={setChildMode} />
+
+          {!childMode && (
+            <>
+              <LanguagePicker />
+              <PersonaSelector value={persona} onChange={setPersona} />
+              <DepthSelector value={depth} onChange={setDepth} />
+            </>
+          )}
         </div>
 
         {/* Right */}
         <div className="space-y-4">
-          <InputModeSelector value={inputMode} onChange={setInputMode} />
+          {!childMode && (
+            <>
+              <ModeSelector value={mode} onChange={setMode} />
+              <InputModeSelector value={inputMode} onChange={setInputMode} />
 
-          {/* Avatar toggle */}
-          <div className="space-y-1.5">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
-              {t("configure.avatarTitle")}
-            </p>
-            <button
-              type="button"
-              onClick={() => setAvatar((v) => !v)}
-              className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-primary/15 bg-white/40 hover:bg-primary/5 transition-all"
-            >
-              <div className="flex items-center gap-2.5">
-                <MaterialIcon name={avatar ? "videocam" : "videocam_off"} className="text-primary text-[18px]" />
-                <span className="text-xs font-semibold text-primary">
-                  {avatar ? t("configure.avatarOn") : t("configure.avatarOff")}
-                </span>
-              </div>
-              <div className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${avatar ? "bg-primary" : "bg-primary/20"}`}>
-                <div className={`absolute top-0.5 size-4 rounded-full bg-white shadow transition-transform duration-200 ${avatar ? "translate-x-4" : "translate-x-0.5"}`} />
-              </div>
-            </button>
-            <p className="text-[10px] text-[#9c8880] leading-relaxed px-1">
-              {t("configure.avatarHint")}
-            </p>
-          </div>
+            </>
+          )}
 
           {/* Fullscreen toggle */}
           <div className="space-y-1.5">
@@ -115,7 +108,7 @@ export default function ConfigPanel() {
             <button
               type="button"
               onClick={toggleFullscreen}
-              className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-primary/15 bg-white/40 hover:bg-primary/5 transition-all"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg border-2 border-primary/10 bg-white/50 hover:bg-primary/5 transition-all"
             >
               <div className="flex items-center gap-2.5">
                 <MaterialIcon name={isFullscreen ? "fullscreen_exit" : "fullscreen"} className="text-primary text-[18px]" />

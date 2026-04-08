@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useDataChannel, useRoomContext } from "@livekit/components-react";
 import { Track } from "livekit-client";
 import { useSession } from "@/context/SessionContext";
@@ -20,13 +20,15 @@ function Dots({ dim }: { dim?: boolean }) {
 }
 
 export default function BottomBar() {
-  const { agentState, currentQuestionIndex, agentName } = useSession();
+  const { agentState, sessionState, currentQuestionIndex, agentName, inputMode } = useSession();
   const { t } = useTranslation();
   const { send } = useDataChannel("control");
   const room = useRoomContext();
   const [interrupted, setInterrupted] = useState(false);
   const [muted, setMuted] = useState(false);
   const [transcriptOpen, setTranscriptOpen] = useState(false);
+  const [hybridRecording, setHybridRecording] = useState(false);
+  const hybridRecordingRef = useRef(false);
 
   // Question suivante → reset état
   const prevQuestionIndex = useRef(currentQuestionIndex);
@@ -38,6 +40,15 @@ export default function BottomBar() {
       setMuted(false);
     }
   }, [currentQuestionIndex, room]);
+
+  // Reset hybrid recording state when agent starts speaking
+  useEffect(() => {
+    if (agentState === "speaking" && hybridRecordingRef.current) {
+      room.localParticipant.getTrackPublication(Track.Source.Microphone)?.mute();
+      hybridRecordingRef.current = false;
+      setHybridRecording(false);
+    }
+  }, [agentState, room]);
 
   const canInterrupt = !interrupted && agentState === "speaking";
 
@@ -60,7 +71,35 @@ export default function BottomBar() {
     setMuted(newMuted);
   };
 
+  const handleHybridReply = useCallback(() => {
+    if (!hybridRecordingRef.current) {
+      room.localParticipant.getTrackPublication(Track.Source.Microphone)?.unmute();
+      hybridRecordingRef.current = true;
+      setHybridRecording(true);
+    } else {
+      room.localParticipant.getTrackPublication(Track.Source.Microphone)?.mute();
+      hybridRecordingRef.current = false;
+      setHybridRecording(false);
+    }
+  }, [room]);
+
+  const handleResume = () => {
+    const msg = new TextEncoder().encode(JSON.stringify({ type: "resume" }));
+    send(msg, { reliable: true });
+  };
+
   const renderStatus = () => {
+    if (sessionState === "standby") {
+      return (
+        <button
+          onClick={handleResume}
+          className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary text-white text-[11px] font-medium tracking-wider cursor-pointer transition-all hover:bg-primary/90"
+        >
+          <MaterialIcon name="mic" className="text-[14px]" />
+          j&apos;ai une question
+        </button>
+      );
+    }
     if (agentState === "initializing") {
       return (
         <>
@@ -92,6 +131,21 @@ export default function BottomBar() {
       );
     }
     if (agentState === "listening") {
+      if (inputMode === "click") {
+        return (
+          <button
+            onClick={handleHybridReply}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium tracking-wider transition-all cursor-pointer ${
+              hybridRecording
+                ? "bg-primary/10 text-primary border border-primary/40 animate-pulse"
+                : "bg-primary text-white"
+            }`}
+          >
+            <MaterialIcon name={hybridRecording ? "stop_circle" : "mic"} className="text-[14px]" />
+            {hybridRecording ? "terminer" : "répondre"}
+          </button>
+        );
+      }
       return (
         <>
           <MaterialIcon name="mic" className="text-[15px] animate-pulse shrink-0" />
@@ -140,15 +194,8 @@ export default function BottomBar() {
 
         <div className="w-px h-4 sm:h-5 bg-primary/20 shrink-0 mx-1" />
 
-        {/* Droite : micro + conversation */}
+        {/* Droite : conversation */}
         <div className="flex items-center shrink-0">
-          <button
-            onClick={handleMicToggle}
-            className={`${iconBtn} ${muted ? "text-red-500 hover:bg-red-50" : "hover:bg-primary/10"}`}
-            title={muted ? "Activer le micro" : "Couper le micro"}
-          >
-            <MaterialIcon name={muted ? "mic_off" : "mic"} className="text-[22px] sm:text-[26px]" />
-          </button>
           <button
             onClick={() => setTranscriptOpen((p) => !p)}
             className={`${iconBtn} hover:bg-primary/10`}

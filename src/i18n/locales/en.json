@@ -57,7 +57,11 @@
     "avatarTitle": "Video avatar",
     "avatarOn": "Avatar enabled",
     "avatarOff": "Audio only",
-    "avatarHint": "Disable if your connection is slow. Run the test below to check."
+    "avatarHint": "Disable if your connection is slow. Run the test below to check.",
+    "childModeTitle": "Child mode",
+    "childModeOn": "Child mode enabled",
+    "childModeOff": "Child mode disabled",
+    "childModeHint": "Adapts the experience for children with 5 simplified questions."
   },
   "interaction": {
     "brand": "Le studio des parfums",

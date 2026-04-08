@@ -28,10 +28,11 @@ export default function PreparationPage() {
   // Navigate when state changes
   useEffect(() => {
     if (DEV_MODE) return;
+    const isChildMode = localStorage.getItem("child_mode") === "true";
     if (sessionState === "questionnaire") {
-      router.push("/interaction");
+      router.push(isChildMode ? "/children/profile" : "/interaction");
     } else if (sessionState === "completed") {
-      router.push("/recommendations");
+      router.push(isChildMode ? "/children/recommendations" : "/recommendations");
     }
   }, [sessionState, router]);
 

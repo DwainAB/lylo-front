@@ -24,6 +24,27 @@ export type SessionState =
 
 export type AgentState = "speaking" | "listening" | "thinking" | "idle" | "initializing";
 
+export type QuestionnaireStep =
+  | "asking_top_2"
+  | "justification_top_1"
+  | "justification_top_2"
+  | "asking_bottom_2"
+  | "justification_bottom_1"
+  | "justification_bottom_2"
+  | "awaiting_confirmation"
+  | "asking_intensity"
+  | null;
+
+export interface QuestionnaireStepData {
+  step: QuestionnaireStep;
+  /** The choice currently being discussed (justification steps) */
+  currentChoice: string | null;
+  /** Top 2 favorites identified so far */
+  top2: string[];
+  /** Bottom 2 least liked identified so far */
+  bottom2: string[];
+}
+
 export interface ProfileUpdate {
   field: string;
   value: string;
@@ -119,8 +140,10 @@ interface SessionContextType {
   devMode: boolean;
   noCreditsError: boolean;
   connectionError: boolean;
+  inputMode: "voice" | "click";
   clickSelectionMode: "top_2" | "bottom_2" | null;
   pendingClickAnswer: PendingClickAnswer | null;
+  questionnaireStepData: QuestionnaireStepData;
   setConnectionError: (v: boolean) => void;
   startSession: () => Promise<void>;
   endSession: () => void;
@@ -130,6 +153,7 @@ interface SessionContextType {
   upsertTranscript: (msg: TranscriptMessage) => void;
   submitClickAnswer: (values: string[]) => void;
   clearPendingClickAnswer: () => void;
+  clearClickSelectionMode: () => void;
 }
 
 const SessionContext = createContext<SessionContextType | null>(null);
@@ -154,24 +178,33 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [connectionError, setConnectionError] = useState(false);
   const [agentState, setAgentState] = useState<AgentState>("initializing");
   const isRetryingRef = useRef(false);
+  const [inputMode, setInputMode] = useState<"voice" | "click">("voice");
   const [clickSelectionMode, setClickSelectionMode] = useState<"top_2" | "bottom_2" | null>(null);
   const [clickQuestionId, setClickQuestionId] = useState<number | null>(null);
   const [clickTop2Values, setClickTop2Values] = useState<string[]>([]);
   const [pendingClickAnswer, setPendingClickAnswer] = useState<PendingClickAnswer | null>(null);
+  const [questionnaireStepData, setQuestionnaireStepData] = useState<QuestionnaireStepData>({
+    step: null,
+    currentChoice: null,
+    top2: [],
+    bottom2: [],
+  });
 
   const startSession = useCallback(async () => {
     if (DEV_MODE) return;
     setSessionState("connecting");
 
     const language = (localStorage.getItem("avatarLocale") as "fr" | "en") || "fr";
+    const child_mode = localStorage.getItem("child_mode") === "true";
     const voice_gender =
       (localStorage.getItem("persona") as "female" | "male") || "female";
     setAgentName(voice_gender === "male" ? "Florian" : "Rose");
     const depth = localStorage.getItem("depth") || "1";
-    const question_count = parseInt(depth, 10);
+    const question_count = child_mode ? 5 : parseInt(depth, 10);
     setQuestionCount(question_count);
-    const mode = localStorage.getItem("mode") || "guided";
-    const input_mode = (localStorage.getItem("input_mode") as "voice" | "click") || "voice";
+    const mode = child_mode ? "guided" : (localStorage.getItem("mode") || "guided");
+    const input_mode = child_mode ? "click" : ((localStorage.getItem("input_mode") as "voice" | "click") || "voice");
+    setInputMode(input_mode);
     const avatar = localStorage.getItem("avatar") !== "false";
     const savedAuth = localStorage.getItem("auth_user");
     const email = savedAuth ? JSON.parse(savedAuth).email : null;
@@ -267,6 +300,38 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           setAgentState(event.state as AgentState);
           break;
 
+        case "step_asking_top_2":
+          setQuestionnaireStepData({ step: "asking_top_2", currentChoice: null, top2: [], bottom2: [] });
+          break;
+
+        case "step_justification_top_1":
+          setQuestionnaireStepData((prev) => ({ ...prev, step: "justification_top_1", currentChoice: event.choice ?? null, top2: event.top_2 ?? prev.top2 }));
+          break;
+
+        case "step_justification_top_2":
+          setQuestionnaireStepData((prev) => ({ ...prev, step: "justification_top_2", currentChoice: event.choice ?? null, top2: event.top_2 ?? prev.top2 }));
+          break;
+
+        case "step_asking_bottom_2":
+          setQuestionnaireStepData((prev) => ({ ...prev, step: "asking_bottom_2", currentChoice: null, top2: event.top_2 ?? prev.top2 }));
+          break;
+
+        case "step_justification_bottom_1":
+          setQuestionnaireStepData((prev) => ({ ...prev, step: "justification_bottom_1", currentChoice: event.choice ?? null }));
+          break;
+
+        case "step_justification_bottom_2":
+          setQuestionnaireStepData((prev) => ({ ...prev, step: "justification_bottom_2", currentChoice: event.choice ?? null }));
+          break;
+
+        case "step_awaiting_confirmation":
+          setQuestionnaireStepData({ step: "awaiting_confirmation", currentChoice: null, top2: event.top_2 ?? [], bottom2: event.bottom_2 ?? [] });
+          break;
+
+        case "step_asking_intensity":
+          setQuestionnaireStepData({ step: "asking_intensity", currentChoice: null, top2: [], bottom2: [] });
+          break;
+
         case "waiting_for_top_2":
           console.warn("🟡 [CLICK MODE] waiting_for_top_2 reçu → question_id:", event.question_id, "| clickSelectionMode → top_2");
           setClickSelectionMode("top_2");
@@ -316,6 +381,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setPendingClickAnswer(null);
   }, []);
 
+  const clearClickSelectionMode = useCallback(() => {
+    setClickSelectionMode(null);
+  }, []);
+
   const endSession = useCallback(() => {
     isRetryingRef.current = false;
     // Fire-and-forget : on nettoie en fond, pas besoin d'attendre
@@ -338,10 +407,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setRequestingEmail(false);
     setConnectionError(false);
     setAgentState("initializing");
+    setInputMode("voice");
     setClickSelectionMode(null);
     setClickQuestionId(null);
     setClickTop2Values([]);
     setPendingClickAnswer(null);
+    setQuestionnaireStepData({ step: null, currentChoice: null, top2: [], bottom2: [] });
   }, [sessionData]);
 
   const handleConnectionTimeout = useCallback(() => {
@@ -392,8 +463,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         connectionError,
         setConnectionError,
         devMode: DEV_MODE,
+        inputMode,
         clickSelectionMode,
         pendingClickAnswer,
+        questionnaireStepData,
         startSession,
         endSession,
         handleConnectionTimeout,
@@ -402,6 +475,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         upsertTranscript,
         submitClickAnswer,
         clearPendingClickAnswer,
+        clearClickSelectionMode,
       }}
     >
       {children}

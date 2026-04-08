@@ -57,7 +57,11 @@
     "avatarTitle": "Avatar vidéo",
     "avatarOn": "Avatar activé",
     "avatarOff": "Audio uniquement",
-    "avatarHint": "Désactivez si votre connexion est lente. Faites le test ci-dessous pour vérifier."
+    "avatarHint": "Désactivez si votre connexion est lente. Faites le test ci-dessous pour vérifier.",
+    "childModeTitle": "Mode enfant",
+    "childModeOn": "Mode enfant activé",
+    "childModeOff": "Mode enfant désactivé",
+    "childModeHint": "Adapte l'expérience pour les enfants avec 5 questions simplifiées."
   },
   "interaction": {
     "brand": "Le studio des parfums",

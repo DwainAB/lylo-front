@@ -1,20 +1,29 @@
 "use client";
 
+type CardHighlight = "favorite" | "disliked" | "selected" | "none";
+
 interface ChoiceCardProps {
   name: string;
   imageUrl?: string;
-  selected?: boolean;
+  highlight?: CardHighlight;
   clickable?: boolean;
   onSelect: (name: string) => void;
 }
 
-export default function ChoiceCard({ name, imageUrl, selected, clickable = true, onSelect }: ChoiceCardProps) {
+export default function ChoiceCard({ name, imageUrl, highlight = "none", clickable = true, onSelect }: ChoiceCardProps) {
+  const borderClass =
+    highlight === "favorite" ? "border-primary scale-[1.03]" :
+    highlight === "disliked" ? "border-rose-400 scale-[1.03]" :
+    highlight === "selected" ? "border-primary scale-[1.03]" :
+    clickable ? "border-transparent hover:border-primary" :
+    "border-transparent";
+
   return (
     <div
       onClick={() => clickable && onSelect(name)}
       className={`h-full min-h-0 rounded-2xl overflow-hidden group border-2 transition-all duration-500 relative bg-stone-200 ${
         clickable ? "cursor-pointer" : "cursor-default"
-      } ${selected ? "border-primary scale-[1.03]" : clickable ? "border-transparent hover:border-primary" : "border-transparent"}`}
+      } ${borderClass}`}
     >
       {imageUrl ? (
         <>
