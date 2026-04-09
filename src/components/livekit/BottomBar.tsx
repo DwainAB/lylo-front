@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useDataChannel, useRoomContext } from "@livekit/components-react";
-import { Track } from "livekit-client";
 import { useSession } from "@/context/SessionContext";
 import { useTranslation } from "@/i18n/LanguageContext";
 import MaterialIcon from "@/components/ui/MaterialIcon";
@@ -20,10 +18,8 @@ function Dots({ dim }: { dim?: boolean }) {
 }
 
 export default function BottomBar() {
-  const { agentState, sessionState, currentQuestionIndex, agentName, inputMode } = useSession();
+  const { agentState, sessionState, currentQuestionIndex, agentName, inputMode, wsRef, micTrackRef, mediaRecorderRef } = useSession();
   const { t } = useTranslation();
-  const { send } = useDataChannel("control");
-  const room = useRoomContext();
   const [interrupted, setInterrupted] = useState(false);
   const [muted, setMuted] = useState(false);
   const [transcriptOpen, setTranscriptOpen] = useState(false);
@@ -35,57 +31,65 @@ export default function BottomBar() {
   useEffect(() => {
     if (prevQuestionIndex.current !== currentQuestionIndex) {
       prevQuestionIndex.current = currentQuestionIndex;
-      room.localParticipant.getTrackPublication(Track.Source.Microphone)?.unmute();
       setInterrupted(false);
       setMuted(false);
+      hybridRecordingRef.current = false;
+      setHybridRecording(false);
+      if (micTrackRef.current) micTrackRef.current.setMuted(true);
+      if (mediaRecorderRef.current?.state === "recording") mediaRecorderRef.current.pause();
     }
-  }, [currentQuestionIndex, room]);
+  }, [currentQuestionIndex, micTrackRef, mediaRecorderRef]);
 
-  // Reset hybrid recording state when agent starts speaking
+  // Reset hybrid recording quand l'agent parle
   useEffect(() => {
     if (agentState === "speaking" && hybridRecordingRef.current) {
-      room.localParticipant.getTrackPublication(Track.Source.Microphone)?.mute();
+      if (mediaRecorderRef.current?.state === "recording") mediaRecorderRef.current.pause();
+      if (micTrackRef.current) micTrackRef.current.setMuted(true);
       hybridRecordingRef.current = false;
       setHybridRecording(false);
     }
-  }, [agentState, room]);
+  }, [agentState, micTrackRef, mediaRecorderRef]);
+
+  const sendWs = (msg: object) => {
+    const ws = wsRef?.current;
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify(msg));
+    }
+  };
 
   const canInterrupt = !interrupted && agentState === "speaking";
 
   const handleInterrupt = () => {
-    send(new TextEncoder().encode(JSON.stringify({ type: "interrupt" })), { reliable: true });
-    room.localParticipant.getTrackPublication(Track.Source.Microphone)?.mute();
+    sendWs({ type: "stop" });
+    if (micTrackRef.current) micTrackRef.current.setMuted(true);
     setInterrupted(true);
   };
 
   const handleResumeListen = () => {
-    send(new TextEncoder().encode(JSON.stringify({ type: "resume_listen" })), { reliable: true });
-    room.localParticipant.getTrackPublication(Track.Source.Microphone)?.unmute();
+    sendWs({ type: "resume_listen" });
+    if (micTrackRef.current) micTrackRef.current.setMuted(false);
     setInterrupted(false);
   };
 
   const handleMicToggle = () => {
     const newMuted = !muted;
-    const pub = room.localParticipant.getTrackPublication(Track.Source.Microphone);
-    if (newMuted) pub?.mute(); else pub?.unmute();
+    if (micTrackRef.current) micTrackRef.current.setMuted(newMuted);
     setMuted(newMuted);
   };
 
   const handleHybridReply = useCallback(() => {
     if (!hybridRecordingRef.current) {
-      room.localParticipant.getTrackPublication(Track.Source.Microphone)?.unmute();
+      // Ouvrir le micro — la fermeture se fait automatiquement via click_transcript_done
+      if (mediaRecorderRef.current?.state === "paused") mediaRecorderRef.current.resume();
+      if (micTrackRef.current) micTrackRef.current.setMuted(false);
       hybridRecordingRef.current = true;
       setHybridRecording(true);
-    } else {
-      room.localParticipant.getTrackPublication(Track.Source.Microphone)?.mute();
-      hybridRecordingRef.current = false;
-      setHybridRecording(false);
     }
-  }, [room]);
+    // Pas de fermeture manuelle — Deepgram détecte la fin et envoie click_transcript_done
+  }, [micTrackRef, mediaRecorderRef]);
 
   const handleResume = () => {
-    const msg = new TextEncoder().encode(JSON.stringify({ type: "resume" }));
-    send(msg, { reliable: true });
+    sendWs({ type: "resume" });
   };
 
   const renderStatus = () => {
@@ -135,14 +139,15 @@ export default function BottomBar() {
         return (
           <button
             onClick={handleHybridReply}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium tracking-wider transition-all cursor-pointer ${
+            disabled={hybridRecording}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium tracking-wider transition-all ${
               hybridRecording
-                ? "bg-primary/10 text-primary border border-primary/40 animate-pulse"
-                : "bg-primary text-white"
+                ? "bg-primary/10 text-primary border border-primary/40 animate-pulse cursor-default"
+                : "bg-primary text-white cursor-pointer"
             }`}
           >
-            <MaterialIcon name={hybridRecording ? "stop_circle" : "mic"} className="text-[14px]" />
-            {hybridRecording ? "terminer" : "répondre"}
+            <MaterialIcon name="mic" className="text-[14px]" />
+            {hybridRecording ? "écoute..." : "répondre"}
           </button>
         );
       }

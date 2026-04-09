@@ -1,6 +1,6 @@
 "use client";
 
-import {
+import React, {
   createContext,
   useContext,
   useState,
@@ -117,9 +117,11 @@ export interface TranscriptMessage {
 interface SessionData {
   session_id: string;
   room_name: string;
-  token: string;
-  livekit_url: string;
+  token: string | null;
+  agora_app_id: string;
   identity: string;
+  // legacy livekit fields (ignorés)
+  livekit_url?: string;
 }
 
 interface SessionContextType {
@@ -144,7 +146,11 @@ interface SessionContextType {
   clickSelectionMode: "top_2" | "bottom_2" | null;
   pendingClickAnswer: PendingClickAnswer | null;
   questionnaireStepData: QuestionnaireStepData;
+  wsRef: React.RefObject<WebSocket | null>;
+  micTrackRef: React.RefObject<any>;
+  mediaRecorderRef: React.RefObject<MediaRecorder | null>;
   setConnectionError: (v: boolean) => void;
+  setAgentState: (state: AgentState) => void;
   startSession: () => Promise<void>;
   endSession: () => void;
   handleConnectionTimeout: () => void;
@@ -178,6 +184,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [connectionError, setConnectionError] = useState(false);
   const [agentState, setAgentState] = useState<AgentState>("initializing");
   const isRetryingRef = useRef(false);
+  const wsRef = useRef<WebSocket | null>(null);
+  const micTrackRef = useRef<any>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [inputMode, setInputMode] = useState<"voice" | "click">("voice");
   const [clickSelectionMode, setClickSelectionMode] = useState<"top_2" | "bottom_2" | null>(null);
   const [clickQuestionId, setClickQuestionId] = useState<number | null>(null);
@@ -434,10 +443,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setTranscripts((prev) => {
       const idx = prev.findIndex((m) => m.id === msg.id);
       if (idx >= 0) {
+        // Texte vide = suppression
+        if (!msg.text.trim()) return prev.filter((m) => m.id !== msg.id);
         const updated = [...prev];
         updated[idx] = { ...updated[idx], text: msg.text };
         return updated;
       }
+      if (!msg.text.trim()) return prev;
       return [...prev, msg];
     });
   }, []);
@@ -462,6 +474,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         noCreditsError,
         connectionError,
         setConnectionError,
+        setAgentState,
+        wsRef,
+        micTrackRef,
+        mediaRecorderRef,
         devMode: DEV_MODE,
         inputMode,
         clickSelectionMode,

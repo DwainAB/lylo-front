@@ -17,7 +17,7 @@ import { useSession, DEV_MODE } from "@/context/SessionContext";
 export default function InteractionPage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { sessionState, questionCount, questions, currentQuestionIndex, questionnaireStepData } = useSession();
+  const { sessionData, sessionState, questionCount, questions, currentQuestionIndex, questionnaireStepData } = useSession();
   const { step, currentChoice } = questionnaireStepData;
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function InteractionPage() {
 
         {/* Barre de contrôle */}
         <div className="flex justify-center shrink-0 py-3">
-          <BottomBar />
+          {sessionData && <BottomBar />}
         </div>
       </main>
 
