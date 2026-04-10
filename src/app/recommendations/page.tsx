@@ -19,9 +19,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 export default function RecommendationsPage() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { formulas: sessionFormulas, endSession, sessionData, requestingEmail, agentName } = useSession();
-  const [email, setEmail] = useState("");
-  const [sendStatus, setSendStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const { formulas: sessionFormulas, endSession, sessionData, agentName } = useSession();
   const [showPrint, setShowPrint] = useState(false);
 
   const [devSingleFormula, setDevSingleFormula] = useState(false);
@@ -32,21 +30,6 @@ export default function RecommendationsPage() {
 
   const handlePrint = () => setShowPrint(true);
 
-  const handleSendEmail = async () => {
-    if (!sessionData?.session_id || !email) return;
-    setSendStatus("sending");
-    try {
-      const res = await fetch(`${API_BASE}/api/session/${sessionData.session_id}/mail/send`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to: email }),
-      });
-      setSendStatus(res.ok ? "sent" : "error");
-    } catch {
-      setSendStatus("error");
-    }
-  };
-
   const allFormulas = sessionFormulas.map((f, i) => ({
     key: `formula-${i}`,
     name: f.profile,
@@ -55,7 +38,6 @@ export default function RecommendationsPage() {
 
   const formulas = DEV_MODE && devSingleFormula ? [allFormulas[0]] : allFormulas;
   const isSingle = formulas.length === 1;
-  const showEmail = requestingEmail || (DEV_MODE && devSingleFormula);
   const showResumeButton = DEV_MODE && devSingleFormula;
   const showMailButton = isSingle;
 
@@ -153,49 +135,6 @@ export default function RecommendationsPage() {
                   </button>
                 )}
 
-                {/* Champ email */}
-                {showEmail && (
-                  <div className="w-full flex flex-col gap-2">
-                    <p className="text-xs font-light text-center text-[#7f6f66] tracking-wide">
-                      Recevez votre formule par email
-                    </p>
-                    {sendStatus === "sent" ? (
-                      <div className="flex items-center justify-center gap-2 text-sm text-green-700">
-                        <MaterialIcon name="check_circle" className="text-[18px]" />
-                        Email envoyé
-                      </div>
-                    ) : (
-                      <div className="flex w-full gap-2">
-                        <input
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          onKeyDown={(e) => e.key === "Enter" && handleSendEmail()}
-                          placeholder="votre@email.com"
-                          disabled={sendStatus === "sending"}
-                          className="flex-1 min-w-0 px-3 py-2 rounded-full border border-primary/25 bg-white/60 text-sm text-[#4a3f3a] placeholder-[#b0a49e] focus:outline-none focus:border-primary/50 disabled:opacity-50"
-                        />
-                        <button
-                          onClick={handleSendEmail}
-                          disabled={!email || sendStatus === "sending"}
-                          className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-primary text-white text-sm font-semibold shadow-md shadow-primary/20 hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-                        >
-                          {sendStatus === "sending" ? (
-                            <div className="size-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                          ) : (
-                            <MaterialIcon name="send" className="text-[16px]" />
-                          )}
-                        </button>
-                      </div>
-                    )}
-                    {sendStatus === "error" && (
-                      <p className="text-xs text-red-500 text-center">
-                        Une erreur est survenue. Veuillez réessayer.
-                      </p>
-                    )}
-                  </div>
-                )}
-
                 {/* Retour accueil */}
                 <button
                   onClick={() => { endSession(); router.push("/"); }}
@@ -234,49 +173,6 @@ export default function RecommendationsPage() {
                   </p>
                 )}
               </div>
-
-              {/* Email à droite si demandé */}
-              {requestingEmail && (
-                <div className="shrink-0 flex flex-col gap-2 items-center sm:w-52 sm:items-stretch sm:justify-center">
-                  <p className="text-xs font-light text-center text-[#7f6f66] tracking-wide">
-                    Recevez votre formule par email
-                  </p>
-                  {sendStatus === "sent" ? (
-                    <div className="flex items-center justify-center gap-2 text-sm text-green-700">
-                      <MaterialIcon name="check_circle" className="text-[18px]" />
-                      Email envoyé
-                    </div>
-                  ) : (
-                    <div className="flex w-full gap-2">
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleSendEmail()}
-                        placeholder="votre@email.com"
-                        disabled={sendStatus === "sending"}
-                        className="flex-1 min-w-0 px-3 py-2 rounded-full border border-primary/25 bg-white/60 text-sm text-[#4a3f3a] placeholder-[#b0a49e] focus:outline-none focus:border-primary/50 disabled:opacity-50"
-                      />
-                      <button
-                        onClick={handleSendEmail}
-                        disabled={!email || sendStatus === "sending"}
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-primary text-white text-sm font-semibold shadow-md shadow-primary/20 hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-                      >
-                        {sendStatus === "sending" ? (
-                          <div className="size-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                        ) : (
-                          <MaterialIcon name="send" className="text-[16px]" />
-                        )}
-                      </button>
-                    </div>
-                  )}
-                  {sendStatus === "error" && (
-                    <p className="text-xs text-red-500 text-center">
-                      Une erreur est survenue. Veuillez réessayer.
-                    </p>
-                  )}
-                </div>
-              )}
             </div>
 
             {/* Retour accueil */}

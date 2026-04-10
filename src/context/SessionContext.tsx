@@ -120,8 +120,8 @@ interface SessionData {
   token: string | null;
   agora_app_id: string;
   identity: string;
-  // legacy livekit fields (ignorés)
   livekit_url?: string;
+  livekit_token?: string;
 }
 
 interface SessionContextType {
@@ -271,6 +271,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         case "answer_saved":
           console.log("[LiveKit] answer_saved → question_id:", event.question_id, "top_2:", event.top_2, "bottom_2:", event.bottom_2);
           setHiddenChoices([]);
+          setQuestionnaireStepData({ step: null, currentChoice: null, top2: [], bottom2: [] });
           setAnswers((prev) => {
             const isNew = !prev.some((a) => a.question_id === event.question_id);
             if (isNew) {

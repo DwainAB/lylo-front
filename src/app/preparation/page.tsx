@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import MaterialIcon from "@/components/ui/MaterialIcon";
@@ -15,6 +15,13 @@ export default function PreparationPage() {
   const router = useRouter();
   const { sessionState, startSession, sessionData, agentName, noCreditsError } = useSession();
   const hasStarted = useRef(false);
+  const [avatarEnabled, setAvatarEnabled] = useState(false);
+  const [fallbackUrl, setFallbackUrl] = useState("/avatar-f.jpg");
+
+  useEffect(() => {
+    setAvatarEnabled(localStorage.getItem("avatar") !== "false");
+    setFallbackUrl(localStorage.getItem("persona") === "male" ? "/avatar-h.jpg" : "/avatar-f.jpg");
+  }, []);
 
   // Start session on mount
   useEffect(() => {
@@ -71,22 +78,21 @@ export default function PreparationPage() {
         </div>
       )}
 
-      <main className="flex-1 flex flex-col items-center justify-between px-4 sm:px-6 pb-8 sm:pb-12 pt-2 max-w-4xl mx-auto w-full min-h-0 relative z-10">
+      <main className={`flex-1 flex flex-col items-center px-4 sm:px-6 pb-8 sm:pb-12 pt-2 max-w-4xl mx-auto w-full min-h-0 relative z-10 ${avatarEnabled ? "justify-between" : "justify-center gap-12"}`}>
         {/* Avatar */}
-        <div className="flex flex-col items-center gap-6 mt-8">
-          <div className="relative group">
-            <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse" />
-            <div className="relative size-32 sm:size-48 md:size-56 rounded-full border-4 border-secondary overflow-hidden bg-white ai-glow">
-              <AvatarVideo
-                fallbackUrl={typeof window !== "undefined" && localStorage.getItem("persona") === "male" ? "/avatar-h.jpg" : "/avatar-f.jpg"}
-                avatarEnabled={typeof window !== "undefined" ? localStorage.getItem("avatar") !== "false" : true}
-              />
-            </div>
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-primary text-white text-[10px] sm:text-xs font-bold tracking-wider uppercase rounded-full">
-              {agentName} AI
+        {avatarEnabled && (
+          <div className="flex flex-col items-center gap-6 mt-8">
+            <div className="relative group">
+              <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse" />
+              <div className="relative size-32 sm:size-48 md:size-56 rounded-full border-4 border-secondary overflow-hidden bg-white ai-glow">
+                <AvatarVideo fallbackUrl={fallbackUrl} avatarEnabled={avatarEnabled} />
+              </div>
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-primary text-white text-[10px] sm:text-xs font-bold tracking-wider uppercase rounded-full">
+                {agentName} AI
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Content */}
         <div className="w-full space-y-8 text-center">

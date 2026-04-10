@@ -5,8 +5,8 @@ import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
 
 interface InputModeSelectorProps {
-  value: "voice" | "click";
-  onChange: (value: "voice" | "click") => void;
+  value: "voice" | "click" | "silent";
+  onChange: (value: "voice" | "click" | "silent") => void;
 }
 
 export default function InputModeSelector({ value, onChange }: InputModeSelectorProps) {
@@ -16,6 +16,7 @@ export default function InputModeSelector({ value, onChange }: InputModeSelector
   const options = [
     { value: "voice" as const, label: t("configure.inputModeVoice"), icon: "mic" },
     { value: "click" as const, label: t("configure.inputModeClick"), icon: "touch_app" },
+    { value: "silent" as const, label: "Silencieux", icon: "touch_app" },
   ];
 
   const infoLines = t("configure.inputModeInfo").split("\n\n");

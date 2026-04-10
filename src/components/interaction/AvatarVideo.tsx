@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useMaybeRoomContext, useParticipants } from "@livekit/components-react";
-import { Track } from "livekit-client";
+import { useEffect, useRef, useState } from "react";
+import { useLiveKitRoom } from "@/context/LiveKitRoomContext";
 
 interface AvatarVideoProps {
   fallbackUrl: string;
@@ -10,20 +9,68 @@ interface AvatarVideoProps {
 }
 
 function AvatarVideoStream({ fallbackUrl }: AvatarVideoProps) {
-  const participants = useParticipants();
-  const avatarParticipant = participants.find(p => p.identity === "bey-avatar-agent");
-  const videoTrack = avatarParticipant?.getTrackPublication(Track.Source.Camera)?.videoTrack;
+  const { roomRef } = useLiveKitRoom();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [hasAvatar, setHasAvatar] = useState(false);
 
   useEffect(() => {
-    const el = videoRef.current;
-    if (videoTrack && el) {
-      videoTrack.attach(el);
-      return () => { videoTrack.detach(el); };
-    }
-  }, [videoTrack]);
+    // Poll jusqu'à ce que la room soit disponible puis écoute les events
+    let interval: ReturnType<typeof setInterval>;
 
-  if (avatarParticipant) {
+    function attachAvatar(room: any) {
+      for (const participant of room.remoteParticipants.values()) {
+        if (participant.identity === "bey-avatar-agent") {
+          for (const pub of participant.trackPublications.values()) {
+            if (pub.track && pub.track.kind === "video" && videoRef.current) {
+              pub.track.attach(videoRef.current);
+              setHasAvatar(true);
+              return;
+            }
+          }
+        }
+      }
+    }
+
+    function setupRoom(room: any) {
+      attachAvatar(room);
+
+      const onTrackSubscribed = (_track: any, _pub: any, participant: any) => {
+        if (participant.identity === "bey-avatar-agent") attachAvatar(room);
+      };
+      const onTrackUnsubscribed = (_track: any, _pub: any, participant: any) => {
+        if (participant.identity === "bey-avatar-agent") setHasAvatar(false);
+      };
+
+      room.on("trackSubscribed", onTrackSubscribed);
+      room.on("trackUnsubscribed", onTrackUnsubscribed);
+
+      return () => {
+        room.off("trackSubscribed", onTrackSubscribed);
+        room.off("trackUnsubscribed", onTrackUnsubscribed);
+      };
+    }
+
+    let cleanup: (() => void) | undefined;
+
+    if (roomRef.current) {
+      cleanup = setupRoom(roomRef.current);
+    } else {
+      // Room pas encore prête — on poll jusqu'à ce qu'elle soit là
+      interval = setInterval(() => {
+        if (roomRef.current) {
+          clearInterval(interval);
+          cleanup = setupRoom(roomRef.current);
+        }
+      }, 300);
+    }
+
+    return () => {
+      clearInterval(interval);
+      cleanup?.();
+    };
+  }, [roomRef]);
+
+  if (hasAvatar) {
     return (
       <video
         ref={videoRef}
@@ -54,21 +101,7 @@ function AvatarVideoStream({ fallbackUrl }: AvatarVideoProps) {
 }
 
 export default function AvatarVideo({ fallbackUrl, avatarEnabled = true }: AvatarVideoProps) {
-  const room = useMaybeRoomContext();
-
-  const staticImage = (
-    <div
-      className="w-full h-full bg-cover bg-center"
-      style={{
-        backgroundImage: `url('${fallbackUrl}')`,
-        transform: "scale(1.4)",
-        transformOrigin: "top center",
-      }}
-    />
-  );
-
-  if (!avatarEnabled) return staticImage;
-  if (!room) return staticImage;
+  if (!avatarEnabled) return null;
 
   return <AvatarVideoStream fallbackUrl={fallbackUrl} />;
 }

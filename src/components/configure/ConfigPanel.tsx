@@ -17,7 +17,7 @@ export default function ConfigPanel() {
   const [persona, setPersona] = useState("");
   const [depth, setDepth] = useState("");
   const [mode, setMode] = useState("");
-  const [inputMode, setInputMode] = useState<"voice" | "click">("voice");
+  const [inputMode, setInputMode] = useState<"voice" | "click" | "silent">("voice");
   const [avatar] = useState(false);
   const [childMode, setChildMode] = useState(false);
   const { t } = useTranslation();
@@ -50,7 +50,11 @@ export default function ConfigPanel() {
       localStorage.setItem("mode", mode);
       localStorage.setItem("input_mode", inputMode);
       localStorage.setItem("avatar", String(avatar));
-      router.push("/preparation");
+      if (inputMode === "silent") {
+        router.push("/silent/profile");
+      } else {
+        router.push("/preparation");
+      }
     }
   };
 
@@ -100,7 +104,7 @@ export default function ConfigPanel() {
             </>
           )}
 
-          {/* Fullscreen toggle */}
+          {/* Affichage */}
           <div className="space-y-1.5">
             <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
               Affichage
@@ -118,6 +122,22 @@ export default function ConfigPanel() {
               </div>
               <div className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${isFullscreen ? "bg-primary" : "bg-primary/20"}`}>
                 <div className={`absolute top-0.5 size-4 rounded-full bg-white shadow transition-transform duration-200 ${isFullscreen ? "translate-x-4" : "translate-x-0.5"}`} />
+              </div>
+            </button>
+            <button
+              type="button"
+              disabled
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg border-2 border-primary/10 bg-white/30 opacity-60 cursor-not-allowed transition-all"
+            >
+              <div className="flex items-center gap-2.5">
+                <MaterialIcon name="face" className="text-primary/50 text-[18px]" />
+                <div className="flex flex-col items-start">
+                  <span className="text-xs font-semibold text-primary/60">Avatar</span>
+                  <span className="text-[10px] text-primary/40 font-medium">Bientôt disponible</span>
+                </div>
+              </div>
+              <div className="relative w-9 h-5 rounded-full bg-gray-200">
+                <div className="absolute top-0.5 left-0.5 size-4 rounded-full bg-gray-400 shadow" />
               </div>
             </button>
           </div>

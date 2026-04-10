@@ -26,7 +26,7 @@ export default function BottomBar() {
   const [hybridRecording, setHybridRecording] = useState(false);
   const hybridRecordingRef = useRef(false);
 
-  // Question suivante → reset état
+  // Question suivante → reset état UI seulement (le micro est géré par tts_start/tts_end)
   const prevQuestionIndex = useRef(currentQuestionIndex);
   useEffect(() => {
     if (prevQuestionIndex.current !== currentQuestionIndex) {
@@ -35,10 +35,8 @@ export default function BottomBar() {
       setMuted(false);
       hybridRecordingRef.current = false;
       setHybridRecording(false);
-      if (micTrackRef.current) micTrackRef.current.setMuted(true);
-      if (mediaRecorderRef.current?.state === "recording") mediaRecorderRef.current.pause();
     }
-  }, [currentQuestionIndex, micTrackRef, mediaRecorderRef]);
+  }, [currentQuestionIndex]);
 
   // Reset hybrid recording quand l'agent parle
   useEffect(() => {
