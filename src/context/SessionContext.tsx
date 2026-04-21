@@ -20,7 +20,9 @@ export type SessionState =
   | "generating_formulas"
   | "completed"
   | "customization"
-  | "standby";
+  | "standby"
+  | "awaiting_confirmation"
+  | "asking_intensity";
 
 export type AgentState = "speaking" | "listening" | "thinking" | "idle" | "initializing";
 
@@ -121,6 +123,7 @@ interface SessionContextType {
   connectionError: boolean;
   clickSelectionMode: "top_2" | "bottom_2" | null;
   pendingClickAnswer: PendingClickAnswer | null;
+  confirmationData: { question_id: number; top_2: string[]; bottom_2: string[] } | null;
   setConnectionError: (v: boolean) => void;
   startSession: () => Promise<void>;
   endSession: () => void;
@@ -158,6 +161,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [clickQuestionId, setClickQuestionId] = useState<number | null>(null);
   const [clickTop2Values, setClickTop2Values] = useState<string[]>([]);
   const [pendingClickAnswer, setPendingClickAnswer] = useState<PendingClickAnswer | null>(null);
+  const [confirmationData, setConfirmationData] = useState<{ question_id: number; top_2: string[]; bottom_2: string[] } | null>(null);
 
   const startSession = useCallback(async () => {
     if (DEV_MODE) return;
@@ -173,8 +177,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const mode = localStorage.getItem("mode") || "guided";
     const input_mode = (localStorage.getItem("input_mode") as "voice" | "click") || "voice";
     const avatar = localStorage.getItem("avatar") !== "false";
-    const savedAuth = localStorage.getItem("auth_user");
-    const email = savedAuth ? JSON.parse(savedAuth).email : null;
+    const email = localStorage.getItem("recap_email") || null;
 
     const res = await fetch(`${API_BASE}/api/session/start`, {
       method: "POST",
@@ -279,6 +282,17 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           setClickQuestionId(event.question_id);
           break;
 
+        case "step_awaiting_confirmation":
+          console.log("[LiveKit] step_awaiting_confirmation →", event.question_id, event.top_2, event.bottom_2);
+          setConfirmationData({ question_id: event.question_id, top_2: event.top_2 || [], bottom_2: event.bottom_2 || [] });
+          setSessionState("awaiting_confirmation");
+          break;
+
+        case "step_asking_intensity":
+          console.log("[LiveKit] step_asking_intensity");
+          setSessionState("asking_intensity");
+          break;
+
         case "requesting_email":
           console.log("[LiveKit] requesting_email →", event.requesting_email);
           if (event.requesting_email) setRequestingEmail(true);
@@ -342,6 +356,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setClickQuestionId(null);
     setClickTop2Values([]);
     setPendingClickAnswer(null);
+    setConfirmationData(null);
   }, [sessionData]);
 
   const handleConnectionTimeout = useCallback(() => {
@@ -394,6 +409,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         devMode: DEV_MODE,
         clickSelectionMode,
         pendingClickAnswer,
+        confirmationData,
         startSession,
         endSession,
         handleConnectionTimeout,

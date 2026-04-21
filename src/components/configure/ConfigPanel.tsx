@@ -16,10 +16,11 @@ export default function ConfigPanel() {
   const [persona, setPersona] = useState("");
   const [depth, setDepth] = useState("");
   const [mode, setMode] = useState("");
-  const [inputMode, setInputMode] = useState<"voice" | "click">("voice");
+  const [inputMode, setInputMode] = useState<"voice" | "click" | "quiz">("voice");
   const [avatar, setAvatar] = useState(true);
   const { t } = useTranslation();
 
+  const [email, setEmail] = useState("");
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
@@ -36,7 +37,8 @@ export default function ConfigPanel() {
     }
   };
 
-  const isFormComplete = persona !== "" && depth !== "" && mode !== "";
+  const isQuiz = inputMode === "quiz";
+  const isFormComplete = isQuiz ? depth !== "" : persona !== "" && depth !== "" && mode !== "";
 
   const handleContinue = () => {
     localStorage.setItem("persona", persona);
@@ -44,7 +46,8 @@ export default function ConfigPanel() {
     localStorage.setItem("mode", mode);
     localStorage.setItem("input_mode", inputMode);
     localStorage.setItem("avatar", String(avatar));
-    router.push("/preparation");
+    if (email.trim()) localStorage.setItem("recap_email", email.trim());
+    router.push(inputMode === "quiz" ? "/quiz" : "/preparation");
   };
 
   return (
@@ -67,71 +70,148 @@ export default function ConfigPanel() {
         </p>
       </div>
 
-      {/* ── Two columns ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+      {/* ── Mode de réponse — toujours en premier ── */}
+      <InputModeSelector value={inputMode} onChange={setInputMode} />
 
-        {/* Left */}
-        <div className="space-y-4">
-          <LanguagePicker />
-          <PersonaSelector value={persona} onChange={setPersona} />
-          <DepthSelector value={depth} onChange={setDepth} />
-          <ModeSelector value={mode} onChange={setMode} />
-        </div>
+      {/* ── Two columns — masqué en mode visuel ── */}
+      {!isQuiz && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
 
-        {/* Right */}
-        <div className="space-y-4">
-          <InputModeSelector value={inputMode} onChange={setInputMode} />
-
-          {/* Avatar toggle */}
-          <div className="space-y-1.5">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
-              {t("configure.avatarTitle")}
-            </p>
-            <button
-              type="button"
-              onClick={() => setAvatar((v) => !v)}
-              className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-primary/15 bg-white/40 hover:bg-primary/5 transition-all"
-            >
-              <div className="flex items-center gap-2.5">
-                <MaterialIcon name={avatar ? "videocam" : "videocam_off"} className="text-primary text-[18px]" />
-                <span className="text-xs font-semibold text-primary">
-                  {avatar ? t("configure.avatarOn") : t("configure.avatarOff")}
-                </span>
-              </div>
-              <div className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${avatar ? "bg-primary" : "bg-primary/20"}`}>
-                <div className={`absolute top-0.5 size-4 rounded-full bg-white shadow transition-transform duration-200 ${avatar ? "translate-x-4" : "translate-x-0.5"}`} />
-              </div>
-            </button>
-            <p className="text-[10px] text-[#9c8880] leading-relaxed px-1">
-              {t("configure.avatarHint")}
-            </p>
+          {/* Left */}
+          <div className="space-y-4">
+            <LanguagePicker />
+            <PersonaSelector value={persona} onChange={setPersona} />
+            <DepthSelector value={depth} onChange={setDepth} />
+            <ModeSelector value={mode} onChange={setMode} />
           </div>
 
-          {/* Fullscreen toggle */}
-          <div className="space-y-1.5">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
-              Affichage
-            </p>
-            <button
-              type="button"
-              onClick={toggleFullscreen}
-              className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-primary/15 bg-white/40 hover:bg-primary/5 transition-all"
-            >
-              <div className="flex items-center gap-2.5">
-                <MaterialIcon name={isFullscreen ? "fullscreen_exit" : "fullscreen"} className="text-primary text-[18px]" />
-                <span className="text-xs font-semibold text-primary">
-                  {isFullscreen ? "Quitter le plein écran" : "Plein écran"}
-                </span>
-              </div>
-              <div className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${isFullscreen ? "bg-primary" : "bg-primary/20"}`}>
-                <div className={`absolute top-0.5 size-4 rounded-full bg-white shadow transition-transform duration-200 ${isFullscreen ? "translate-x-4" : "translate-x-0.5"}`} />
-              </div>
-            </button>
-          </div>
+          {/* Right */}
+          <div className="space-y-4">
 
-          <ConnectionTest />
+            {/* Avatar toggle */}
+            <div className="space-y-1.5">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
+                {t("configure.avatarTitle")}
+              </p>
+              <button
+                type="button"
+                onClick={() => setAvatar((v) => !v)}
+                className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-primary/15 bg-white/40 hover:bg-primary/5 transition-all"
+              >
+                <div className="flex items-center gap-2.5">
+                  <MaterialIcon name={avatar ? "videocam" : "videocam_off"} className="text-primary text-[18px]" />
+                  <span className="text-xs font-semibold text-primary">
+                    {avatar ? t("configure.avatarOn") : t("configure.avatarOff")}
+                  </span>
+                </div>
+                <div className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${avatar ? "bg-primary" : "bg-primary/20"}`}>
+                  <div className={`absolute top-0.5 size-4 rounded-full bg-white shadow transition-transform duration-200 ${avatar ? "translate-x-4" : "translate-x-0.5"}`} />
+                </div>
+              </button>
+              <p className="text-[10px] text-[#9c8880] leading-relaxed px-1">
+                {t("configure.avatarHint")}
+              </p>
+            </div>
+
+            {/* Fullscreen toggle */}
+            <div className="space-y-1.5">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
+                Affichage
+              </p>
+              <button
+                type="button"
+                onClick={toggleFullscreen}
+                className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-primary/15 bg-white/40 hover:bg-primary/5 transition-all"
+              >
+                <div className="flex items-center gap-2.5">
+                  <MaterialIcon name={isFullscreen ? "fullscreen_exit" : "fullscreen"} className="text-primary text-[18px]" />
+                  <span className="text-xs font-semibold text-primary">
+                    {isFullscreen ? "Quitter le plein écran" : "Plein écran"}
+                  </span>
+                </div>
+                <div className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${isFullscreen ? "bg-primary" : "bg-primary/20"}`}>
+                  <div className={`absolute top-0.5 size-4 rounded-full bg-white shadow transition-transform duration-200 ${isFullscreen ? "translate-x-4" : "translate-x-0.5"}`} />
+                </div>
+              </button>
+            </div>
+
+            {/* Email recap */}
+            <div className="space-y-1.5">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
+                {t("configure.emailTitle")}
+              </p>
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-primary/15 bg-white/40">
+                <MaterialIcon name="mail" className="text-primary text-[18px] shrink-0" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={t("configure.emailPlaceholder")}
+                  className="flex-1 bg-transparent text-xs font-medium text-primary placeholder:text-primary/35 outline-none"
+                />
+              </div>
+              <p className="text-[10px] text-[#9c8880] leading-relaxed px-1">
+                {t("configure.emailHint")}
+              </p>
+            </div>
+
+            <ConnectionTest />
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* ── Mode visuel : uniquement langue + profondeur ── */}
+      {isQuiz && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div className="space-y-4">
+            <LanguagePicker />
+            <DepthSelector value={depth} onChange={setDepth} />
+          </div>
+          <div className="space-y-4">
+            {/* Fullscreen toggle */}
+            <div className="space-y-1.5">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
+                Affichage
+              </p>
+              <button
+                type="button"
+                onClick={toggleFullscreen}
+                className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-primary/15 bg-white/40 hover:bg-primary/5 transition-all"
+              >
+                <div className="flex items-center gap-2.5">
+                  <MaterialIcon name={isFullscreen ? "fullscreen_exit" : "fullscreen"} className="text-primary text-[18px]" />
+                  <span className="text-xs font-semibold text-primary">
+                    {isFullscreen ? "Quitter le plein écran" : "Plein écran"}
+                  </span>
+                </div>
+                <div className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${isFullscreen ? "bg-primary" : "bg-primary/20"}`}>
+                  <div className={`absolute top-0.5 size-4 rounded-full bg-white shadow transition-transform duration-200 ${isFullscreen ? "translate-x-4" : "translate-x-0.5"}`} />
+                </div>
+              </button>
+            </div>
+
+            {/* Email recap */}
+            <div className="space-y-1.5">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
+                {t("configure.emailTitle")}
+              </p>
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-primary/15 bg-white/40">
+                <MaterialIcon name="mail" className="text-primary text-[18px] shrink-0" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={t("configure.emailPlaceholder")}
+                  className="flex-1 bg-transparent text-xs font-medium text-primary placeholder:text-primary/35 outline-none"
+                />
+              </div>
+              <p className="text-[10px] text-[#9c8880] leading-relaxed px-1">
+                {t("configure.emailHint")}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Continue button ── */}
       <button

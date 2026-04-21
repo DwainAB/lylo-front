@@ -20,13 +20,27 @@ function Dots({ dim }: { dim?: boolean }) {
 }
 
 export default function BottomBar() {
-  const { agentState, currentQuestionIndex, agentName } = useSession();
+  const { agentState, currentQuestionIndex, agentName, sessionState } = useSession();
   const { t } = useTranslation();
   const { send } = useDataChannel("control");
   const room = useRoomContext();
   const [interrupted, setInterrupted] = useState(false);
   const [muted, setMuted] = useState(false);
   const [transcriptOpen, setTranscriptOpen] = useState(false);
+  const [resumeAsked, setResumeAsked] = useState(false);
+
+  // Écoute directement les events "state" pour réafficher le bouton à chaque standby,
+  // même si sessionState était déjà "standby" (React ne re-déclenche pas l'effect dans ce cas)
+  useDataChannel("state", (msg) => {
+    try {
+      const event = JSON.parse(new TextDecoder().decode(msg.payload));
+      if (event.type === "state_change" && event.state === "standby") {
+        setResumeAsked(false);
+      }
+    } catch {
+      // ignore
+    }
+  });
 
   // Question suivante → reset état
   const prevQuestionIndex = useRef(currentQuestionIndex);
@@ -51,6 +65,11 @@ export default function BottomBar() {
     send(new TextEncoder().encode(JSON.stringify({ type: "resume_listen" })), { reliable: true });
     room.localParticipant.getTrackPublication(Track.Source.Microphone)?.unmute();
     setInterrupted(false);
+  };
+
+  const handleResume = () => {
+    send(new TextEncoder().encode(JSON.stringify({ type: "resume" })), { reliable: true });
+    setResumeAsked(true);
   };
 
   const handleMicToggle = () => {
@@ -133,9 +152,22 @@ export default function BottomBar() {
 
         <div className="w-px h-4 sm:h-5 bg-primary/20 shrink-0 mx-1" />
 
-        {/* Centre : statut */}
+        {/* Centre : statut ou bouton "j'ai une question" */}
         <div className="flex items-center gap-1.5 px-1 flex-1 min-w-0">
-          {renderStatus()}
+          {sessionState === "standby" && !resumeAsked ? (
+            <button
+              onClick={handleResume}
+              className="flex items-center gap-1.5 cursor-pointer hover:opacity-70 transition-opacity"
+              title="J'ai une question"
+            >
+              <MaterialIcon name="mic" className="text-[15px] shrink-0 animate-pulse" />
+              <span className="text-[11px] tracking-wider font-medium lowercase truncate">
+                {t("interaction.resumeQuestion")}
+              </span>
+            </button>
+          ) : (
+            renderStatus()
+          )}
         </div>
 
         <div className="w-px h-4 sm:h-5 bg-primary/20 shrink-0 mx-1" />

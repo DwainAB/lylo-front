@@ -31,6 +31,7 @@
     "male": "Homme",
     "female": "Femme",
     "depthTitle": "Profondeur d'analyse",
+    "questionCountTitle": "Nombre de questions",
     "depthInfo": "Correspond au nombre de questions posées par l'IA. Plus il y en a, plus l'analyse sera précise et personnalisée.",
     "quick": "Rapide",
     "standard": "Standard",
@@ -53,11 +54,16 @@
     "inputModeVoiceDesc": "Répondez à l'oral",
     "inputModeClick": "Hybride",
     "inputModeClickDesc": "Cliquez sur les cartes",
-    "inputModeInfo": "Voix : vous et l'IA échangez entièrement à voix haute tout au long de la conversation.\n\nHybride : vous cliquez sur les choix proposés pour répondre et parlez uniquement pour le reste de l'expérience. Idéal dans les environnements bruyants.",
+    "inputModeQuiz": "Visuel",
+    "inputModeQuizDesc": "Lisez et cliquez",
+    "inputModeInfo": "Voix : vous et l'IA échangez entièrement à voix haute tout au long de la conversation.\n\nHybride : vous cliquez sur les choix proposés pour répondre et parlez uniquement pour le reste de l'expérience. Idéal dans les environnements bruyants.\n\nVisuel : aucune voix. Vous lisez les questions et cliquez sur vos réponses. Les formules sont générées directement.",
     "avatarTitle": "Avatar vidéo",
     "avatarOn": "Avatar activé",
     "avatarOff": "Audio uniquement",
-    "avatarHint": "Désactivez si votre connexion est lente. Faites le test ci-dessous pour vérifier."
+    "avatarHint": "Désactivez si votre connexion est lente. Faites le test ci-dessous pour vérifier.",
+    "emailTitle": "Récapitulatif par mail",
+    "emailPlaceholder": "votre@email.com",
+    "emailHint": "Recevez un résumé de votre session olfactive par e-mail à la fin de l'expérience."
   },
   "interaction": {
     "brand": "Le studio des parfums",
@@ -70,7 +76,8 @@
     "agentListening": "À vous de parler",
     "agentIdle": "Session en attente...",
     "connecting": "Connexion en cours...",
-    "clickSelectHint": "Cliquez sur vos 2 choix"
+    "clickSelectHint": "Cliquez sur vos 2 choix",
+    "resumeQuestion": "j'ai une question"
   },
   "preparation": {
     "title": "Préparation de votre voyage olfactif",
@@ -122,6 +129,17 @@
     "micMin": "Bas",
     "micMax": "Élevé"
   },
+  "confirmation": {
+    "subtitle": "Récapitulatif de vos choix",
+    "preferred": "Vos préférés",
+    "leastFavored": "Les moins aimés"
+  },
+  "intensity": {
+    "subtitle": "Quelle intensité souhaitez-vous ?",
+    "légère": "Légère",
+    "modérée": "Modérée",
+    "intense": "Intense"
+  },
   "transcript": {
     "toggle": "Conversation",
     "title": "Conversation",
@@ -141,6 +159,42 @@
     "close": "Fermer",
     "logout": "Déconnexion",
     "welcome": "Bonjour"
+  },
+  "quiz": {
+    "label": "Mode Visuel",
+    "title": "Vos préférences olfactives",
+    "subtitle": "Sélectionnez vos 4 choix pour chaque question — du plus au moins apprécié.",
+    "loading": "Chargement des questions...",
+    "back": "Retour",
+    "profileLabel": "Votre profil",
+    "profileTitle": "Parlez-nous de vous",
+    "profileSubtitle": "Ces informations permettent de personnaliser votre formule.",
+    "profileGenderQuestion": "Quel est votre genre ?",
+    "profileMale": "Homme",
+    "profileFemale": "Femme",
+    "profileAgeQuestion": "Quel est votre âge ?",
+    "profileAgePlaceholder": "ex: 35",
+    "profilePregnantQuestion": "Êtes-vous enceinte ?",
+    "profileAllergiesQuestion": "Avez-vous des allergies ?",
+    "profileAllergiesDetailQuestion": "Quelles sont vos allergies ?",
+    "profileAllergiesPlaceholder": "ex: jasmin, musc, bois de cèdre...",
+    "yes": "Oui",
+    "no": "Non",
+    "submit": "Générer mes formules",
+    "continue": "Continuer",
+    "next": "Question suivante",
+    "hintTop2": "Choisissez vos 2 préférés",
+    "hintBottom2": "Choisissez vos 2 moins aimés",
+    "resultsLabel": "Vos Formules",
+    "resultsTitle": "Voici vos formules sur mesure",
+    "resultsSubtitle": "Cliquez sur la formule qui vous correspond le mieux.",
+    "resultsTitleChosen": "Votre formule",
+    "resultsSubtitleChosen": "Vous avez fait votre choix.",
+    "changeChoice": "Changer de formule",
+    "print": "Imprimer",
+    "sendEmail": "Envoyer par email",
+    "emailSent": "Email envoyé",
+    "emailError": "Une erreur est survenue. Veuillez réessayer."
   },
   "recommendations": {
     "brand": "Le Studio Des Parfums",

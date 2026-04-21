@@ -138,6 +138,17 @@ export default function RecommendationsPage() {
                   </button>
                 )}
 
+                {/* Bouton Imprimer */}
+                {sessionData?.session_id && (
+                  <button
+                    onClick={() => window.open(`${API_BASE}/api/session/${sessionData.session_id}/formula/pdf`, "_blank")}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-white/90 backdrop-blur-sm text-primary text-sm font-medium border border-primary/25 cursor-pointer shadow-lg shadow-primary/10 hover:bg-white hover:border-primary/40 transition-all"
+                  >
+                    <MaterialIcon name="print" className="text-[18px]" />
+                    Imprimer
+                  </button>
+                )}
+
                 {/* Bouton Voir l'email */}
                 {showMailButton && (
                   <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-primary text-white text-sm font-semibold shadow-lg shadow-primary/30 hover:brightness-110 transition-all">

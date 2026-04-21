@@ -5,8 +5,8 @@ import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
 
 interface InputModeSelectorProps {
-  value: "voice" | "click";
-  onChange: (value: "voice" | "click") => void;
+  value: "voice" | "click" | "quiz";
+  onChange: (value: "voice" | "click" | "quiz") => void;
 }
 
 export default function InputModeSelector({ value, onChange }: InputModeSelectorProps) {
@@ -14,8 +14,9 @@ export default function InputModeSelector({ value, onChange }: InputModeSelector
   const [showInfo, setShowInfo] = useState(false);
 
   const options = [
-    { value: "voice" as const, label: t("configure.inputModeVoice"), icon: "mic" },
-    { value: "click" as const, label: t("configure.inputModeClick"), icon: "touch_app" },
+    { value: "voice" as const, label: t("configure.inputModeVoice") },
+    { value: "click" as const, label: t("configure.inputModeClick") },
+    { value: "quiz" as const, label: t("configure.inputModeQuiz") },
   ];
 
   const infoLines = t("configure.inputModeInfo").split("\n\n");
@@ -46,7 +47,7 @@ export default function InputModeSelector({ value, onChange }: InputModeSelector
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-2.5">
+      <div className="grid grid-cols-3 gap-2.5">
         {options.map((option) => (
           <label key={option.value} className="group relative cursor-pointer">
             <input
@@ -57,8 +58,7 @@ export default function InputModeSelector({ value, onChange }: InputModeSelector
               onChange={() => onChange(option.value)}
               className="peer hidden"
             />
-            <div className="flex items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 border-primary/10 bg-white/50 text-primary/60 transition-all group-hover:bg-primary/5 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-lg">
-              <MaterialIcon name={option.icon} className="text-base" />
+            <div className="flex items-center justify-center px-3 py-3 rounded-lg border-2 border-primary/10 bg-white/50 text-primary/60 transition-all group-hover:bg-primary/5 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-lg">
               <span className="text-sm font-bold">{option.label}</span>
             </div>
           </label>

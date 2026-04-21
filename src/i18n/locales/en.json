@@ -31,6 +31,7 @@
     "male": "Male",
     "female": "Female",
     "depthTitle": "Depth of Analysis",
+    "questionCountTitle": "Number of questions",
     "depthInfo": "Corresponds to the number of questions asked by the AI. The more questions, the more precise and personalised the analysis will be.",
     "quick": "Quick",
     "standard": "Standard",
@@ -53,11 +54,16 @@
     "inputModeVoiceDesc": "Answer out loud",
     "inputModeClick": "Hybrid",
     "inputModeClickDesc": "Click on the cards",
-    "inputModeInfo": "Voice: you and the AI exchange entirely out loud throughout the conversation.\n\nHybrid: you click on the proposed choices to answer and only speak for the rest of the experience. Ideal in noisy environments.",
+    "inputModeQuiz": "Visual",
+    "inputModeQuizDesc": "Read & click",
+    "inputModeInfo": "Voice: you and the AI exchange entirely out loud throughout the conversation.\n\nHybrid: you click on the proposed choices to answer and only speak for the rest of the experience. Ideal in noisy environments.\n\nVisual: no voice at all. You read the questions and click your answers. Formulas are generated directly.",
     "avatarTitle": "Video avatar",
     "avatarOn": "Avatar enabled",
     "avatarOff": "Audio only",
-    "avatarHint": "Disable if your connection is slow. Run the test below to check."
+    "avatarHint": "Disable if your connection is slow. Run the test below to check.",
+    "emailTitle": "Summary by email",
+    "emailPlaceholder": "your@email.com",
+    "emailHint": "Receive a summary of your olfactory session by email at the end of the experience."
   },
   "interaction": {
     "brand": "Le studio des parfums",
@@ -70,7 +76,8 @@
     "agentListening": "Your turn to speak",
     "agentIdle": "Session on hold...",
     "connecting": "Connecting...",
-    "clickSelectHint": "Click on your 2 choices"
+    "clickSelectHint": "Click on your 2 choices",
+    "resumeQuestion": "i have a question"
   },
   "preparation": {
     "title": "Preparing your olfactory journey",
@@ -122,6 +129,17 @@
     "micMin": "Low",
     "micMax": "High"
   },
+  "confirmation": {
+    "subtitle": "Summary of your choices",
+    "preferred": "Your favorites",
+    "leastFavored": "Least favored"
+  },
+  "intensity": {
+    "subtitle": "What intensity would you like?",
+    "légère": "Light",
+    "modérée": "Moderate",
+    "intense": "Intense"
+  },
   "transcript": {
     "toggle": "Conversation",
     "title": "Conversation",
@@ -141,6 +159,42 @@
     "close": "Close",
     "logout": "Log out",
     "welcome": "Hello"
+  },
+  "quiz": {
+    "label": "Visual Mode",
+    "title": "Your olfactory preferences",
+    "subtitle": "Select your 4 choices for each question — from most to least preferred.",
+    "loading": "Loading questions...",
+    "back": "Back",
+    "profileLabel": "Your profile",
+    "profileTitle": "Tell us about yourself",
+    "profileSubtitle": "This information helps personalise your formula.",
+    "profileGenderQuestion": "What is your gender?",
+    "profileMale": "Male",
+    "profileFemale": "Female",
+    "profileAgeQuestion": "How old are you?",
+    "profileAgePlaceholder": "e.g. 35",
+    "profilePregnantQuestion": "Are you pregnant?",
+    "profileAllergiesQuestion": "Do you have any allergies?",
+    "profileAllergiesDetailQuestion": "What are your allergies?",
+    "profileAllergiesPlaceholder": "e.g. jasmine, musk, cedarwood...",
+    "yes": "Yes",
+    "no": "No",
+    "submit": "Generate my formulas",
+    "continue": "Continue",
+    "next": "Next question",
+    "hintTop2": "Choose your 2 favourites",
+    "hintBottom2": "Choose your 2 least favourites",
+    "resultsLabel": "Your Formulas",
+    "resultsTitle": "Your bespoke formulas",
+    "resultsSubtitle": "Click on the formula that suits you best.",
+    "resultsTitleChosen": "Your formula",
+    "resultsSubtitleChosen": "You have made your choice.",
+    "changeChoice": "Change formula",
+    "print": "Print",
+    "sendEmail": "Send by email",
+    "emailSent": "Email sent",
+    "emailError": "An error occurred. Please try again."
   },
   "recommendations": {
     "brand": "Le Studio Des Parfums",

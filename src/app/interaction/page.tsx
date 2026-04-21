@@ -8,6 +8,8 @@ import Navbar from "@/components/layout/Navbar";
 import AvatarSection from "@/components/interaction/AvatarSection";
 import StepProgress from "@/components/interaction/StepProgress";
 import ChoiceGrid from "@/components/interaction/ChoiceGrid";
+import AnswerConfirmation from "@/components/interaction/AnswerConfirmation";
+import IntensitySelector from "@/components/interaction/IntensitySelector";
 import nextDynamic from "next/dynamic";
 const BottomBar = nextDynamic(() => import("@/components/livekit/BottomBar"), { ssr: false });
 import GeneratingLoader from "@/components/livekit/GeneratingLoader";
@@ -17,7 +19,7 @@ import { useSession, DEV_MODE } from "@/context/SessionContext";
 export default function InteractionPage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { sessionState, questionCount, questions, currentQuestionIndex } = useSession();
+  const { sessionState, questionCount, questions, currentQuestionIndex, confirmationData } = useSession();
 
   useEffect(() => {
     if (DEV_MODE) return;
@@ -57,8 +59,17 @@ export default function InteractionPage() {
           </h3>
         </div>
 
-        {/* Choice selection grid */}
-        <ChoiceGrid choices={currentQuestion?.choices || []} />
+        {/* Récap confirmation top2 / bottom2 */}
+        {sessionState === "awaiting_confirmation" && confirmationData ? (
+          <AnswerConfirmation
+            top2={confirmationData.top_2}
+            bottom2={confirmationData.bottom_2}
+          />
+        ) : sessionState === "asking_intensity" ? (
+          <IntensitySelector />
+        ) : (
+          <ChoiceGrid choices={currentQuestion?.choices || []} />
+        )}
 
         {/* Barre de contrôle */}
         <div className="flex justify-center shrink-0 py-3">
