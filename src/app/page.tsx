@@ -14,7 +14,8 @@ export default function Home() {
       endSession();
     }
   }, []);
-//test
+
+  
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden h-full">
       <Navbar />
