@@ -124,6 +124,7 @@ interface SessionContextType {
   clickSelectionMode: "top_2" | "bottom_2" | null;
   pendingClickAnswer: PendingClickAnswer | null;
   confirmationData: { question_id: number; top_2: string[]; bottom_2: string[] } | null;
+  avatarDisabled: boolean;
   setConnectionError: (v: boolean) => void;
   startSession: () => Promise<void>;
   endSession: () => void;
@@ -162,6 +163,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [clickTop2Values, setClickTop2Values] = useState<string[]>([]);
   const [pendingClickAnswer, setPendingClickAnswer] = useState<PendingClickAnswer | null>(null);
   const [confirmationData, setConfirmationData] = useState<{ question_id: number; top_2: string[]; bottom_2: string[] } | null>(null);
+  const [avatarDisabled, setAvatarDisabled] = useState(false);
 
   const startSession = useCallback(async () => {
     if (DEV_MODE) return;
@@ -298,6 +300,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           if (event.requesting_email) setRequestingEmail(true);
           break;
 
+        case "avatar_disabled":
+          console.log("[LiveKit] avatar_disabled →", event.reason ?? "disconnected");
+          setAvatarDisabled(true);
+          break;
+
         default:
           console.warn("[LiveKit] unknown event type:", event.type, event);
       }
@@ -410,6 +417,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         clickSelectionMode,
         pendingClickAnswer,
         confirmationData,
+        avatarDisabled,
         startSession,
         endSession,
         handleConnectionTimeout,

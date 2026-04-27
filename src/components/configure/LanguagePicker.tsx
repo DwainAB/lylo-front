@@ -61,7 +61,7 @@ export default function LanguagePicker() {
 
   return (
     <section>
-      <h3 className="text-text-dark text-xs font-bold uppercase tracking-widest leading-tight mb-2.5 flex items-center gap-2">
+      <h3 className="text-text-dark text-xs font-bold uppercase tracking-widest leading-tight mb-1.5 flex items-center gap-2">
         <MaterialIcon name="record_voice_over" className="text-sm" />
         {t("configure.languageTitle")}
       </h3>
@@ -69,7 +69,7 @@ export default function LanguagePicker() {
       {/* Trigger */}
       <button
         onClick={openModal}
-        className="w-full flex items-center justify-between px-4 py-3 rounded-lg border-2 border-primary/10 bg-white/50 text-primary hover:bg-primary/5 hover:border-primary/25 transition-all group cursor-pointer"
+        className="w-full flex items-center justify-between px-3 py-2 rounded-lg border-2 border-primary/10 bg-white/50 text-primary hover:bg-primary/5 hover:border-primary/25 transition-all group cursor-pointer"
       >
         <div className="flex items-center gap-4">
           <span className="text-2xl leading-none">{currentLang.flag}</span>

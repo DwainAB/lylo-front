@@ -21,12 +21,43 @@ export default function RecommendationsPage() {
   const { formulas: sessionFormulas, endSession, sessionData, requestingEmail, agentName } = useSession();
   const [email, setEmail] = useState("");
   const [sendStatus, setSendStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [printStatus, setPrintStatus] = useState<"idle" | "printing" | "done" | "error">("idle");
+
+  const printerLocation = typeof window !== "undefined" ? localStorage.getItem("printer_location") ?? "" : "";
 
   const [devSingleFormula, setDevSingleFormula] = useState(false);
 
   const persona = typeof window !== "undefined" ? localStorage.getItem("persona") : null;
   const avatarUrl = persona === "male" ? "/avatar-h.jpg" : "/avatar-f.jpg";
   const avatarEnabled = typeof window !== "undefined" ? localStorage.getItem("avatar") !== "false" : true;
+
+  const handlePrint = async () => {
+    const formula = sessionFormulas[0];
+    if (!formula || !printerLocation) return;
+    setPrintStatus("printing");
+    try {
+      const size = formula.sizes["30ml"];
+      const res = await fetch(`${API_BASE}/printers/print-formula`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          location: printerLocation,
+          formula: {
+            profile: formula.profile,
+            notes: {
+              top: size.top_notes.map((n) => n.name),
+              heart: size.heart_notes.map((n) => n.name),
+              base: size.base_notes.map((n) => n.name),
+            },
+            date: new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }),
+          },
+        }),
+      });
+      setPrintStatus(res.ok ? "done" : "error");
+    } catch {
+      setPrintStatus("error");
+    }
+  };
 
   const handleSendEmail = async () => {
     if (!sessionData?.session_id || !email) return;
@@ -139,14 +170,28 @@ export default function RecommendationsPage() {
                 )}
 
                 {/* Bouton Imprimer */}
-                {sessionData?.session_id && (
-                  <button
-                    onClick={() => window.open(`${API_BASE}/api/session/${sessionData.session_id}/formula/pdf`, "_blank")}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-white/90 backdrop-blur-sm text-primary text-sm font-medium border border-primary/25 cursor-pointer shadow-lg shadow-primary/10 hover:bg-white hover:border-primary/40 transition-all"
-                  >
-                    <MaterialIcon name="print" className="text-[18px]" />
-                    Imprimer
-                  </button>
+                {printerLocation && (
+                  printStatus === "done" ? (
+                    <div className="flex items-center gap-2 text-sm text-green-700">
+                      <MaterialIcon name="check_circle" className="text-[18px]" />
+                      Imprimé
+                    </div>
+                  ) : (
+                    <button
+                      onClick={handlePrint}
+                      disabled={printStatus === "printing"}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-white/90 backdrop-blur-sm text-primary text-sm font-medium border border-primary/25 cursor-pointer shadow-lg shadow-primary/10 hover:bg-white hover:border-primary/40 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      {printStatus === "printing"
+                        ? <div className="size-4 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+                        : <MaterialIcon name="print" className="text-[18px]" />
+                      }
+                      Imprimer
+                    </button>
+                  )
+                )}
+                {printStatus === "error" && (
+                  <p className="text-xs text-red-500 text-center">Erreur d&apos;impression.</p>
                 )}
 
                 {/* Bouton Voir l'email */}

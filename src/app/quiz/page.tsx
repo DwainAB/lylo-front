@@ -9,6 +9,7 @@ import StepProgress from "@/components/interaction/StepProgress";
 import GeneratingLoader from "@/components/livekit/GeneratingLoader";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { PARTICIPANT_COLORS } from "@/components/configure/ConfigPanel";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
@@ -21,6 +22,13 @@ type Step = "profile" | "questionnaire";
 type Phase = "top2" | "bottom2" | "confirm";
 type ProfileStep = "gender" | "age" | "pregnant" | "allergies" | "allergies_detail";
 
+// ── Mode multi ───────────────────────────────────────────────────────────
+interface ParticipantState {
+  color: string;
+  profile: Profile;
+  answers: QuizAnswer[];
+}
+
 function BigButton({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
   return (
     <button
@@ -29,7 +37,7 @@ function BigButton({ label, selected, onClick }: { label: string; selected: bool
       className={`flex-1 py-4 rounded-xl border-2 text-base font-semibold transition-all
         ${selected
           ? "border-primary bg-primary text-white shadow-lg scale-[1.02]"
-          : "border-primary/15 bg-white/60 text-primary/70 hover:border-primary/40 hover:bg-primary/5"
+          : "border-primary/20 bg-white text-primary/80 hover:bg-primary hover:text-white hover:border-primary shadow-sm"
         }`}
     >
       {label}
@@ -37,16 +45,40 @@ function BigButton({ label, selected, onClick }: { label: string; selected: bool
   );
 }
 
+// ── Bannière couleur ─────────────────────────────────────────────────────
+function ColorTurnBanner({ colorId }: { colorId: string }) {
+  const def = PARTICIPANT_COLORS.find((c) => c.id === colorId);
+  if (!def) return null;
+  return (
+    <div
+      className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl text-sm font-bold tracking-wide"
+      style={{ backgroundColor: def.bg, color: def.text }}
+    >
+      <span
+        className="inline-block size-3 rounded-full"
+        style={{ backgroundColor: def.text }}
+      />
+      {def.label.charAt(0).toUpperCase() + def.label.slice(1)}, à votre tour
+    </div>
+  );
+}
+
 export default function QuizPage() {
   const router = useRouter();
   const { t } = useTranslation();
 
+  // ── Config depuis localStorage ─────────────────────────────────────
+  const language = typeof window !== "undefined" ? localStorage.getItem("language") ?? "fr" : "fr";
+  const depth = typeof window !== "undefined" ? localStorage.getItem("depth") ?? "12" : "12";
+  const questionCount = parseInt(depth) || 12;
+
+  const rawColors = typeof window !== "undefined" ? localStorage.getItem("participant_colors") : null;
+  const participantColors: string[] = rawColors ? JSON.parse(rawColors) : [];
+  const isMulti = participantColors.length > 1;
+
+  // ── État commun ────────────────────────────────────────────────────
   const [step, setStep] = useState<Step>("profile");
   const [profileStep, setProfileStep] = useState<ProfileStep>("gender");
-  const [profile, setProfile] = useState<Profile>({
-    gender: "", age: "", pregnant: null, has_allergies: null, allergies: "",
-  });
-
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,12 +87,30 @@ export default function QuizPage() {
   const [phase, setPhase] = useState<Phase>("top2");
   const [top2, setTop2] = useState<string[]>([]);
   const [bottom2, setBottom2] = useState<string[]>([]);
+
+  // ── Mode solo ──────────────────────────────────────────────────────
+  const [profile, setProfile] = useState<Profile>({
+    gender: "", age: "", pregnant: null, has_allergies: null, allergies: "",
+  });
   const [answers, setAnswers] = useState<QuizAnswer[]>([]);
 
-  const language = typeof window !== "undefined" ? localStorage.getItem("language") ?? "fr" : "fr";
-  const depth = typeof window !== "undefined" ? localStorage.getItem("depth") ?? "12" : "12";
-  const questionCount = parseInt(depth) || 12;
+  // ── Mode multi ─────────────────────────────────────────────────────
+  const initParticipants = (): ParticipantState[] =>
+    participantColors.map((color) => ({
+      color,
+      profile: { gender: "", age: "", pregnant: null, has_allergies: null, allergies: "" },
+      answers: [],
+    }));
+  const [participants, setParticipants] = useState<ParticipantState[]>(initParticipants);
+  const [currentParticipantIndex, setCurrentParticipantIndex] = useState(0);
+  // En mode multi, l'étape de profil s'applique participant par participant
+  const [multiProfileStep, setMultiProfileStep] = useState<ProfileStep>("gender");
 
+  const currentParticipant = participants[currentParticipantIndex];
+  const currentColor = isMulti ? participantColors[currentParticipantIndex] : null;
+  const colorDef = currentColor ? PARTICIPANT_COLORS.find((c) => c.id === currentColor) : null;
+
+  // ── Chargement des questions ────────────────────────────────────────
   useEffect(() => {
     if (step !== "questionnaire") return;
     setLoading(true);
@@ -71,11 +121,17 @@ export default function QuizPage() {
       .finally(() => setLoading(false));
   }, [step]);
 
-  // ── Navigation profil ────────────────────────────────────────────────────
+  // ── Couleur de fond dynamique ────────────────────────────────────────
+  const bgStyle = colorDef
+    ? { backgroundColor: colorDef.bg }
+    : {};
+
+  // ════════════════════════════════════════════════════════════════════
+  // PROFIL SOLO
+  // ════════════════════════════════════════════════════════════════════
   const advanceProfile = useCallback((updates: Partial<Profile>) => {
     const next = { ...profile, ...updates };
     setProfile(next);
-
     if (profileStep === "gender") {
       setProfileStep("age");
     } else if (profileStep === "age") {
@@ -90,7 +146,56 @@ export default function QuizPage() {
     }
   }, [profile, profileStep]);
 
-  // ── Questionnaire ────────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════
+  // PROFIL MULTI
+  // ════════════════════════════════════════════════════════════════════
+  const updateCurrentParticipantProfile = (updates: Partial<Profile>) => {
+    setParticipants((prev) => {
+      const next = [...prev];
+      next[currentParticipantIndex] = {
+        ...next[currentParticipantIndex],
+        profile: { ...next[currentParticipantIndex].profile, ...updates },
+      };
+      return next;
+    });
+  };
+
+  const advanceMultiProfile = useCallback((updates: Partial<Profile>) => {
+    const next = { ...currentParticipant.profile, ...updates };
+    updateCurrentParticipantProfile(updates);
+
+    if (multiProfileStep === "gender") {
+      setMultiProfileStep("age");
+    } else if (multiProfileStep === "age") {
+      setMultiProfileStep(next.gender === "femme" ? "pregnant" : "allergies");
+    } else if (multiProfileStep === "pregnant") {
+      setMultiProfileStep("allergies");
+    } else if (multiProfileStep === "allergies") {
+      if (updates.has_allergies === true) {
+        setMultiProfileStep("allergies_detail");
+      } else {
+        // Ce participant a fini son profil
+        advanceToNextParticipantOrQuestionnaire();
+      }
+    } else if (multiProfileStep === "allergies_detail") {
+      advanceToNextParticipantOrQuestionnaire();
+    }
+  }, [currentParticipant, multiProfileStep, currentParticipantIndex, participants]);
+
+  const advanceToNextParticipantOrQuestionnaire = () => {
+    if (currentParticipantIndex + 1 < participantColors.length) {
+      setCurrentParticipantIndex((i) => i + 1);
+      setMultiProfileStep("gender");
+    } else {
+      // Tous les profils remplis → questionnaire, on recommence depuis le premier participant
+      setCurrentParticipantIndex(0);
+      setStep("questionnaire");
+    }
+  };
+
+  // ════════════════════════════════════════════════════════════════════
+  // QUESTIONNAIRE (solo + multi)
+  // ════════════════════════════════════════════════════════════════════
   const currentQuestion = questions[currentIndex];
 
   const handleTopSelect = useCallback((label: string) => {
@@ -119,16 +224,45 @@ export default function QuizPage() {
       top_2: top2,
       bottom_2: bottom2.length === 2 ? bottom2 : [...bottom2, ...remaining].slice(0, 2),
     };
-    const newAnswers = [...answers, answer];
-    setAnswers(newAnswers);
-    if (currentIndex + 1 < questions.length) {
-      setCurrentIndex((i) => i + 1);
-      setPhase("top2"); setTop2([]); setBottom2([]);
-    } else {
-      submitAnswers(newAnswers);
-    }
-  }, [currentQuestion, top2, bottom2, answers, currentIndex, questions.length]);
 
+    if (isMulti) {
+      // Construit l'état mis à jour localement pour pouvoir l'utiliser immédiatement
+      const updatedParticipants = participants.map((p, i) =>
+        i === currentParticipantIndex
+          ? { ...p, answers: [...p.answers, answer] }
+          : p
+      );
+      setParticipants(updatedParticipants);
+
+      const nextParticipantIdx = currentParticipantIndex + 1;
+      if (nextParticipantIdx < participantColors.length) {
+        // Passe au participant suivant pour la même question
+        setCurrentParticipantIndex(nextParticipantIdx);
+        setPhase("top2"); setTop2([]); setBottom2([]);
+      } else {
+        // Tous ont répondu à cette question → question suivante
+        setCurrentParticipantIndex(0);
+        if (currentIndex + 1 < questions.length) {
+          setCurrentIndex((i) => i + 1);
+          setPhase("top2"); setTop2([]); setBottom2([]);
+        } else {
+          // Toutes les questions terminées — on passe l'état final directement
+          submitMultiAnswers(updatedParticipants);
+        }
+      }
+    } else {
+      const newAnswers = [...answers, answer];
+      setAnswers(newAnswers);
+      if (currentIndex + 1 < questions.length) {
+        setCurrentIndex((i) => i + 1);
+        setPhase("top2"); setTop2([]); setBottom2([]);
+      } else {
+        submitAnswers(newAnswers);
+      }
+    }
+  }, [currentQuestion, top2, bottom2, answers, currentIndex, questions.length, isMulti, currentParticipantIndex, participantColors.length, participants]);
+
+  // ── Soumission solo ────────────────────────────────────────────────
   const submitAnswers = async (finalAnswers: QuizAnswer[]) => {
     setGenerating(true);
     try {
@@ -155,6 +289,36 @@ export default function QuizPage() {
     }
   };
 
+  // ── Soumission multi ───────────────────────────────────────────────
+  const submitMultiAnswers = async (finalParticipants: ParticipantState[]) => {
+    setGenerating(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/formulas/generate-multi`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          language,
+          participants: finalParticipants.map((p) => ({
+            color: p.color,
+            gender: p.profile.gender,
+            age: p.profile.age,
+            has_allergies: p.profile.has_allergies ? "oui" : "non",
+            allergies: p.profile.allergies || undefined,
+            pregnant: p.profile.pregnant ?? false,
+            answers: p.answers,
+          })),
+        }),
+      });
+      if (!res.ok) throw new Error("Erreur génération multi");
+      const data = await res.json();
+      localStorage.setItem("quiz_multi_results", JSON.stringify(data.participants ?? []));
+      router.push("/quiz/results");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erreur inconnue");
+      setGenerating(false);
+    }
+  };
+
   if (generating) return <GeneratingLoader />;
   if (error) return (
     <div className="relative h-dvh w-full flex flex-col bg-stone-50">
@@ -166,135 +330,158 @@ export default function QuizPage() {
     </div>
   );
 
-  // ══════════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════════
   // PROFIL — une question à la fois
-  // ══════════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════════
   if (step === "profile") {
+    const activeProfile = isMulti ? currentParticipant.profile : profile;
+    const activeProfileStep = isMulti ? multiProfileStep : profileStep;
+    const activeAdvance = isMulti ? advanceMultiProfile : advanceProfile;
+
     const profileSteps: ProfileStep[] = ["gender", "age", "pregnant", "allergies", "allergies_detail"];
     const visibleSteps = profileSteps.filter((s) => {
-      if (s === "pregnant" && profile.gender !== "femme") return false;
-      if (s === "allergies_detail" && !profile.has_allergies) return false;
+      if (s === "pregnant" && activeProfile.gender !== "femme") return false;
+      if (s === "allergies_detail" && !activeProfile.has_allergies) return false;
       return true;
     });
-    const currentProfileIndex = visibleSteps.indexOf(profileStep);
+    const currentProfileIndex = visibleSteps.indexOf(activeProfileStep);
     const totalProfileSteps = visibleSteps.length;
 
+    const goBackProfile = () => {
+      if (isMulti) setMultiProfileStep(visibleSteps[currentProfileIndex - 1]);
+      else setProfileStep(visibleSteps[currentProfileIndex - 1]);
+    };
+
     return (
-      <div className="relative flex h-dvh w-full flex-col">
+      <div className="relative flex h-dvh w-full flex-col transition-colors duration-500" style={bgStyle}>
         <Navbar showActions={false} transparent />
 
         <main className="flex-1 flex flex-col items-center justify-center px-4 relative z-10">
-          <div className="w-full max-w-lg flex flex-col items-center gap-8">
+          <div className="w-full max-w-lg flex flex-col items-center gap-5">
 
-            {/* Progress */}
-            <StepProgress currentStep={currentProfileIndex + 1} totalSteps={totalProfileSteps} />
-
-            {/* Question genre */}
-            {profileStep === "gender" && (
-              <div className="w-full flex flex-col items-center gap-6">
-                <h2 className="text-2xl md:text-3xl font-extralight tracking-tight text-center leading-tight">
-                  {t("quiz.profileGenderQuestion")}
-                </h2>
-                <div className="flex gap-4 w-full max-w-xs">
-                  <BigButton label={t("quiz.profileMale")} selected={profile.gender === "homme"} onClick={() => advanceProfile({ gender: "homme", pregnant: false })} />
-                  <BigButton label={t("quiz.profileFemale")} selected={profile.gender === "femme"} onClick={() => advanceProfile({ gender: "femme" })} />
-                </div>
-              </div>
+            {isMulti && currentColor && (
+              <ColorTurnBanner colorId={currentColor} />
             )}
 
-            {/* Question âge */}
-            {profileStep === "age" && (
-              <div className="w-full flex flex-col items-center gap-6">
-                <h2 className="text-2xl md:text-3xl font-extralight tracking-tight text-center leading-tight">
-                  {t("quiz.profileAgeQuestion")}
-                </h2>
-                <div className="flex items-center gap-3 px-5 py-3.5 rounded-xl border-2 border-primary/15 bg-white/60 w-full max-w-xs">
-                  <MaterialIcon name="cake" className="text-primary text-[20px] shrink-0" />
-                  <input
-                    type="number"
-                    min={10} max={110}
-                    value={profile.age}
-                    onChange={(e) => setProfile((p) => ({ ...p, age: e.target.value }))}
-                    onKeyDown={(e) => e.key === "Enter" && profile.age.trim() && advanceProfile({})}
-                    placeholder={t("quiz.profileAgePlaceholder")}
-                    autoFocus
-                    className="flex-1 bg-transparent text-base font-medium text-primary placeholder:text-primary/35 outline-none"
-                  />
+            {/* Carte blanche : progress + question + contrôles */}
+            <div className="w-full bg-white rounded-2xl shadow-lg px-8 py-8 flex flex-col items-center gap-6">
+
+              {/* Progress */}
+              <StepProgress currentStep={currentProfileIndex + 1} totalSteps={totalProfileSteps} />
+
+              {/* Question genre */}
+              {activeProfileStep === "gender" && (
+                <div className="w-full flex flex-col items-center gap-6">
+                  <h2 className="text-2xl md:text-3xl font-extralight tracking-tight text-center leading-tight text-primary">
+                    {t("quiz.profileGenderQuestion")}
+                  </h2>
+                  <div className="flex gap-4 w-full max-w-xs">
+                    <BigButton label={t("quiz.profileMale")} selected={activeProfile.gender === "homme"} onClick={() => activeAdvance({ gender: "homme", pregnant: false })} />
+                    <BigButton label={t("quiz.profileFemale")} selected={activeProfile.gender === "femme"} onClick={() => activeAdvance({ gender: "femme" })} />
+                  </div>
                 </div>
+              )}
+
+              {/* Question âge */}
+              {activeProfileStep === "age" && (
+                <div className="w-full flex flex-col items-center gap-6">
+                  <h2 className="text-2xl md:text-3xl font-extralight tracking-tight text-center leading-tight text-primary">
+                    {t("quiz.profileAgeQuestion")}
+                  </h2>
+                  <div className="flex items-center gap-3 px-5 py-3.5 rounded-xl border-2 border-primary/15 bg-stone-50 w-full max-w-xs">
+                    <MaterialIcon name="cake" className="text-primary text-[20px] shrink-0" />
+                    <input
+                      type="number"
+                      min={10} max={110}
+                      value={activeProfile.age}
+                      onChange={(e) => {
+                        if (isMulti) updateCurrentParticipantProfile({ age: e.target.value });
+                        else setProfile((p) => ({ ...p, age: e.target.value }));
+                      }}
+                      onKeyDown={(e) => e.key === "Enter" && activeProfile.age.trim() && activeAdvance({})}
+                      placeholder={t("quiz.profileAgePlaceholder")}
+                      autoFocus
+                      className="flex-1 bg-transparent text-base font-medium text-primary placeholder:text-primary/35 outline-none"
+                    />
+                  </div>
+                  <button
+                    disabled={!activeProfile.age.trim()}
+                    onClick={() => activeAdvance({})}
+                    className="bg-primary hover:bg-primary/90 text-white font-bold px-10 py-3 rounded-lg shadow-xl transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
+                  >
+                    {t("quiz.continue")} <MaterialIcon name="arrow_forward" />
+                  </button>
+                </div>
+              )}
+
+              {/* Question enceinte */}
+              {activeProfileStep === "pregnant" && (
+                <div className="w-full flex flex-col items-center gap-6">
+                  <h2 className="text-2xl md:text-3xl font-extralight tracking-tight text-center leading-tight text-primary">
+                    {t("quiz.profilePregnantQuestion")}
+                  </h2>
+                  <div className="flex gap-4 w-full max-w-xs">
+                    <BigButton label={t("quiz.yes")} selected={activeProfile.pregnant === true} onClick={() => activeAdvance({ pregnant: true })} />
+                    <BigButton label={t("quiz.no")} selected={activeProfile.pregnant === false} onClick={() => activeAdvance({ pregnant: false })} />
+                  </div>
+                </div>
+              )}
+
+              {/* Question allergies */}
+              {activeProfileStep === "allergies" && (
+                <div className="w-full flex flex-col items-center gap-6">
+                  <h2 className="text-2xl md:text-3xl font-extralight tracking-tight text-center leading-tight text-primary">
+                    {t("quiz.profileAllergiesQuestion")}
+                  </h2>
+                  <div className="flex gap-4 w-full max-w-xs">
+                    <BigButton label={t("quiz.yes")} selected={activeProfile.has_allergies === true} onClick={() => activeAdvance({ has_allergies: true })} />
+                    <BigButton label={t("quiz.no")} selected={activeProfile.has_allergies === false} onClick={() => activeAdvance({ has_allergies: false })} />
+                  </div>
+                </div>
+              )}
+
+              {/* Détail allergies */}
+              {activeProfileStep === "allergies_detail" && (
+                <div className="w-full flex flex-col items-center gap-6">
+                  <h2 className="text-2xl md:text-3xl font-extralight tracking-tight text-center leading-tight text-primary">
+                    {t("quiz.profileAllergiesDetailQuestion")}
+                  </h2>
+                  <div className="flex items-center gap-3 px-5 py-3.5 rounded-xl border-2 border-primary/15 bg-stone-50 w-full max-w-xs">
+                    <MaterialIcon name="warning" className="text-primary text-[20px] shrink-0" />
+                    <input
+                      type="text"
+                      value={activeProfile.allergies}
+                      onChange={(e) => {
+                        if (isMulti) updateCurrentParticipantProfile({ allergies: e.target.value });
+                        else setProfile((p) => ({ ...p, allergies: e.target.value }));
+                      }}
+                      onKeyDown={(e) => e.key === "Enter" && activeProfile.allergies.trim() && activeAdvance({})}
+                      placeholder={t("quiz.profileAllergiesPlaceholder")}
+                      autoFocus
+                      className="flex-1 bg-transparent text-base font-medium text-primary placeholder:text-primary/35 outline-none"
+                    />
+                  </div>
+                  <button
+                    disabled={!activeProfile.allergies.trim()}
+                    onClick={() => activeAdvance({})}
+                    className="bg-primary hover:bg-primary/90 text-white font-bold px-10 py-3 rounded-lg shadow-xl transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
+                  >
+                    {t("quiz.continue")} <MaterialIcon name="arrow_forward" />
+                  </button>
+                </div>
+              )}
+
+              {/* Retour */}
+              {currentProfileIndex > 0 && (
                 <button
-                  disabled={!profile.age.trim()}
-                  onClick={() => advanceProfile({})}
-                  className="bg-primary hover:bg-primary/90 text-white font-bold px-10 py-3 rounded-lg shadow-xl transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
+                  onClick={goBackProfile}
+                  className="text-primary/40 text-xs hover:text-primary transition-colors flex items-center gap-1"
                 >
-                  {t("quiz.continue")} <MaterialIcon name="arrow_forward" />
+                  <MaterialIcon name="arrow_back" className="text-[14px]" />
+                  {t("quiz.back")}
                 </button>
-              </div>
-            )}
-
-            {/* Question enceinte */}
-            {profileStep === "pregnant" && (
-              <div className="w-full flex flex-col items-center gap-6">
-                <h2 className="text-2xl md:text-3xl font-extralight tracking-tight text-center leading-tight">
-                  {t("quiz.profilePregnantQuestion")}
-                </h2>
-                <div className="flex gap-4 w-full max-w-xs">
-                  <BigButton label={t("quiz.yes")} selected={profile.pregnant === true} onClick={() => advanceProfile({ pregnant: true })} />
-                  <BigButton label={t("quiz.no")} selected={profile.pregnant === false} onClick={() => advanceProfile({ pregnant: false })} />
-                </div>
-              </div>
-            )}
-
-            {/* Question allergies */}
-            {profileStep === "allergies" && (
-              <div className="w-full flex flex-col items-center gap-6">
-                <h2 className="text-2xl md:text-3xl font-extralight tracking-tight text-center leading-tight">
-                  {t("quiz.profileAllergiesQuestion")}
-                </h2>
-                <div className="flex gap-4 w-full max-w-xs">
-                  <BigButton label={t("quiz.yes")} selected={profile.has_allergies === true} onClick={() => advanceProfile({ has_allergies: true })} />
-                  <BigButton label={t("quiz.no")} selected={profile.has_allergies === false} onClick={() => advanceProfile({ has_allergies: false })} />
-                </div>
-              </div>
-            )}
-
-            {/* Détail allergies */}
-            {profileStep === "allergies_detail" && (
-              <div className="w-full flex flex-col items-center gap-6">
-                <h2 className="text-2xl md:text-3xl font-extralight tracking-tight text-center leading-tight">
-                  {t("quiz.profileAllergiesDetailQuestion")}
-                </h2>
-                <div className="flex items-center gap-3 px-5 py-3.5 rounded-xl border-2 border-primary/15 bg-white/60 w-full max-w-xs">
-                  <MaterialIcon name="warning" className="text-primary text-[20px] shrink-0" />
-                  <input
-                    type="text"
-                    value={profile.allergies}
-                    onChange={(e) => setProfile((p) => ({ ...p, allergies: e.target.value }))}
-                    onKeyDown={(e) => e.key === "Enter" && profile.allergies.trim() && advanceProfile({})}
-                    placeholder={t("quiz.profileAllergiesPlaceholder")}
-                    autoFocus
-                    className="flex-1 bg-transparent text-base font-medium text-primary placeholder:text-primary/35 outline-none"
-                  />
-                </div>
-                <button
-                  disabled={!profile.allergies.trim()}
-                  onClick={() => advanceProfile({})}
-                  className="bg-primary hover:bg-primary/90 text-white font-bold px-10 py-3 rounded-lg shadow-xl transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
-                >
-                  {t("quiz.continue")} <MaterialIcon name="arrow_forward" />
-                </button>
-              </div>
-            )}
-
-            {/* Retour */}
-            {currentProfileIndex > 0 && (
-              <button
-                onClick={() => setProfileStep(visibleSteps[currentProfileIndex - 1])}
-                className="text-primary/40 text-xs hover:text-primary transition-colors flex items-center gap-1"
-              >
-                <MaterialIcon name="arrow_back" className="text-[14px]" />
-                {t("quiz.back")}
-              </button>
-            )}
+              )}
+            </div>
           </div>
         </main>
 
@@ -304,9 +491,9 @@ export default function QuizPage() {
     );
   }
 
-  // ══════════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════════
   // QUESTIONNAIRE
-  // ══════════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════════
   if (loading) return (
     <div className="relative h-dvh w-full flex flex-col bg-stone-50">
       <Navbar showActions={false} transparent />
@@ -323,26 +510,40 @@ export default function QuizPage() {
   const selected = phase === "top2" ? top2 : phase === "bottom2" ? bottom2 : [];
   const phaseHint = phase === "top2" ? t("quiz.hintTop2") : phase === "bottom2" ? t("quiz.hintBottom2") : "";
 
+  // En mode multi, le fond change selon le participant courant
+  const questionBgStyle = isMulti && colorDef ? { backgroundColor: colorDef.bg } : {};
+
   return (
-    <div className="relative flex h-dvh w-full flex-col">
+    <div className="relative flex h-dvh w-full flex-col transition-colors duration-500" style={questionBgStyle}>
       <Navbar showActions={false} transparent />
-      <main className="flex-1 flex flex-col items-center justify-center gap-6 px-4 pb-4 pt-1 max-w-6xl mx-auto w-full min-h-0 relative z-10">
-        <div className="w-full flex flex-col items-center gap-2 shrink-0">
+      <main className="flex-1 flex flex-col items-center justify-center gap-3 px-4 pb-4 pt-1 max-w-6xl mx-auto w-full min-h-0 relative z-10">
+
+        {/* Bannière couleur en mode multi */}
+        {isMulti && currentColor && (
+          <div className="w-full max-w-2xl shrink-0">
+            <ColorTurnBanner colorId={currentColor} />
+          </div>
+        )}
+
+        {/* Question + hint dans une carte blanche */}
+        <div className="w-full max-w-2xl bg-white rounded-2xl shadow-md px-6 py-4 flex flex-col items-center gap-2 shrink-0">
           <StepProgress currentStep={currentIndex + 1} totalSteps={questions.length} />
-          <h3 className="text-2xl md:text-3xl font-extralight tracking-tight text-center max-w-2xl leading-tight">
+          <h3 className="text-2xl md:text-3xl font-extralight tracking-tight text-center leading-tight text-primary">
             {currentQuestion?.question}
           </h3>
           {phaseHint && <p className="text-xs text-primary/40 tracking-widest uppercase">{phaseHint}</p>}
         </div>
 
         {phase === "confirm" ? (
-          <AnswerConfirmation
-            top2={top2.map((label) => ({ label, image: currentQuestion?.choices.find((c) => c.label === label)?.image ? `${API_BASE}${currentQuestion.choices.find((c) => c.label === label)!.image}` : undefined }))}
-            bottom2={bottom2.map((label) => ({ label, image: currentQuestion?.choices.find((c) => c.label === label)?.image ? `${API_BASE}${currentQuestion.choices.find((c) => c.label === label)!.image}` : undefined }))}
-          />
+          <div className="w-full max-w-2xl bg-white rounded-2xl shadow-md px-4 py-4">
+            <AnswerConfirmation
+              top2={top2.map((label) => ({ label, image: currentQuestion?.choices.find((c) => c.label === label)?.image ? `${API_BASE}${currentQuestion.choices.find((c) => c.label === label)!.image}` : undefined }))}
+              bottom2={bottom2.map((label) => ({ label, image: currentQuestion?.choices.find((c) => c.label === label)?.image ? `${API_BASE}${currentQuestion.choices.find((c) => c.label === label)!.image}` : undefined }))}
+            />
+          </div>
         ) : (
           <div className="relative w-full max-w-5xl">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 w-full" style={{ height: "42vh" }}>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 w-full" style={{ height: "36vh" }}>
               {visibleChoices.map((choice) => (
                 <ChoiceCard key={choice.label} name={choice.label}
                   imageUrl={choice.image ? `${API_BASE}${choice.image}` : undefined}
@@ -354,25 +555,30 @@ export default function QuizPage() {
           </div>
         )}
 
-        <div className="shrink-0 py-3 flex justify-center">
+        <div className="shrink-0 py-2 flex justify-center">
           {phase === "top2" && (
             <button disabled={top2.length < 2} onClick={() => setPhase("bottom2")}
-              className="bg-primary hover:bg-primary/90 text-white font-bold px-10 py-3 rounded-lg shadow-xl transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100">
+              className="bg-white hover:bg-primary text-primary hover:text-white border border-primary/20 font-bold px-10 py-3 rounded-xl shadow-md transition-all hover:scale-[1.02] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:bg-white disabled:hover:text-primary">
               {t("quiz.continue")}
             </button>
           )}
           {phase === "bottom2" && (
             <button disabled={bottom2.length < 2} onClick={() => setPhase("confirm")}
-              className="bg-primary hover:bg-primary/90 text-white font-bold px-10 py-3 rounded-lg shadow-xl transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100">
+              className="bg-white hover:bg-primary text-primary hover:text-white border border-primary/20 font-bold px-10 py-3 rounded-xl shadow-md transition-all hover:scale-[1.02] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:bg-white disabled:hover:text-primary">
               {t("quiz.continue")}
             </button>
           )}
-          {phase === "confirm" && (
-            <button onClick={handleConfirm}
-              className="bg-primary hover:bg-primary/90 text-white font-bold px-10 py-3 rounded-lg shadow-xl transition-all hover:scale-[1.02]">
-              {currentIndex + 1 < questions.length ? t("quiz.next") : t("quiz.submit")}
-            </button>
-          )}
+          {phase === "confirm" && (() => {
+            const isLastParticipant = !isMulti || currentParticipantIndex === participantColors.length - 1;
+            const isLastQuestion = currentIndex + 1 >= questions.length;
+            const isVeryLast = isLastParticipant && isLastQuestion;
+            return (
+              <button onClick={handleConfirm}
+                className="bg-primary hover:bg-primary/90 text-white font-bold px-10 py-3 rounded-xl shadow-md transition-all hover:scale-[1.02]">
+                {isVeryLast ? t("quiz.submit") : t("quiz.next")}
+              </button>
+            );
+          })()}
         </div>
       </main>
       <div className="absolute top-0 right-0 -z-10 w-[40%] h-full opacity-[0.03] pointer-events-none bg-gradient-to-l from-primary to-transparent" />

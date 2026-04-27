@@ -18,7 +18,7 @@ export default function PersonaSelector({ value, onChange }: PersonaSelectorProp
 
   return (
     <section>
-      <h3 className="text-text-dark text-xs font-bold uppercase tracking-widest leading-tight mb-2.5 flex items-center gap-2">
+      <h3 className="text-text-dark text-xs font-bold uppercase tracking-widest leading-tight mb-1.5 flex items-center gap-2">
         <MaterialIcon name="psychology" className="text-sm" />
         {t("configure.personaTitle")}
       </h3>
@@ -33,7 +33,7 @@ export default function PersonaSelector({ value, onChange }: PersonaSelectorProp
               onChange={() => onChange(persona.value)}
               className="peer hidden"
             />
-            <div className="flex items-center justify-center gap-2.5 px-3 py-3 rounded-lg border-2 border-primary/10 bg-white/50 text-primary/60 transition-all group-hover:bg-primary/5 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-lg">
+            <div className="flex items-center justify-center gap-2.5 px-2 py-2 rounded-lg border-2 border-primary/10 bg-white/50 text-primary/60 transition-all group-hover:bg-primary/5 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-lg">
               <MaterialIcon name={persona.icon} className="text-base" />
               <span className="text-sm font-bold">{persona.label}</span>
             </div>

@@ -21,6 +21,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
   const { login, isLoading, error, clearError } = useAuth();
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
+  const [debugError, setDebugError] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -99,13 +100,20 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
           ) : error !== "no_sessions" ? (
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
-              onError={() => {}}
+              onError={() => { const msg = "Google OAuth onError triggered"; alert(msg); setDebugError(msg); }}
               theme="outline"
               shape="rectangular"
               size="large"
               text="continue_with"
             />
           ) : null}
+
+          {/* Debug error */}
+          {debugError && (
+            <div className="text-xs text-red-500 bg-red-50 rounded p-2 w-full break-all">
+              {debugError}
+            </div>
+          )}
 
           {/* Error */}
           {error && (
