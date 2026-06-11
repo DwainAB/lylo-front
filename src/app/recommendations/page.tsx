@@ -87,10 +87,10 @@ export default function RecommendationsPage() {
   const showMailButton = DEV_MODE && devSingleFormula;
 
   return (
-    <div className="relative flex h-dvh w-full flex-col overflow-hidden">
+    <div className="relative flex min-h-dvh w-full flex-col overflow-x-hidden overflow-y-auto">
       <Navbar showActions={false} transparent />
 
-      <main className="flex-1 min-h-0 flex flex-col px-3 sm:px-5 pt-2 sm:pt-3 pb-0 max-w-6xl mx-auto w-full relative z-10">
+      <main className="flex-1 flex flex-col px-3 sm:px-5 pt-2 sm:pt-3 pb-6 max-w-6xl mx-auto w-full relative z-10">
 
         {/* ── Avatar + Titre ── visible uniquement en vue 2 formules ── */}
         {!isSingle && (
@@ -263,18 +263,28 @@ export default function RecommendationsPage() {
             VUE 2 FORMULES
             [carte 1] [carte 2]   [email si demandé]
         ════════════════════════════════════════════════ */
-          <div className="flex-1 min-h-0 flex flex-col gap-3">
+          <div className="flex-1 flex flex-col gap-4 sm:gap-5">
 
-            <div className="flex-1 min-h-0 flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <div className="shrink-0 text-center max-w-3xl mx-auto">
+              <p className="brand-text text-[0.62rem] sm:text-[0.68rem] text-primary/70 mb-2">
+                Vos recommandations
+              </p>
+              <h3 className="text-lg sm:text-2xl md:text-3xl font-extralight tracking-tight text-primary leading-tight">
+                Comparez les deux formules en toute lisibilité
+              </h3>
+            </div>
 
-              {/* Cartes côte à côte */}
-              <div className="flex-1 min-h-0 min-w-0 flex flex-row gap-2 sm:gap-3">
+            <div className="flex flex-col gap-4">
+
+              {/* Cartes */}
+              <div className="min-w-0 grid grid-cols-1 xl:grid-cols-2 gap-3 sm:gap-4 items-start">
                 {formulas.length > 0 ? (
                   formulas.map((formula) => (
                     <FormulaCard
                       key={formula.key}
                       name={formula.name}
                       sizes={formula.sizes}
+                      variant="comparison"
                     />
                   ))
                 ) : (
@@ -284,10 +294,10 @@ export default function RecommendationsPage() {
                 )}
               </div>
 
-              {/* Email à droite si demandé */}
+              {/* Email sous les cartes */}
               {requestingEmail && (
-                <div className="shrink-0 flex flex-col gap-2 items-center sm:w-52 sm:items-stretch sm:justify-center">
-                  <p className="text-xs font-light text-center text-[#7f6f66] tracking-wide">
+                <div className="shrink-0 max-w-xl mx-auto w-full bg-white/85 border border-primary/10 rounded-xl px-4 py-4 sm:px-5 sm:py-5 card-shadow">
+                  <p className="text-xs font-light text-center text-[#7f6f66] tracking-wide mb-3">
                     Recevez votre formule par email
                   </p>
                   {sendStatus === "sent" ? (

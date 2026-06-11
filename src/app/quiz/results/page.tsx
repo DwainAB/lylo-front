@@ -139,9 +139,14 @@ function SoloResults() {
               <div
                 key={i}
                 onClick={() => handleChoose(i)}
-                className="w-[280px] sm:w-[300px] h-[340px] sm:h-[360px] cursor-pointer rounded-xl border-2 border-transparent hover:border-primary transition-all hover:scale-[1.02] overflow-hidden relative shadow-md"
+                className="w-[300px] sm:w-[340px] h-[min(68vh,720px)] cursor-pointer rounded-xl border-2 border-transparent hover:border-primary transition-all hover:scale-[1.02] overflow-hidden relative shadow-md"
               >
-                <FormulaCard name={formula.profile} sizes={formula.sizes} />
+                <FormulaCard
+                  name={formula.profile}
+                  sizes={formula.sizes}
+                  variant="comparison"
+                  className="h-full"
+                />
               </div>
             ))}
           </div>
@@ -154,13 +159,18 @@ function SoloResults() {
                 <div
                   key={i}
                   onClick={() => { setChosen(null); setSendStatus("idle"); }}
-                  className={`w-[280px] sm:w-[300px] h-[340px] sm:h-[360px] rounded-xl border-2 overflow-hidden relative shadow-md transition-all duration-300 ${
+                  className={`w-[300px] sm:w-[340px] h-[min(68vh,720px)] rounded-xl border-2 overflow-hidden relative shadow-md transition-all duration-300 ${
                     chosen === i
                       ? "border-primary scale-[1.02] cursor-default"
                       : "border-transparent opacity-30 scale-[0.97] cursor-pointer"
                   }`}
                 >
-                  <FormulaCard name={formula.profile} sizes={formula.sizes} />
+                  <FormulaCard
+                    name={formula.profile}
+                    sizes={formula.sizes}
+                    variant="comparison"
+                    className="h-full"
+                  />
                   {chosen === i && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                       <div className="bg-primary/90 rounded-full p-3 shadow-xl">
@@ -374,7 +384,7 @@ function MultiResults() {
               <div
                 key={i}
                 onClick={() => chosen === null && handleSelect(i)}
-                className={`w-[280px] sm:w-[300px] h-[300px] sm:h-[340px] rounded-xl border-2 overflow-hidden relative shadow-md transition-all duration-300 ${
+                className={`w-[300px] sm:w-[340px] h-[min(66vh,680px)] rounded-xl border-2 overflow-hidden relative shadow-md transition-all duration-300 ${
                   chosen === null ? "cursor-pointer hover:scale-[1.02]" : ""
                 } ${
                   chosen === i
@@ -385,7 +395,12 @@ function MultiResults() {
                 }`}
                 style={{ borderColor: chosen === i ? (colorDef?.text ?? "#333") : "transparent" }}
               >
-                <FormulaCard name={formula.profile} sizes={formula.sizes} />
+                <FormulaCard
+                  name={formula.profile}
+                  sizes={formula.sizes}
+                  variant="comparison"
+                  className="h-full"
+                />
                 {chosen === i && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="rounded-full p-3 shadow-xl" style={{ backgroundColor: colorDef?.text ?? "#333" }}>
@@ -469,7 +484,12 @@ function MultiResults() {
                 </div>
                 {/* Carte formule */}
                 <div className="flex-1 min-h-0 rounded-xl overflow-hidden border border-primary/10">
-                  <FormulaCard name={formula.profile} sizes={formula.sizes} />
+                  <FormulaCard
+                    name={formula.profile}
+                    sizes={formula.sizes}
+                    variant="comparison"
+                    className="h-full"
+                  />
                 </div>
               </div>
             );

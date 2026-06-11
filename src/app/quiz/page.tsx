@@ -537,8 +537,8 @@ export default function QuizPage() {
         {phase === "confirm" ? (
           <div className="w-full max-w-2xl bg-white rounded-2xl shadow-md px-4 py-4">
             <AnswerConfirmation
-              top2={top2.map((label) => ({ label, image: currentQuestion?.choices.find((c) => c.label === label)?.image ? `${API_BASE}${currentQuestion.choices.find((c) => c.label === label)!.image}` : undefined }))}
-              bottom2={bottom2.map((label) => ({ label, image: currentQuestion?.choices.find((c) => c.label === label)?.image ? `${API_BASE}${currentQuestion.choices.find((c) => c.label === label)!.image}` : undefined }))}
+              top2={top2.map((label) => { const img = currentQuestion?.choices.find((c) => c.label === label)?.image; return { label, image: img ? (img.startsWith("http") ? img : `${API_BASE}${img}`) : undefined }; })}
+              bottom2={bottom2.map((label) => { const img = currentQuestion?.choices.find((c) => c.label === label)?.image; return { label, image: img ? (img.startsWith("http") ? img : `${API_BASE}${img}`) : undefined }; })}
             />
           </div>
         ) : (
@@ -546,7 +546,7 @@ export default function QuizPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 w-full" style={{ height: "36vh" }}>
               {visibleChoices.map((choice) => (
                 <ChoiceCard key={choice.label} name={choice.label}
-                  imageUrl={choice.image ? `${API_BASE}${choice.image}` : undefined}
+                  imageUrl={choice.image ? (choice.image.startsWith("http") ? choice.image : `${API_BASE}${choice.image}`) : undefined}
                   selected={selected.includes(choice.label)} clickable
                   onSelect={phase === "top2" ? handleTopSelect : handleBottomSelect}
                 />
