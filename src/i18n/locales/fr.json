@@ -61,7 +61,7 @@
     "avatarOn": "Avatar activé",
     "avatarOff": "Audio uniquement",
     "avatarHint": "Désactivez si votre connexion est lente. Faites le test ci-dessous pour vérifier.",
-    "emailTitle": "Récapitulatif par mail",
+    "emailTitle": "Récapitulatif par e-mail",
     "emailPlaceholder": "votre@email.com",
     "emailHint": "Recevez un résumé de votre session olfactive par e-mail à la fin de l'expérience."
   },
@@ -77,7 +77,7 @@
     "agentIdle": "Session en attente...",
     "connecting": "Connexion en cours...",
     "clickSelectHint": "Cliquez sur vos 2 choix",
-    "resumeQuestion": "j'ai une question"
+    "resumeQuestion": "J'ai une question"
   },
   "preparation": {
     "title": "Préparation de votre voyage olfactif",
@@ -192,8 +192,8 @@
     "resultsSubtitleChosen": "Vous avez fait votre choix.",
     "changeChoice": "Changer de formule",
     "print": "Imprimer",
-    "sendEmail": "Envoyer par email",
-    "emailSent": "Email envoyé",
+    "sendEmail": "Envoyer par e-mail",
+    "emailSent": "E-mail envoyé",
     "emailError": "Une erreur est survenue. Veuillez réessayer."
   },
   "recommendations": {

@@ -198,7 +198,7 @@ export default function RecommendationsPage() {
                 {showMailButton && (
                   <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-primary text-white text-sm font-semibold shadow-lg shadow-primary/30 hover:brightness-110 transition-all">
                     <MaterialIcon name="mail" className="text-[18px]" />
-                    Voir l&apos;email
+                    Voir l&apos;e-mail
                   </button>
                 )}
 
@@ -206,12 +206,12 @@ export default function RecommendationsPage() {
                 {showEmail && (
                   <div className="w-full flex flex-col gap-2">
                     <p className="text-xs font-light text-center text-[#7f6f66] tracking-wide">
-                      Recevez votre formule par email
+                      Recevez votre formule par e-mail
                     </p>
                     {sendStatus === "sent" ? (
                       <div className="flex items-center justify-center gap-2 text-sm text-green-700">
                         <MaterialIcon name="check_circle" className="text-[18px]" />
-                        Email envoyé
+                        E-mail envoyé
                       </div>
                     ) : (
                       <div className="flex w-full gap-2">
@@ -298,12 +298,12 @@ export default function RecommendationsPage() {
               {requestingEmail && (
                 <div className="shrink-0 max-w-xl mx-auto w-full bg-white/85 border border-primary/10 rounded-xl px-4 py-4 sm:px-5 sm:py-5 card-shadow">
                   <p className="text-xs font-light text-center text-[#7f6f66] tracking-wide mb-3">
-                    Recevez votre formule par email
+                    Recevez votre formule par e-mail
                   </p>
                   {sendStatus === "sent" ? (
                     <div className="flex items-center justify-center gap-2 text-sm text-green-700">
                       <MaterialIcon name="check_circle" className="text-[18px]" />
-                      Email envoyé
+                      E-mail envoyé
                     </div>
                   ) : (
                     <div className="flex w-full gap-2">
