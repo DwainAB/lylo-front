@@ -10,6 +10,7 @@ import GeneratingLoader from "@/components/livekit/GeneratingLoader";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { PARTICIPANT_COLORS } from "@/components/configure/ConfigPanel";
+import { persistLanguage, resolveStoredLanguage } from "@/lib/language";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
@@ -68,7 +69,10 @@ export default function QuizPage() {
   const { t } = useTranslation();
 
   // ── Config depuis localStorage ─────────────────────────────────────
-  const language = typeof window !== "undefined" ? localStorage.getItem("language") ?? "fr" : "fr";
+  const language = resolveStoredLanguage();
+  if (typeof window !== "undefined") {
+    persistLanguage(language);
+  }
   const depth = typeof window !== "undefined" ? localStorage.getItem("depth") ?? "12" : "12";
   const questionCount = parseInt(depth) || 12;
 

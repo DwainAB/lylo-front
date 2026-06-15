@@ -7,6 +7,7 @@ import Button from "@/components/ui/Button";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
+import { persistLanguage } from "@/lib/language";
 
 export default function HeroSection() {
   const router = useRouter();
@@ -61,7 +62,7 @@ export default function HeroSection() {
         {/* CTA Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-4">
           {user ? (
-            <Button variant="primary" size="lg" className="shadow-2xl shadow-black/20 hover:scale-[1.02]" onClick={() => { localStorage.setItem("language", locale); router.push("/configure"); }}>
+            <Button variant="primary" size="lg" className="shadow-2xl shadow-black/20 hover:scale-[1.02]" onClick={() => { persistLanguage(locale); router.push("/configure"); }}>
               <MaterialIcon name="auto_awesome" />
               {t("home.getStarted")}
             </Button>

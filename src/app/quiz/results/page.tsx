@@ -8,6 +8,7 @@ import FormulaCard from "@/components/recommendations/FormulaCard";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { FormulaSize } from "@/context/SessionContext";
 import { PARTICIPANT_COLORS } from "@/components/configure/ConfigPanel";
+import { persistLanguage, resolveStoredLanguage } from "@/lib/language";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
@@ -41,7 +42,9 @@ function SoloResults() {
 
   useEffect(() => {
     setSavedEmail(localStorage.getItem("recap_email") ?? "");
-    setLanguage(localStorage.getItem("language") ?? "fr");
+    const storedLanguage = resolveStoredLanguage();
+    persistLanguage(storedLanguage);
+    setLanguage(storedLanguage);
     setPrinterLocation(localStorage.getItem("printer_location") ?? "");
     const raw = localStorage.getItem("quiz_formulas");
     if (!raw) { router.push("/quiz"); return; }
@@ -59,7 +62,7 @@ function SoloResults() {
           formula,
           customer_email: localStorage.getItem("recap_email") || null,
           customer_name: localStorage.getItem("recap_name") || null,
-          language: localStorage.getItem("language") ?? "fr",
+          language: resolveStoredLanguage(),
         }),
       });
       if (res.ok) {
@@ -260,7 +263,7 @@ function MultiResults() {
   const [references, setReferences] = useState<Record<string, string>>({});
   const [printStatus, setPrintStatus] = useState<"idle" | "printing" | "done" | "error">("idle");
   const [printerLocation, setPrinterLocation] = useState("");
-  const language = typeof window !== "undefined" ? localStorage.getItem("language") ?? "fr" : "fr";
+  const language = resolveStoredLanguage();
 
   const RECAP = -1;
 

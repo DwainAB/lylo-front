@@ -9,6 +9,7 @@ import {
   ReactNode,
 } from "react";
 import { MOCK_FORMULAS, MOCK_QUESTIONS } from "@/lib/mockData";
+import { persistLanguage, resolveStoredLanguage } from "@/lib/language";
 
 export const DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === "true";
 
@@ -169,7 +170,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     if (DEV_MODE) return;
     setSessionState("connecting");
 
-    const language = (localStorage.getItem("avatarLocale") as "fr" | "en") || "fr";
+    const language = resolveStoredLanguage();
+    persistLanguage(language);
     const voice_gender =
       (localStorage.getItem("persona") as "female" | "male") || "female";
     setAgentName(voice_gender === "male" ? "Florian" : "Rose");

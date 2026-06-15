@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { persistLanguage, resolveStoredLanguage } from "@/lib/language";
 
 type AvatarLocale = "fr" | "en";
 
@@ -20,17 +21,19 @@ const LANGUAGES: Language[] = [
 ];
 
 export default function LanguagePicker() {
-  const { t } = useTranslation();
+  const { t, locale, setLocale } = useTranslation();
   const [avatarLocale, setAvatarLocale] = useState<AvatarLocale>("fr");
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("avatarLocale") as AvatarLocale | null;
-    if (saved === "en" || saved === "fr") {
-      setAvatarLocale(saved);
+    const saved = resolveStoredLanguage();
+    setAvatarLocale(saved);
+    persistLanguage(saved);
+    if (saved !== locale) {
+      setLocale(saved);
     }
-  }, []);
+  }, [locale, setLocale]);
 
   const currentLang = LANGUAGES.find((l) => l.code === avatarLocale) ?? LANGUAGES[0];
 
@@ -46,7 +49,8 @@ export default function LanguagePicker() {
 
   const handleSelect = (code: AvatarLocale) => {
     setAvatarLocale(code);
-    localStorage.setItem("avatarLocale", code);
+    persistLanguage(code);
+    setLocale(code);
     closeModal();
   };
 
