@@ -192,6 +192,8 @@
     "resultsSubtitleChosen": "Vous avez fait votre choix.",
     "changeChoice": "Changer de formule",
     "print": "Imprimer",
+    "openEmailForm": "Recevoir la formule par e-mail",
+    "receiveEmail": "Recevoir",
     "sendEmail": "Envoyer par e-mail",
     "emailSent": "E-mail envoyé",
     "emailError": "Une erreur est survenue. Veuillez réessayer."
@@ -204,6 +206,11 @@
     "selectSize": "CHOISIR LA TAILLE",
     "returnHome": "Retour à l'accueil",
     "noFormulas": "Aucune formule disponible pour le moment.",
+    "qrButton": "Afficher le QR code",
+    "qrTitle": "Voir la formule sur votre téléphone",
+    "qrSubtitle": "Scannez ce QR code pour ouvrir cette formule sur mobile.",
+    "qrClose": "Fermer la fenêtre QR code",
+    "invalidQr": "Le QR code est invalide ou incomplet.",
     "noteLabels": {
       "top": "Notes de tête",
       "heart": "Notes de cœur",

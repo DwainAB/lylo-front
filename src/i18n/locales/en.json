@@ -192,6 +192,8 @@
     "resultsSubtitleChosen": "You have made your choice.",
     "changeChoice": "Change formula",
     "print": "Print",
+    "openEmailForm": "Receive the formula by email",
+    "receiveEmail": "Receive",
     "sendEmail": "Send by email",
     "emailSent": "Email sent",
     "emailError": "An error occurred. Please try again."
@@ -204,6 +206,11 @@
     "selectSize": "SELECT SIZE",
     "returnHome": "Return to homepage",
     "noFormulas": "No formulas available at the moment.",
+    "qrButton": "Show QR code",
+    "qrTitle": "View the formula on your phone",
+    "qrSubtitle": "Scan this QR code to open this formula on mobile.",
+    "qrClose": "Close QR code dialog",
+    "invalidQr": "This QR code is invalid or incomplete.",
     "noteLabels": {
       "top": "Top Notes",
       "heart": "Heart Notes",

@@ -5,10 +5,13 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import FormulaCard from "@/components/recommendations/FormulaCard";
+import FormulaQrCode from "@/components/recommendations/FormulaQrCode";
+import { SizeOption } from "@/components/recommendations/SizeToggle";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { FormulaSize } from "@/context/SessionContext";
 import { PARTICIPANT_COLORS } from "@/components/configure/ConfigPanel";
 import { persistLanguage, resolveStoredLanguage } from "@/lib/language";
+import { createShareableFormula } from "@/lib/shareableFormula";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
@@ -34,14 +37,12 @@ function SoloResults() {
   const [formulas, setFormulas] = useState<Formula[]>([]);
   const [chosen, setChosen] = useState<number | null>(null);
   const [reference, setReference] = useState<string>("");
-  const [sendStatus, setSendStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
-  const [savedEmail, setSavedEmail] = useState("");
   const [language, setLanguage] = useState("fr");
   const [printerLocation, setPrinterLocation] = useState("");
   const [printStatus, setPrintStatus] = useState<"idle" | "printing" | "done" | "error">("idle");
+  const [selectedSizes, setSelectedSizes] = useState<Record<number, SizeOption>>({});
 
   useEffect(() => {
-    setSavedEmail(localStorage.getItem("recap_email") ?? "");
     const storedLanguage = resolveStoredLanguage();
     persistLanguage(storedLanguage);
     setLanguage(storedLanguage);
@@ -76,7 +77,8 @@ function SoloResults() {
     if (!selectedFormula || !printerLocation) return;
     setPrintStatus("printing");
     try {
-      const size = selectedFormula.sizes["30ml"];
+      const activeSize = chosen !== null ? (selectedSizes[chosen] ?? "30ml") : "30ml";
+      const size = selectedFormula.sizes[activeSize];
       const res = await fetch(`${API_BASE}/printers/print-formula`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -98,21 +100,14 @@ function SoloResults() {
     } catch { setPrintStatus("error"); }
   };
 
-  const handleSendEmail = async () => {
-    if (!savedEmail || chosen === null) return;
-    setSendStatus("sending");
-    try {
-      const res = await fetch(`${API_BASE}/api/formulas/send-mail`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: savedEmail, language, formula: formulas[chosen] }),
-      });
-      setSendStatus(res.ok ? "sent" : "error");
-    } catch { setSendStatus("error"); }
-  };
-
   if (formulas.length === 0) return null;
   const selectedFormula = chosen !== null ? formulas[chosen] : null;
+  const handleFormulaSizeChange = (formulaIndex: number, size: SizeOption) => {
+    setSelectedSizes((current) => ({
+      ...current,
+      [formulaIndex]: size,
+    }));
+  };
 
   return (
     <div className="relative min-h-dvh w-full flex flex-col bg-stone-50 overflow-hidden">
@@ -121,7 +116,7 @@ function SoloResults() {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary rounded-full blur-[100px]" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-warm-cream rounded-full blur-[100px]" />
       </div>
-      <main className="flex-1 flex flex-col items-center px-4 sm:px-6 py-6 pb-10 relative z-10 max-w-4xl mx-auto w-full gap-6">
+      <main className="flex-1 flex flex-col items-center px-4 sm:px-6 py-5 pb-8 relative z-10 max-w-4xl mx-auto w-full gap-4">
         <div className="text-center">
           <div className="inline-flex items-center gap-2 mb-2">
             <span className="h-px w-6 bg-primary/40" />
@@ -149,6 +144,8 @@ function SoloResults() {
                   sizes={formula.sizes}
                   variant="comparison"
                   className="h-full"
+                  selectedSize={selectedSizes[i] ?? "30ml"}
+                  onSelectedSizeChange={(size) => handleFormulaSizeChange(i, size)}
                 />
               </div>
             ))}
@@ -161,8 +158,8 @@ function SoloResults() {
               {formulas.map((formula, i) => (
                 <div
                   key={i}
-                  onClick={() => { setChosen(null); setSendStatus("idle"); }}
-                  className={`w-[300px] sm:w-[340px] h-[min(68vh,720px)] rounded-xl border-2 overflow-hidden relative shadow-md transition-all duration-300 ${
+                  onClick={() => { setChosen(null); }}
+                  className={`w-[280px] sm:w-[320px] h-[min(56vh,620px)] rounded-xl border-2 overflow-hidden relative shadow-md transition-all duration-300 ${
                     chosen === i
                       ? "border-primary scale-[1.02] cursor-default"
                       : "border-transparent opacity-30 scale-[0.97] cursor-pointer"
@@ -173,6 +170,8 @@ function SoloResults() {
                     sizes={formula.sizes}
                     variant="comparison"
                     className="h-full"
+                    selectedSize={selectedSizes[i] ?? "30ml"}
+                    onSelectedSizeChange={(size) => handleFormulaSizeChange(i, size)}
                   />
                   {chosen === i && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -187,8 +186,7 @@ function SoloResults() {
               ))}
             </div>
             <p className="text-xs text-primary/40 text-center">Appuie sur l&apos;autre carte pour changer de choix</p>
-            <div className="w-full flex flex-col sm:flex-row gap-3 items-center justify-center">
-
+            <div className="w-full flex flex-wrap gap-2.5 items-center justify-center">
               {printerLocation && (
                 printStatus === "done" ? (
                   <div className="flex items-center gap-2 text-sm text-green-700">
@@ -198,7 +196,7 @@ function SoloResults() {
                   <button
                     onClick={handlePrint}
                     disabled={printStatus === "printing"}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-primary/25 text-primary text-sm font-semibold shadow-sm hover:bg-primary/5 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-primary/25 text-primary text-xs sm:text-sm font-semibold shadow-sm hover:bg-primary/5 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     {printStatus === "printing"
                       ? <div className="size-4 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
@@ -209,37 +207,36 @@ function SoloResults() {
                 )
               )}
               {printStatus === "error" && <p className="text-xs text-red-500">Erreur d&apos;impression.</p>}
-
-              {savedEmail && (
-                sendStatus === "sent" ? (
-                  <div className="flex items-center gap-2 text-sm text-green-700">
-                    <MaterialIcon name="check_circle" className="text-[18px]" />
-                    {t("quiz.emailSent")}
-                  </div>
-                ) : (
-                  <button
-                    onClick={handleSendEmail}
-                    disabled={sendStatus === "sending"}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-white text-sm font-semibold shadow-md shadow-primary/20 hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    {sendStatus === "sending"
-                      ? <div className="size-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                      : <><MaterialIcon name="mail" className="text-[16px]" /><span>{t("quiz.sendEmail")}</span></>
-                    }
-                  </button>
-                )
-              )}
-              {sendStatus === "error" && <p className="text-xs text-red-500">{t("quiz.emailError")}</p>}
+              <FormulaQrCode
+                formula={createShareableFormula(
+                  selectedFormula.profile,
+                  selectedSizes[chosen] ?? "30ml",
+                  selectedFormula.sizes,
+                )}
+                language={language as "fr" | "en"}
+                buttonLabel={t("recommendations.qrButton")}
+                title={t("recommendations.qrTitle")}
+                subtitle={t("recommendations.qrSubtitle")}
+                closeLabel={t("recommendations.qrClose")}
+              />
+              <button
+                onClick={() => { localStorage.removeItem("quiz_formulas"); router.push("/"); }}
+                className="text-gray-400 brand-text text-[11px] hover:text-primary transition-colors cursor-pointer py-1"
+              >
+                {t("recommendations.returnHome")}
+              </button>
             </div>
           </>
         )}
 
-        <button
-          onClick={() => { localStorage.removeItem("quiz_formulas"); router.push("/"); }}
-          className="text-gray-400 brand-text text-xs hover:text-primary transition-colors cursor-pointer py-1"
-        >
-          {t("recommendations.returnHome")}
-        </button>
+        {chosen === null && (
+          <button
+            onClick={() => { localStorage.removeItem("quiz_formulas"); router.push("/"); }}
+            className="text-gray-400 brand-text text-xs hover:text-primary transition-colors cursor-pointer py-1"
+          >
+            {t("recommendations.returnHome")}
+          </button>
+        )}
       </main>
     </div>
   );

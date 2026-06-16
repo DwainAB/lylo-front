@@ -1,5 +1,6 @@
 "use client";
 
+import type { MouseEvent } from "react";
 import { useTranslation } from "@/i18n/LanguageContext";
 
 export type SizeOption = "10ml" | "30ml" | "50ml";
@@ -13,9 +14,16 @@ const SIZES: SizeOption[] = ["10ml", "30ml", "50ml"];
 
 export default function SizeToggle({ selected, onSelect }: SizeToggleProps) {
   const { t } = useTranslation();
+  const handleSelect = (event: MouseEvent<HTMLButtonElement>, size: SizeOption) => {
+    event.stopPropagation();
+    onSelect(size);
+  };
 
   return (
-    <div className="shrink-0 mt-3 pt-3 sm:mt-4 sm:pt-4 border-t border-secondary/20 flex items-center justify-between">
+    <div
+      className="shrink-0 mt-3 pt-3 sm:mt-4 sm:pt-4 border-t border-secondary/20 flex items-center justify-between"
+      onClick={(event) => event.stopPropagation()}
+    >
       <span className="text-xs font-medium text-gray-400">
         {t("recommendations.selectSize")}
       </span>
@@ -23,7 +31,8 @@ export default function SizeToggle({ selected, onSelect }: SizeToggleProps) {
         {SIZES.map((size) => (
           <button
             key={size}
-            onClick={() => onSelect(size)}
+            type="button"
+            onClick={(event) => handleSelect(event, size)}
             className={`px-3 py-1.5 [@media(max-height:680px)]:py-1 rounded-full text-xs font-bold transition-colors cursor-pointer ${
               selected === size
                 ? "bg-primary text-white"

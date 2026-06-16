@@ -14,6 +14,8 @@ interface FormulaCardProps {
   };
   variant?: "default" | "comparison";
   className?: string;
+  selectedSize?: SizeOption;
+  onSelectedSizeChange?: (size: SizeOption) => void;
 }
 
 const MAX_NOTES = 3;
@@ -80,9 +82,23 @@ function NoteList({
   );
 }
 
-export default function FormulaCard({ name, sizes, variant = "default", className = "" }: FormulaCardProps) {
-  const [selectedSize, setSelectedSize] = useState<SizeOption>("30ml");
+export default function FormulaCard({
+  name,
+  sizes,
+  variant = "default",
+  className = "",
+  selectedSize: controlledSelectedSize,
+  onSelectedSizeChange,
+}: FormulaCardProps) {
+  const [uncontrolledSelectedSize, setUncontrolledSelectedSize] = useState<SizeOption>("30ml");
   const { t } = useTranslation();
+  const selectedSize = controlledSelectedSize ?? uncontrolledSelectedSize;
+  const handleSelectedSizeChange = (size: SizeOption) => {
+    if (controlledSelectedSize === undefined) {
+      setUncontrolledSelectedSize(size);
+    }
+    onSelectedSizeChange?.(size);
+  };
   const sizeData = sizes[selectedSize];
   const isComparison = variant === "comparison";
 
@@ -90,11 +106,11 @@ export default function FormulaCard({ name, sizes, variant = "default", classNam
     <div
       className={`min-w-0 bg-white border rounded-xl card-shadow flex flex-col transition-transform hover:scale-[1.01] ${
         isComparison
-          ? "border-primary/20 p-4 sm:p-5"
+          ? "border-primary/20 p-3 sm:p-4"
           : "border-secondary/30 p-2 sm:p-3"
       } ${className}`}
     >
-      <div className={`${isComparison ? "mb-4 pb-3 border-b border-primary/10" : "mb-1 sm:mb-2"}`}>
+      <div className={`${isComparison ? "mb-3 pb-2.5 border-b border-primary/10" : "mb-1 sm:mb-2"}`}>
         {isComparison && (
           <p className="brand-text text-[0.62rem] sm:text-[0.68rem] text-primary/70 text-center mb-2">
             Formule recommandee
@@ -102,7 +118,7 @@ export default function FormulaCard({ name, sizes, variant = "default", classNam
         )}
         <h2
           className={`luxury-title text-primary text-center shrink-0 ${
-            isComparison ? "text-xl sm:text-2xl leading-tight" : "text-base sm:text-lg"
+            isComparison ? "text-lg sm:text-xl leading-tight" : "text-base sm:text-lg"
           }`}
         >
           {name}
@@ -112,7 +128,7 @@ export default function FormulaCard({ name, sizes, variant = "default", classNam
       <div
         className={`text-sm ${
           isComparison
-            ? "flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-1 flex flex-col gap-3"
+            ? "flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-1 flex flex-col gap-2"
             : "flex flex-col gap-1 sm:gap-2"
         }`}
       >
@@ -138,7 +154,7 @@ export default function FormulaCard({ name, sizes, variant = "default", classNam
         />
       </div>
 
-      <SizeToggle selected={selectedSize} onSelect={setSelectedSize} />
+      <SizeToggle selected={selectedSize} onSelect={handleSelectedSizeChange} />
     </div>
   );
 }

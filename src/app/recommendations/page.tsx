@@ -7,21 +7,24 @@ import AvatarSection from "@/components/interaction/AvatarSection";
 import AvatarVideo from "@/components/interaction/AvatarVideo";
 
 import FormulaCard from "@/components/recommendations/FormulaCard";
+import FormulaQrCode from "@/components/recommendations/FormulaQrCode";
 import nextDynamic from "next/dynamic";
 const BottomBar = nextDynamic(() => import("@/components/livekit/BottomBar"), { ssr: false });
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useSession, DEV_MODE } from "@/context/SessionContext";
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import { resolveStoredLanguage } from "@/lib/language";
+import { createShareableFormula } from "@/lib/shareableFormula";
+import { SizeOption } from "@/components/recommendations/SizeToggle";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 export default function RecommendationsPage() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { formulas: sessionFormulas, endSession, sessionData, requestingEmail, agentName } = useSession();
-  const [email, setEmail] = useState("");
-  const [sendStatus, setSendStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const { formulas: sessionFormulas, endSession, agentName } = useSession();
   const [printStatus, setPrintStatus] = useState<"idle" | "printing" | "done" | "error">("idle");
+  const [selectedSize, setSelectedSize] = useState<SizeOption>("30ml");
 
   const printerLocation = typeof window !== "undefined" ? localStorage.getItem("printer_location") ?? "" : "";
 
@@ -36,7 +39,7 @@ export default function RecommendationsPage() {
     if (!formula || !printerLocation) return;
     setPrintStatus("printing");
     try {
-      const size = formula.sizes["30ml"];
+      const size = formula.sizes[selectedSize];
       const res = await fetch(`${API_BASE}/printers/print-formula`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -59,21 +62,6 @@ export default function RecommendationsPage() {
     }
   };
 
-  const handleSendEmail = async () => {
-    if (!sessionData?.session_id || !email) return;
-    setSendStatus("sending");
-    try {
-      const res = await fetch(`${API_BASE}/api/session/${sessionData.session_id}/mail/send`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to: email }),
-      });
-      setSendStatus(res.ok ? "sent" : "error");
-    } catch {
-      setSendStatus("error");
-    }
-  };
-
   const allFormulas = sessionFormulas.map((f, i) => ({
     key: `formula-${i}`,
     name: f.profile,
@@ -82,9 +70,9 @@ export default function RecommendationsPage() {
 
   const formulas = DEV_MODE && devSingleFormula ? [allFormulas[0]] : allFormulas;
   const isSingle = formulas.length === 1;
-  const showEmail = requestingEmail || (DEV_MODE && devSingleFormula);
   const showResumeButton = DEV_MODE && devSingleFormula;
-  const showMailButton = DEV_MODE && devSingleFormula;
+  const selectedFormula = sessionFormulas[0];
+  const language = resolveStoredLanguage();
 
   return (
     <div className="relative flex min-h-dvh w-full flex-col overflow-x-hidden overflow-y-auto">
@@ -133,37 +121,43 @@ export default function RecommendationsPage() {
             [FormulaCard ~50%] | [Carte avatar ~50%]
                                   - avatar
                                   - J'ai une question
-                                  - email
+                                  - QR code
                                   - retour accueil
         ════════════════════════════════════════════════ */}
         {isSingle ? (
           <div className="flex-1 min-h-0 flex items-center justify-center">
 
             {/* Conteneur centré — h-[500px] fixe la référence commune aux 2 cartes */}
-            <div className="w-full max-w-2xl flex flex-row gap-3 sm:gap-4 h-[500px]">
+            <div className="w-full max-w-[920px] flex flex-row gap-2.5 sm:gap-3 h-[470px]">
 
               {/* Carte notes (50 %) — flex-1 min-h-0 min-w-0 déjà dans FormulaCard */}
               {formulas[0] && (
-                <FormulaCard name={formulas[0].name} sizes={formulas[0].sizes} />
+                <FormulaCard
+                  name={formulas[0].name}
+                  sizes={formulas[0].sizes}
+                  className="flex-[1.05]"
+                  selectedSize={selectedSize}
+                  onSelectedSizeChange={setSelectedSize}
+                />
               )}
 
               {/* Carte avatar + actions (50 %) — mêmes flex-1 min-h-0 min-w-0 */}
-              <div className="flex-1 min-h-0 min-w-0 bg-white border border-secondary/30 rounded-xl card-shadow flex flex-col items-center justify-center gap-4 sm:gap-5 p-4 sm:p-6 overflow-hidden">
+              <div className="flex-[0.9] min-h-0 min-w-0 bg-white border border-secondary/30 rounded-xl card-shadow flex flex-col items-center justify-center gap-3 p-3.5 sm:p-4 overflow-hidden">
 
                 {/* Avatar */}
                 <div className="relative shrink-0">
-                  <div className="size-28 sm:size-36 rounded-full overflow-hidden border-4 border-white ai-glow">
+                  <div className="size-24 sm:size-28 rounded-full overflow-hidden border-4 border-white ai-glow">
                     <AvatarVideo fallbackUrl={avatarUrl} avatarEnabled={avatarEnabled} />
                   </div>
                   <div className="absolute bottom-1 right-1 size-4 bg-primary rounded-full border-2 border-white" />
                 </div>
-                <p className="text-sm font-light tracking-wide italic text-primary">
+                <p className="text-xs sm:text-sm font-light tracking-wide italic text-primary">
                   {agentName} AI
                 </p>
 
                 {/* Bouton J'ai une question */}
                 {showResumeButton && (
-                  <button className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-full bg-white/90 backdrop-blur-sm text-primary text-sm font-medium border border-primary/25 cursor-pointer shadow-lg shadow-primary/10 hover:bg-white hover:border-primary/40 transition-all">
+                  <button className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-full bg-white/90 backdrop-blur-sm text-primary text-xs sm:text-sm font-medium border border-primary/25 cursor-pointer shadow-lg shadow-primary/10 hover:bg-white hover:border-primary/40 transition-all">
                     <MaterialIcon name="mic" className="text-[18px]" />
                     J&apos;ai une question
                   </button>
@@ -180,7 +174,7 @@ export default function RecommendationsPage() {
                     <button
                       onClick={handlePrint}
                       disabled={printStatus === "printing"}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-white/90 backdrop-blur-sm text-primary text-sm font-medium border border-primary/25 cursor-pointer shadow-lg shadow-primary/10 hover:bg-white hover:border-primary/40 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-full bg-white/90 backdrop-blur-sm text-primary text-xs sm:text-sm font-medium border border-primary/25 cursor-pointer shadow-lg shadow-primary/10 hover:bg-white hover:border-primary/40 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {printStatus === "printing"
                         ? <div className="size-4 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
@@ -194,55 +188,15 @@ export default function RecommendationsPage() {
                   <p className="text-xs text-red-500 text-center">Erreur d&apos;impression.</p>
                 )}
 
-                {/* Bouton Voir l'email */}
-                {showMailButton && (
-                  <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-primary text-white text-sm font-semibold shadow-lg shadow-primary/30 hover:brightness-110 transition-all">
-                    <MaterialIcon name="mail" className="text-[18px]" />
-                    Voir l&apos;e-mail
-                  </button>
-                )}
-
-                {/* Champ email */}
-                {showEmail && (
-                  <div className="w-full flex flex-col gap-2">
-                    <p className="text-xs font-light text-center text-[#7f6f66] tracking-wide">
-                      Recevez votre formule par e-mail
-                    </p>
-                    {sendStatus === "sent" ? (
-                      <div className="flex items-center justify-center gap-2 text-sm text-green-700">
-                        <MaterialIcon name="check_circle" className="text-[18px]" />
-                        E-mail envoyé
-                      </div>
-                    ) : (
-                      <div className="flex w-full gap-2">
-                        <input
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          onKeyDown={(e) => e.key === "Enter" && handleSendEmail()}
-                          placeholder="votre@email.com"
-                          disabled={sendStatus === "sending"}
-                          className="flex-1 min-w-0 px-3 py-2 rounded-full border border-primary/25 bg-white/60 text-sm text-[#4a3f3a] placeholder-[#b0a49e] focus:outline-none focus:border-primary/50 disabled:opacity-50"
-                        />
-                        <button
-                          onClick={handleSendEmail}
-                          disabled={!email || sendStatus === "sending"}
-                          className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-primary text-white text-sm font-semibold shadow-md shadow-primary/20 hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-                        >
-                          {sendStatus === "sending" ? (
-                            <div className="size-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                          ) : (
-                            <MaterialIcon name="send" className="text-[16px]" />
-                          )}
-                        </button>
-                      </div>
-                    )}
-                    {sendStatus === "error" && (
-                      <p className="text-xs text-red-500 text-center">
-                        Une erreur est survenue. Veuillez réessayer.
-                      </p>
-                    )}
-                  </div>
+                {selectedFormula && (
+                  <FormulaQrCode
+                    formula={createShareableFormula(selectedFormula.profile, selectedSize, selectedFormula.sizes)}
+                    language={language}
+                    buttonLabel={t("recommendations.qrButton")}
+                    title={t("recommendations.qrTitle")}
+                    subtitle={t("recommendations.qrSubtitle")}
+                    closeLabel={t("recommendations.qrClose")}
+                  />
                 )}
 
                 {/* Retour accueil */}
@@ -261,7 +215,7 @@ export default function RecommendationsPage() {
 
         /* ════════════════════════════════════════════════
             VUE 2 FORMULES
-            [carte 1] [carte 2]   [email si demandé]
+            [carte 1] [carte 2]
         ════════════════════════════════════════════════ */
           <div className="flex-1 flex flex-col gap-4 sm:gap-5">
 
@@ -293,49 +247,6 @@ export default function RecommendationsPage() {
                   </p>
                 )}
               </div>
-
-              {/* Email sous les cartes */}
-              {requestingEmail && (
-                <div className="shrink-0 max-w-xl mx-auto w-full bg-white/85 border border-primary/10 rounded-xl px-4 py-4 sm:px-5 sm:py-5 card-shadow">
-                  <p className="text-xs font-light text-center text-[#7f6f66] tracking-wide mb-3">
-                    Recevez votre formule par e-mail
-                  </p>
-                  {sendStatus === "sent" ? (
-                    <div className="flex items-center justify-center gap-2 text-sm text-green-700">
-                      <MaterialIcon name="check_circle" className="text-[18px]" />
-                      E-mail envoyé
-                    </div>
-                  ) : (
-                    <div className="flex w-full gap-2">
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleSendEmail()}
-                        placeholder="votre@email.com"
-                        disabled={sendStatus === "sending"}
-                        className="flex-1 min-w-0 px-3 py-2 rounded-full border border-primary/25 bg-white/60 text-sm text-[#4a3f3a] placeholder-[#b0a49e] focus:outline-none focus:border-primary/50 disabled:opacity-50"
-                      />
-                      <button
-                        onClick={handleSendEmail}
-                        disabled={!email || sendStatus === "sending"}
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-primary text-white text-sm font-semibold shadow-md shadow-primary/20 hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-                      >
-                        {sendStatus === "sending" ? (
-                          <div className="size-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                        ) : (
-                          <MaterialIcon name="send" className="text-[16px]" />
-                        )}
-                      </button>
-                    </div>
-                  )}
-                  {sendStatus === "error" && (
-                    <p className="text-xs text-red-500 text-center">
-                      Une erreur est survenue. Veuillez réessayer.
-                    </p>
-                  )}
-                </div>
-              )}
             </div>
 
             {/* Retour accueil */}
