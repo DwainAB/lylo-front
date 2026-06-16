@@ -256,6 +256,7 @@ function MultiResults() {
   // Index du participant en train de choisir (-1 = récap final)
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selections, setSelections] = useState<Record<string, number>>({});
+  const [selectedSizes, setSelectedSizes] = useState<Record<string, Record<number, SizeOption>>>({});
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [references, setReferences] = useState<Record<string, string>>({});
   const [printStatus, setPrintStatus] = useState<"idle" | "printing" | "done" | "error">("idle");
@@ -299,6 +300,16 @@ function MultiResults() {
     }
   };
 
+  const handleFormulaSizeChange = (color: string, formulaIndex: number, size: SizeOption) => {
+    setSelectedSizes((current) => ({
+      ...current,
+      [color]: {
+        ...(current[color] ?? {}),
+        [formulaIndex]: size,
+      },
+    }));
+  };
+
   const handleSaveAll = async () => {
     setSaveStatus("saving");
     try {
@@ -326,7 +337,8 @@ function MultiResults() {
     try {
       const formulasToPrint = participants.map((p) => {
         const formula = p.formulas[selections[p.color]];
-        const size = formula.sizes["30ml"];
+        const activeSize = selectedSizes[p.color]?.[selections[p.color]] ?? "30ml";
+        const size = formula.sizes[activeSize];
         return {
           profile: formula.profile,
           notes: {
@@ -400,6 +412,8 @@ function MultiResults() {
                   sizes={formula.sizes}
                   variant="comparison"
                   className="h-full"
+                  selectedSize={selectedSizes[participant.color]?.[i] ?? "30ml"}
+                  onSelectedSizeChange={(size) => handleFormulaSizeChange(participant.color, i, size)}
                 />
                 {chosen === i && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -458,6 +472,7 @@ function MultiResults() {
             const chosenIdx = selections[participant.color];
             const formula = participant.formulas[chosenIdx];
             const ref = references[participant.color];
+            const selectedSize = selectedSizes[participant.color]?.[chosenIdx] ?? "30ml";
 
             return (
               <div key={participant.color} className="flex-1 min-w-0 flex flex-col gap-2">
@@ -489,8 +504,18 @@ function MultiResults() {
                     sizes={formula.sizes}
                     variant="comparison"
                     className="h-full"
+                    selectedSize={selectedSize}
+                    onSelectedSizeChange={(size) => handleFormulaSizeChange(participant.color, chosenIdx, size)}
                   />
                 </div>
+                <FormulaQrCode
+                  formula={createShareableFormula(formula.profile, selectedSize, formula.sizes)}
+                  language={language as "fr" | "en"}
+                  buttonLabel={t("recommendations.qrButton")}
+                  title={`${t("recommendations.qrTitle")} · ${colorDef?.label ?? participant.color}`}
+                  subtitle={t("recommendations.qrSubtitle")}
+                  closeLabel={t("recommendations.qrClose")}
+                />
               </div>
             );
           })}
