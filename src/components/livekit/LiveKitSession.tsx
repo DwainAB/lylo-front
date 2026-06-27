@@ -6,6 +6,7 @@ import {
   RoomAudioRenderer,
   useDataChannel,
   useRoomContext,
+  useStartAudio,
 } from "@livekit/components-react";
 import { RoomEvent, ParticipantEvent, TranscriptionSegment, Participant, RoomOptions } from "livekit-client";
 import { useSession } from "@/context/SessionContext";
@@ -140,6 +141,29 @@ function TranscriptionListener() {
   return null;
 }
 
+function AudioUnlockButton() {
+  const room = useRoomContext();
+  const { mergedProps, canPlayAudio } = useStartAudio({
+    room,
+    props: {
+      type: "button",
+    },
+  });
+
+  if (canPlayAudio) return null;
+
+  return (
+    <div className="fixed inset-x-0 bottom-6 z-40 flex justify-center px-4 pointer-events-none">
+      <button
+        {...mergedProps}
+        className="pointer-events-auto rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-opacity hover:opacity-90"
+      >
+        Activer l&apos;audio
+      </button>
+    </div>
+  );
+}
+
 
 interface LiveKitSessionProps {
   children: ReactNode;
@@ -171,6 +195,7 @@ export default function LiveKitSession({ children }: LiveKitSessionProps) {
       options={roomOptions}
     >
       <RoomAudioRenderer />
+      <AudioUnlockButton />
       <RoomEventLogger />
       <DataChannelListener />
       <TranscriptionListener />
