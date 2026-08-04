@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import FormulaCard from "@/components/recommendations/FormulaCard";
+import CatalogFormulaCard from "@/components/recommendations/CatalogFormulaCard";
 import FormulaQrCode from "@/components/recommendations/FormulaQrCode";
 import { SizeOption } from "@/components/recommendations/SizeToggle";
 import { useTranslation } from "@/i18n/LanguageContext";
@@ -16,17 +17,64 @@ import { createShareableFormula } from "@/lib/shareableFormula";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 interface Formula {
+  // Lylo — formule générée sur-mesure
   profile: string;
   formula_type?: string;
   top_notes?: string[];
   heart_notes?: string[];
   base_notes?: string[];
-  sizes: {
+  sizes?: {
     "10ml": FormulaSize;
     "30ml": FormulaSize;
     "50ml": FormulaSize;
   };
   session_id?: string;
+  // Ester — parfum sélectionné dans le catalogue
+  source?: "catalog";
+  brand?: string;
+  name?: string;
+  family?: string;
+  match_reason?: string;
+}
+
+function isCatalogFormula(formula: Formula): boolean {
+  return formula.source === "catalog";
+}
+
+function renderFormula(
+  formula: Formula,
+  opts: {
+    variant: "default" | "comparison";
+    className?: string;
+    selectedSize: SizeOption;
+    onSelectedSizeChange: (size: SizeOption) => void;
+  }
+) {
+  if (isCatalogFormula(formula)) {
+    return (
+      <CatalogFormulaCard
+        brand={formula.brand ?? ""}
+        name={formula.name ?? ""}
+        family={formula.family}
+        topNotes={formula.top_notes}
+        heartNotes={formula.heart_notes}
+        baseNotes={formula.base_notes}
+        matchReason={formula.match_reason}
+        variant={opts.variant}
+        className={opts.className}
+      />
+    );
+  }
+  return (
+    <FormulaCard
+      name={formula.profile}
+      sizes={formula.sizes!}
+      variant={opts.variant}
+      className={opts.className}
+      selectedSize={opts.selectedSize}
+      onSelectedSizeChange={opts.onSelectedSizeChange}
+    />
+  );
 }
 
 // ── Mode solo ─────────────────────────────────────────────────────────────
@@ -74,11 +122,11 @@ function SoloResults() {
   };
 
   const handlePrint = async () => {
-    if (!selectedFormula || !printerLocation) return;
+    if (!selectedFormula || !printerLocation || isCatalogFormula(selectedFormula)) return;
     setPrintStatus("printing");
     try {
       const activeSize = chosen !== null ? (selectedSizes[chosen] ?? "30ml") : "30ml";
-      const size = selectedFormula.sizes[activeSize];
+      const size = selectedFormula.sizes![activeSize];
       const res = await fetch(`${API_BASE}/printers/print-formula`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -139,14 +187,12 @@ function SoloResults() {
                 onClick={() => handleChoose(i)}
                 className="w-[300px] sm:w-[340px] h-[min(68vh,720px)] cursor-pointer rounded-xl border-2 border-transparent hover:border-primary transition-all hover:scale-[1.02] overflow-hidden relative shadow-md"
               >
-                <FormulaCard
-                  name={formula.profile}
-                  sizes={formula.sizes}
-                  variant="comparison"
-                  className="h-full"
-                  selectedSize={selectedSizes[i] ?? "30ml"}
-                  onSelectedSizeChange={(size) => handleFormulaSizeChange(i, size)}
-                />
+                {renderFormula(formula, {
+                  variant: "comparison",
+                  className: "h-full",
+                  selectedSize: selectedSizes[i] ?? "30ml",
+                  onSelectedSizeChange: (size) => handleFormulaSizeChange(i, size),
+                })}
               </div>
             ))}
           </div>
@@ -165,14 +211,12 @@ function SoloResults() {
                       : "border-transparent opacity-30 scale-[0.97] cursor-pointer"
                   }`}
                 >
-                  <FormulaCard
-                    name={formula.profile}
-                    sizes={formula.sizes}
-                    variant="comparison"
-                    className="h-full"
-                    selectedSize={selectedSizes[i] ?? "30ml"}
-                    onSelectedSizeChange={(size) => handleFormulaSizeChange(i, size)}
-                  />
+                  {renderFormula(formula, {
+                    variant: "comparison",
+                    className: "h-full",
+                    selectedSize: selectedSizes[i] ?? "30ml",
+                    onSelectedSizeChange: (size) => handleFormulaSizeChange(i, size),
+                  })}
                   {chosen === i && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                       <div className="bg-primary/90 rounded-full p-3 shadow-xl">
@@ -187,7 +231,7 @@ function SoloResults() {
             </div>
             <p className="text-xs text-primary/40 text-center">Appuie sur l&apos;autre carte pour changer de choix</p>
             <div className="w-full flex flex-wrap gap-2.5 items-center justify-center">
-              {printerLocation && (
+              {!isCatalogFormula(selectedFormula) && printerLocation && (
                 printStatus === "done" ? (
                   <div className="flex items-center gap-2 text-sm text-green-700">
                     <MaterialIcon name="check_circle" className="text-[18px]" /> Imprimé
@@ -207,18 +251,20 @@ function SoloResults() {
                 )
               )}
               {printStatus === "error" && <p className="text-xs text-red-500">Erreur d&apos;impression.</p>}
-              <FormulaQrCode
-                formula={createShareableFormula(
-                  selectedFormula.profile,
-                  selectedSizes[chosen] ?? "30ml",
-                  selectedFormula.sizes,
-                )}
-                language={language as "fr" | "en"}
-                buttonLabel={t("recommendations.qrButton")}
-                title={t("recommendations.qrTitle")}
-                subtitle={t("recommendations.qrSubtitle")}
-                closeLabel={t("recommendations.qrClose")}
-              />
+              {!isCatalogFormula(selectedFormula) && (
+                <FormulaQrCode
+                  formula={createShareableFormula(
+                    selectedFormula.profile,
+                    selectedSizes[chosen] ?? "30ml",
+                    selectedFormula.sizes!,
+                  )}
+                  language={language as "fr" | "en"}
+                  buttonLabel={t("recommendations.qrButton")}
+                  title={t("recommendations.qrTitle")}
+                  subtitle={t("recommendations.qrSubtitle")}
+                  closeLabel={t("recommendations.qrClose")}
+                />
+              )}
               <button
                 onClick={() => { localStorage.removeItem("quiz_formulas"); router.push("/"); }}
                 className="text-gray-400 brand-text text-[11px] hover:text-primary transition-colors cursor-pointer py-1"
@@ -335,10 +381,12 @@ function MultiResults() {
     if (!printerLocation) return;
     setPrintStatus("printing");
     try {
-      const formulasToPrint = participants.map((p) => {
+      const formulasToPrint = participants
+        .filter((p) => !isCatalogFormula(p.formulas[selections[p.color]]))
+        .map((p) => {
         const formula = p.formulas[selections[p.color]];
         const activeSize = selectedSizes[p.color]?.[selections[p.color]] ?? "30ml";
-        const size = formula.sizes[activeSize];
+        const size = formula.sizes![activeSize];
         return {
           profile: formula.profile,
           notes: {
@@ -407,14 +455,12 @@ function MultiResults() {
                 }`}
                 style={{ borderColor: chosen === i ? (colorDef?.text ?? "#333") : "transparent" }}
               >
-                <FormulaCard
-                  name={formula.profile}
-                  sizes={formula.sizes}
-                  variant="comparison"
-                  className="h-full"
-                  selectedSize={selectedSizes[participant.color]?.[i] ?? "30ml"}
-                  onSelectedSizeChange={(size) => handleFormulaSizeChange(participant.color, i, size)}
-                />
+                {renderFormula(formula, {
+                  variant: "comparison",
+                  className: "h-full",
+                  selectedSize: selectedSizes[participant.color]?.[i] ?? "30ml",
+                  onSelectedSizeChange: (size) => handleFormulaSizeChange(participant.color, i, size),
+                })}
                 {chosen === i && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="rounded-full p-3 shadow-xl" style={{ backgroundColor: colorDef?.text ?? "#333" }}>
@@ -499,23 +545,23 @@ function MultiResults() {
                 </div>
                 {/* Carte formule */}
                 <div className="flex-1 min-h-0 rounded-xl overflow-hidden border border-primary/10">
-                  <FormulaCard
-                    name={formula.profile}
-                    sizes={formula.sizes}
-                    variant="comparison"
-                    className="h-full"
-                    selectedSize={selectedSize}
-                    onSelectedSizeChange={(size) => handleFormulaSizeChange(participant.color, chosenIdx, size)}
-                  />
+                  {renderFormula(formula, {
+                    variant: "comparison",
+                    className: "h-full",
+                    selectedSize,
+                    onSelectedSizeChange: (size) => handleFormulaSizeChange(participant.color, chosenIdx, size),
+                  })}
                 </div>
-                <FormulaQrCode
-                  formula={createShareableFormula(formula.profile, selectedSize, formula.sizes)}
-                  language={language as "fr" | "en"}
-                  buttonLabel={t("recommendations.qrButton")}
-                  title={`${t("recommendations.qrTitle")} · ${colorDef?.label ?? participant.color}`}
-                  subtitle={t("recommendations.qrSubtitle")}
-                  closeLabel={t("recommendations.qrClose")}
-                />
+                {!isCatalogFormula(formula) && (
+                  <FormulaQrCode
+                    formula={createShareableFormula(formula.profile, selectedSize, formula.sizes!)}
+                    language={language as "fr" | "en"}
+                    buttonLabel={t("recommendations.qrButton")}
+                    title={`${t("recommendations.qrTitle")} · ${colorDef?.label ?? participant.color}`}
+                    subtitle={t("recommendations.qrSubtitle")}
+                    closeLabel={t("recommendations.qrClose")}
+                  />
+                )}
               </div>
             );
           })}

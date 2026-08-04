@@ -11,6 +11,7 @@ import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { PARTICIPANT_COLORS } from "@/components/configure/ConfigPanel";
 import { persistLanguage, resolveStoredLanguage } from "@/lib/language";
+import { activeBrand } from "@/lib/brand";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
@@ -275,6 +276,7 @@ export default function QuizPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           language,
+          brand: activeBrand.id,
           gender: profile.gender,
           age: profile.age,
           has_allergies: profile.has_allergies ? "oui" : "non",
@@ -302,6 +304,7 @@ export default function QuizPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           language,
+          brand: activeBrand.id,
           participants: finalParticipants.map((p) => ({
             color: p.color,
             gender: p.profile.gender,
