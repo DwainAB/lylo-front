@@ -6,6 +6,11 @@ frontend:
         - npm ci --cache .npm --prefer-offline
     build:
       commands:
+        - echo "=== DEBUG .env.production content ==="
+        - cat .env.production || echo "FILE NOT FOUND"
+        - echo "=== DEBUG process env NEXT_PUBLIC_BRAND ==="
+        - env | grep NEXT_PUBLIC_BRAND || echo "NOT SET IN SHELL ENV"
+        - echo "======================================="
         - npm run build
   artifacts:
     baseDirectory: .next
