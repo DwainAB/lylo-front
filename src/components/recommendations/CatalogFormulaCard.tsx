@@ -15,7 +15,7 @@ interface CatalogFormulaCardProps {
 function NoteList({ label, notes }: { label: string; notes: string[] }) {
   if (!notes || notes.length === 0) return null;
   return (
-    <section className="min-w-0 rounded-lg border border-primary/12 bg-[#fcfaf8] px-3 py-2.5">
+    <section className="min-w-0 rounded-lg border border-primary/12 brand-surface-softer px-3 py-2.5">
       <span className="brand-text text-primary block mb-2 text-[0.62rem] sm:text-[0.68rem]">
         {label}
       </span>
@@ -23,7 +23,7 @@ function NoteList({ label, notes }: { label: string; notes: string[] }) {
         {notes.map((note) => (
           <li
             key={note}
-            className="py-1 text-[#4f443e] border-b border-primary/8 last:border-b-0 text-sm sm:text-[0.95rem]"
+            className="py-1 text-surface border-b border-primary/8 last:border-b-0 text-sm sm:text-[0.95rem]"
           >
             {note}
           </li>
@@ -48,7 +48,7 @@ export default function CatalogFormulaCard({
 
   return (
     <div
-      className={`min-w-0 bg-white border rounded-xl card-shadow flex flex-col transition-transform hover:scale-[1.01] ${
+      className={`min-w-0 brand-surface border rounded-xl card-shadow flex flex-col transition-transform hover:scale-[1.01] ${
         isComparison ? "border-primary/20 p-3 sm:p-4" : "border-secondary/30 p-2 sm:p-3"
       } ${className}`}
     >
@@ -59,9 +59,10 @@ export default function CatalogFormulaCard({
           </p>
         )}
         <h2
-          className={`luxury-title text-primary text-center shrink-0 ${
+          className={`luxury-title text-center shrink-0 ${
             isComparison ? "text-lg sm:text-xl leading-tight" : "text-base sm:text-lg"
           }`}
+          style={{ color: "#fff" }}
         >
           {name}
         </h2>
@@ -78,7 +79,7 @@ export default function CatalogFormulaCard({
         }`}
       >
         {matchReason && (
-          <p className="text-xs sm:text-sm text-[#4f443e] italic mb-1">{matchReason}</p>
+          <p className="text-xs sm:text-sm text-surface opacity-80 italic mb-1">{matchReason}</p>
         )}
         <NoteList label="Notes de tête" notes={topNotes} />
         <NoteList label="Notes de cœur" notes={heartNotes} />

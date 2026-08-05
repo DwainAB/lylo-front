@@ -1,9 +1,11 @@
 "use client";
 
 import { useTranslation } from "@/i18n/LanguageContext";
+import { activeBrand } from "@/lib/brand";
 
 export default function GeneratingLoader() {
   const { t } = useTranslation();
+  const i18nPrefix = activeBrand.id === "ester" ? "generatingCatalog" : "generating";
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background-light/90 backdrop-blur-md">
@@ -32,10 +34,10 @@ export default function GeneratingLoader() {
       </div>
 
       <h2 className="text-2xl font-bold text-primary tracking-tight mb-2">
-        {t("generating.title")}
+        {t(`${i18nPrefix}.title`)}
       </h2>
-      <p className="text-sm text-[#7f6f66] max-w-xs text-center">
-        {t("generating.subtitle")}
+      <p className="text-sm text-primary/60 max-w-xs text-center">
+        {t(`${i18nPrefix}.subtitle`)}
       </p>
 
       {/* Progress dots */}

@@ -158,7 +158,7 @@ function SoloResults() {
   };
 
   return (
-    <div className="relative min-h-dvh w-full flex flex-col bg-stone-50 overflow-hidden">
+    <div className="relative min-h-dvh w-full flex flex-col bg-background-light overflow-hidden">
       <Navbar showActions={false} transparent />
       <div className="absolute inset-0 opacity-5 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary rounded-full blur-[100px]" />
@@ -240,7 +240,7 @@ function SoloResults() {
                   <button
                     onClick={handlePrint}
                     disabled={printStatus === "printing"}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-primary/25 text-primary text-xs sm:text-sm font-semibold shadow-sm hover:bg-primary/5 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full brand-surface border border-primary/25 text-primary text-xs sm:text-sm font-semibold shadow-sm hover:bg-primary/5 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     {printStatus === "printing"
                       ? <div className="size-4 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
@@ -267,7 +267,7 @@ function SoloResults() {
               )}
               <button
                 onClick={() => { localStorage.removeItem("quiz_formulas"); router.push("/"); }}
-                className="text-gray-400 brand-text text-[11px] hover:text-primary transition-colors cursor-pointer py-1"
+                className="text-surface opacity-50 brand-text text-[11px] hover:text-primary hover:opacity-100 transition-colors cursor-pointer py-1"
               >
                 {t("recommendations.returnHome")}
               </button>
@@ -278,7 +278,7 @@ function SoloResults() {
         {chosen === null && (
           <button
             onClick={() => { localStorage.removeItem("quiz_formulas"); router.push("/"); }}
-            className="text-gray-400 brand-text text-xs hover:text-primary transition-colors cursor-pointer py-1"
+            className="text-surface opacity-50 brand-text text-xs hover:text-primary hover:opacity-100 transition-colors cursor-pointer py-1"
           >
             {t("recommendations.returnHome")}
           </button>
@@ -496,7 +496,7 @@ function MultiResults() {
 
   // ── Récapitulatif final ────────────────────────────────────────────
   return (
-    <div className="h-dvh w-full flex flex-col bg-stone-50 overflow-hidden">
+    <div className="h-dvh w-full flex flex-col bg-background-light overflow-hidden">
       <Navbar showActions={false} transparent />
 
       <main className="flex-1 flex flex-col min-h-0 px-4 pb-4 pt-2 max-w-6xl mx-auto w-full gap-3">
@@ -613,7 +613,7 @@ function MultiResults() {
 
           <button
             onClick={() => { localStorage.removeItem("quiz_multi_results"); localStorage.removeItem("participant_colors"); router.push("/"); }}
-            className="text-gray-400 text-xs hover:text-primary transition-colors cursor-pointer"
+            className="text-surface opacity-50 text-xs hover:text-primary hover:opacity-100 transition-colors cursor-pointer"
           >
             {t("recommendations.returnHome")}
           </button>

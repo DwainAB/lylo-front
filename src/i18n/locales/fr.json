@@ -149,6 +149,10 @@
     "title": "Création de vos formules",
     "subtitle": "Rose compose deux formules de parfum sur mesure basées sur votre profil olfactif unique."
   },
+  "generatingCatalog": {
+    "title": "Recherche de vos parfums",
+    "subtitle": "Nous recherchons les parfums qui correspondent le mieux à vos préférences."
+  },
   "auth": {
     "modalTitle": "Connexion",
     "modalSubtitle": "Connectez-vous pour accéder à votre espace",

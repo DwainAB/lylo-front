@@ -149,6 +149,10 @@
     "title": "Crafting your formulas",
     "subtitle": "Rose is composing two bespoke fragrance formulas based on your unique olfactory profile."
   },
+  "generatingCatalog": {
+    "title": "Finding your perfumes",
+    "subtitle": "We're searching for the perfumes that best match your preferences."
+  },
   "auth": {
     "modalTitle": "Sign in",
     "modalSubtitle": "Sign in to access your space",

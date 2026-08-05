@@ -61,7 +61,13 @@ export default function ChoiceGrid({ choices }: ChoiceGridProps) {
           <ChoiceCard
             key={choice.label}
             name={choice.label}
-            imageUrl={choice.image ? `${process.env.NEXT_PUBLIC_API_URL}${choice.image}` : undefined}
+            imageUrl={
+              choice.image
+                ? /^https?:\/\//.test(choice.image)
+                  ? choice.image
+                  : `${process.env.NEXT_PUBLIC_API_URL}${choice.image}`
+                : undefined
+            }
             selected={
               clickSelectionMode !== null
                 ? clickSelected.includes(choice.label)

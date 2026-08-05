@@ -150,6 +150,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [formulas, setFormulas] = useState<Formula[]>(DEV_MODE ? MOCK_FORMULAS : []);
   const [transcripts, setTranscripts] = useState<TranscriptMessage[]>([]);
   const [questions, setQuestions] = useState<Question[]>(DEV_MODE ? MOCK_QUESTIONS : []);
+  const questionsRef = useRef<Question[]>(questions);
+  questionsRef.current = questions;
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [questionCount, setQuestionCount] = useState(DEV_MODE ? MOCK_QUESTIONS.length : 0);
   const [agentName, setAgentName] = useState("Rose");
@@ -233,14 +235,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           setHiddenChoices(event.top_2 || []);
           break;
 
-        case "answer_saved":
+        case "answer_saved": {
           console.log("[LiveKit] answer_saved → question_id:", event.question_id, "top_2:", event.top_2, "bottom_2:", event.bottom_2);
           setHiddenChoices([]);
+          setConfirmationData(null);
+          setSessionState("questionnaire");
           setAnswers((prev) => {
-            const isNew = !prev.some((a) => a.question_id === event.question_id);
-            if (isNew) {
-              setCurrentQuestionIndex((i) => i + 1);
-            }
             return [
               ...prev.filter((a) => a.question_id !== event.question_id),
               {
@@ -250,7 +250,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
               },
             ];
           });
+          // L'index affiché est dérivé de la position réelle de la question
+          // répondue dans la liste, pas d'un simple compteur — un compteur
+          // aveugle dérive silencieusement si un événement est manqué/dupliqué.
+          const answeredIndex = questionsRef.current.findIndex((q) => q.id === event.question_id);
+          if (answeredIndex !== -1) {
+            setCurrentQuestionIndex(answeredIndex + 1);
+          }
           break;
+        }
 
         case "formulas_generated":
           console.log("[LiveKit] formulas_generated →", event.formulas?.length, "formulas");
