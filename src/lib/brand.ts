@@ -31,3 +31,10 @@ function resolveBrandId(): BrandId {
 }
 
 export const activeBrand: BrandConfig = brands[resolveBrandId()];
+
+if (typeof window !== "undefined") {
+  console.log(
+    `%c[BRAND] NEXT_PUBLIC_BRAND="${process.env.NEXT_PUBLIC_BRAND}" → activeBrand="${activeBrand.id}"`,
+    "background:#222;color:#fff;padding:4px 8px;border-radius:4px;font-weight:bold;"
+  );
+}
