@@ -23,7 +23,7 @@ export default function InputModeSelector({ value, onChange }: InputModeSelector
 
   return (
     <section className="relative">
-      <h3 className="text-text-dark text-xs font-bold uppercase tracking-widest leading-tight mb-1.5 flex items-center gap-2">
+      <h3 className="text-surface text-xs font-bold uppercase tracking-widest leading-tight mb-1.5 flex items-center gap-2">
         <MaterialIcon name="settings_input_component" className="text-sm" />
         {t("configure.inputModeTitle")}&nbsp;<button
           type="button"
@@ -31,7 +31,7 @@ export default function InputModeSelector({ value, onChange }: InputModeSelector
           onClick={() => setShowInfo((v) => !v)}
           onMouseEnter={() => setShowInfo(true)}
           onMouseLeave={() => setShowInfo(false)}
-          className="text-text-dark transition-colors"
+          className="text-surface transition-colors"
         >
           <MaterialIcon name="info" className="text-[14px]" />
         </button>
@@ -39,8 +39,8 @@ export default function InputModeSelector({ value, onChange }: InputModeSelector
 
       {/* Tooltip */}
       {showInfo && (
-        <div className="absolute z-20 top-6 right-0 w-64 bg-white border border-primary/15 rounded-lg shadow-lg p-3 text-[11px] text-primary/80 leading-relaxed space-y-2">
-          <div className="absolute -top-1.5 right-2 w-2.5 h-2.5 bg-white border-l border-t border-primary/15 rotate-45" />
+        <div className="absolute z-20 top-6 right-0 w-64 brand-surface border border-primary/15 rounded-lg shadow-lg p-3 text-[11px] text-primary/80 leading-relaxed space-y-2">
+          <div className="absolute -top-1.5 right-2 w-2.5 h-2.5 brand-surface border-l border-t border-primary/15 rotate-45" />
           {infoLines.map((line, i) => (
             <p key={i}>{line}</p>
           ))}
@@ -58,7 +58,7 @@ export default function InputModeSelector({ value, onChange }: InputModeSelector
               onChange={() => onChange(option.value)}
               className="peer hidden"
             />
-            <div className="flex items-center justify-center px-2 py-2 rounded-lg border-2 border-primary/10 bg-white/50 text-primary/60 transition-all group-hover:bg-primary/5 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-lg">
+            <div className="flex items-center justify-center px-2 py-2 rounded-lg border-2 border-primary/10 brand-surface-soft text-primary/60 transition-all group-hover:bg-primary/5 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-lg">
               <span className="text-sm font-bold">{option.label}</span>
             </div>
           </label>

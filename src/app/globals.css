@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-primary: #996f56;
-  --color-background-light: #f7f7f6;
-  --color-background-dark: #1c1816;
-  --color-accent-tan: #d7cdc6;
-  --color-warm-cream: #d7cdc6;
-  --color-secondary: #d7cdc6;
-  --color-text-dark: #171412;
-  --color-brand-light: #fdfbf9;
+  --color-primary: var(--brand-primary);
+  --color-background-light: var(--brand-background-light);
+  --color-background-dark: var(--brand-background-dark);
+  --color-accent-tan: var(--brand-accent-tan);
+  --color-warm-cream: var(--brand-warm-cream);
+  --color-secondary: var(--brand-secondary);
+  --color-text-dark: var(--brand-text-dark);
+  --color-brand-light: var(--brand-brand-light);
 
   --font-display: "EB Garamond", serif;
   --font-serif: "EB Garamond", serif;
@@ -18,29 +18,97 @@
   --radius-xl: 0.75rem;
 }
 
+:root,
+[data-brand="lylo"] {
+  --brand-primary: #996f56;
+  --brand-primary-rgb: 153, 111, 86;
+  --brand-background-light: #f7f7f6;
+  --brand-background-light-rgb: 247, 247, 246;
+  --brand-background-dark: #1c1816;
+  --brand-background-dark-rgb: 28, 24, 22;
+  --brand-accent-tan: #d7cdc6;
+  --brand-warm-cream: #d7cdc6;
+  --brand-secondary: #d7cdc6;
+  --brand-text-dark: #171412;
+  --brand-brand-light: #fdfbf9;
+  --brand-hero-image: url("/background-lylo.png");
+  --brand-surface-rgb: 247, 247, 246;
+  --brand-surface-text: #171412;
+  --brand-surface-nav-opacity: 0.8;
+  --brand-surface-tech-opacity: 0.5;
+}
+
+[data-brand="ester"] {
+  --brand-primary: #d3b184;
+  --brand-primary-rgb: 211, 177, 132;
+  --brand-background-light: #17142e;
+  --brand-background-light-rgb: 23, 20, 46;
+  --brand-background-dark: #17142e;
+  --brand-background-dark-rgb: 23, 20, 46;
+  --brand-accent-tan: #4a2116;
+  --brand-warm-cream: #4a2116;
+  --brand-secondary: #4a2116;
+  --brand-text-dark: #f7f5f1;
+  --brand-brand-light: #17142e;
+  --brand-hero-image: url("/background-ester.png");
+  --brand-surface-rgb: 23, 20, 46;
+  --brand-surface-text: #f7f5f1;
+  --brand-surface-nav-opacity: 0.97;
+  --brand-surface-tech-opacity: 0.97;
+  --brand-panel-rgb: 36, 32, 68;
+  --brand-panel-shadow-rgb: 0, 0, 0;
+}
+
 body {
   font-family: var(--font-display);
 }
 
 .hero-gradient {
   background: linear-gradient(
-      rgba(28, 24, 22, 0.4),
-      rgba(28, 24, 22, 0.6)
+      rgba(var(--brand-background-dark-rgb), 0.4),
+      rgba(var(--brand-background-dark-rgb), 0.6)
     ),
-    url("/background-lylo.png");
+    var(--brand-hero-image);
   background-size: cover;
   background-position: center;
 }
 
 .glass-nav {
   backdrop-filter: blur(12px);
-  background-color: rgba(247, 247, 246, 0.8);
+  background-color: rgba(var(--brand-surface-rgb), var(--brand-surface-nav-opacity));
+  color: var(--brand-surface-text);
+}
+
+.tech-bar {
+  background-color: rgba(var(--brand-surface-rgb), var(--brand-surface-tech-opacity));
+  color: var(--brand-surface-text);
 }
 
 .glass-panel {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(var(--brand-panel-rgb, var(--brand-surface-rgb)), 0.85);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(153, 111, 86, 0.1);
+  border: 1px solid rgba(var(--brand-primary-rgb), 0.1);
+  color: var(--brand-surface-text);
+  box-shadow: 0 24px 60px -20px rgba(var(--brand-panel-shadow-rgb, 0, 0, 0), 0.45);
+}
+
+.brand-surface {
+  background-color: rgb(var(--brand-surface-rgb));
+  color: var(--brand-surface-text);
+}
+
+.brand-surface-soft {
+  background-color: rgba(var(--brand-surface-rgb), 0.5);
+  color: var(--brand-surface-text);
+}
+
+.brand-surface-softer {
+  background-color: rgba(var(--brand-surface-rgb), 0.4);
+  color: var(--brand-surface-text);
+}
+
+.text-surface {
+  color: var(--brand-surface-text);
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -52,26 +120,26 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #996f56;
+  background: var(--brand-primary);
   border-radius: 10px;
 }
 
 .ai-glow {
-  box-shadow: 0 0 40px 10px rgba(153, 111, 86, 0.15);
+  box-shadow: 0 0 40px 10px rgba(var(--brand-primary-rgb), 0.15);
 }
 
 @keyframes pulse-ring {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(153, 111, 86, 0.6);
+    box-shadow: 0 0 0 0 rgba(var(--brand-primary-rgb), 0.6);
   }
   70% {
     transform: scale(1.05);
-    box-shadow: 0 0 0 12px rgba(153, 111, 86, 0);
+    box-shadow: 0 0 0 12px rgba(var(--brand-primary-rgb), 0);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(153, 111, 86, 0);
+    box-shadow: 0 0 0 0 rgba(var(--brand-primary-rgb), 0);
   }
 }
 
@@ -92,14 +160,14 @@ body {
 }
 
 .card-shadow {
-  box-shadow: 0 10px 30px -10px rgba(154, 111, 86, 0.2);
+  box-shadow: 0 10px 30px -10px rgba(var(--brand-primary-rgb), 0.2);
 }
 
 .toggle-checkbox:checked {
   right: 0;
-  border-color: #996f56;
+  border-color: var(--brand-primary);
 }
 
 .toggle-checkbox:checked + .toggle-label {
-  background-color: #996f56;
+  background-color: var(--brand-primary);
 }

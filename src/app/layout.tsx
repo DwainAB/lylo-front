@@ -6,6 +6,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import LiveKitSession from "@/components/livekit/LiveKitSession";
 import DevNavigator from "@/components/dev/DevNavigator";
+import { activeBrand } from "@/lib/brand";
 import "./globals.css";
 
 const garamond = EB_Garamond({
@@ -15,11 +16,11 @@ const garamond = EB_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Le studio des parfums | AI-Powered Perfumery",
+  title: `${activeBrand.name} | AI-Powered Perfumery`,
   description:
     "Discover your perfect scent with Rose, your AI personal perfumer. Luxury fragrances crafted with cutting-edge technology.",
   icons: {
-    icon: "/logo-sdp.png",
+    icon: activeBrand.logo,
   },
 };
 
@@ -29,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light" suppressHydrationWarning>
+    <html lang="en" className="light" data-brand={activeBrand.id} suppressHydrationWarning>
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"

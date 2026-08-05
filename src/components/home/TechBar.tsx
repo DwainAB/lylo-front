@@ -14,7 +14,7 @@ export default function TechBar() {
   const { t } = useTranslation();
 
   return (
-    <section className="py-4 px-6 bg-white/50 border-y border-primary/5">
+    <section className="tech-bar py-4 px-6 border-y border-primary/5">
       <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
         {/* Tech logos */}
         <div className="flex flex-wrap justify-center gap-6 opacity-60 grayscale scale-75 md:scale-90">

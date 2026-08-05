@@ -10,6 +10,7 @@ import { useTranslation } from "@/i18n/LanguageContext";
 import MicCalibrator from "@/components/preparation/MicCalibrator";
 import { useAuth } from "@/context/AuthContext";
 import LoginModal from "@/components/auth/LoginModal";
+import { activeBrand } from "@/lib/brand";
 
 interface NavbarProps {
   showActions?: boolean;
@@ -33,7 +34,7 @@ export default function Navbar({ showActions = true, transparent = false }: Navb
         <div className="max-w-[1440px] mx-auto flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3" onClick={handleLogoClick}>
-            <Image src="/logo-sdp.png" alt="Logo SDP" width={40} height={40} style={{ width: "auto", height: "auto" }} />
+            <Image src={activeBrand.logo} alt={`Logo ${activeBrand.name}`} width={activeBrand.navLogoSize} height={activeBrand.navLogoSize} style={{ width: "auto", height: "auto" }} />
             {!showActions && (
               <span className="text-primary/50 hover:text-primary text-xs font-medium uppercase tracking-widest transition-colors">
                 {t("nav.home")}

@@ -35,6 +35,13 @@ export default function MicCalibrator({ variant = "light" }: MicCalibratorProps)
   // DOM refs for direct animation (no React re-render at 60fps)
   const levelFillRef = useRef<HTMLDivElement | null>(null);
   const statusRef = useRef<HTMLParagraphElement | null>(null);
+  // Idle color read from the active brand's CSS variable so it follows theme switches
+  const idleColorRef = useRef("#d4c9c3");
+
+  useEffect(() => {
+    const primary = getComputedStyle(document.documentElement).getPropertyValue("--brand-primary").trim();
+    if (primary) idleColorRef.current = `${primary}66`;
+  }, []);
 
   const cleanup = useCallback(() => {
     if (rafRef.current) {
@@ -49,7 +56,7 @@ export default function MicCalibrator({ variant = "light" }: MicCalibratorProps)
     analyserRef.current = null;
     if (levelFillRef.current) {
       levelFillRef.current.style.width = "0%";
-      levelFillRef.current.style.backgroundColor = "#d4c9c3";
+      levelFillRef.current.style.backgroundColor = idleColorRef.current;
     }
   }, []);
 
@@ -108,12 +115,12 @@ export default function MicCalibrator({ variant = "light" }: MicCalibratorProps)
           if (levelFillRef.current) {
             levelFillRef.current.style.width = `${level * 100}%`;
             levelFillRef.current.style.backgroundColor =
-              level < 0.05 ? "#d4c9c3" : level < 0.65 ? "#22c55e" : "#fb923c";
+              level < 0.05 ? idleColorRef.current : level < 0.65 ? "#22c55e" : "#fb923c";
           }
           if (statusRef.current) {
             if (level < 0.05) {
               statusRef.current.textContent = silentText;
-              statusRef.current.style.color = "#9c8880";
+              statusRef.current.style.color = idleColorRef.current;
             } else if (level < 0.65) {
               statusRef.current.textContent = goodText;
               statusRef.current.style.color = "#16a34a";
@@ -184,7 +191,7 @@ export default function MicCalibrator({ variant = "light" }: MicCalibratorProps)
         className={`hidden flex items-center justify-center size-9 rounded-full backdrop-blur-sm transition-all duration-200 ${
           variant === "dark"
             ? "border border-white/25 bg-white/10 text-white/70 hover:text-white hover:bg-white/20 hover:border-white/40"
-            : "border border-primary/20 bg-white/60 text-[#7f6f66] hover:text-primary hover:bg-primary/10 hover:border-primary/40"
+            : "border border-primary/20 brand-surface-soft text-primary/55 hover:text-primary hover:bg-primary/10 hover:border-primary/40"
         }`}
       >
         <MaterialIcon name="settings" className="text-[20px]" />
@@ -207,7 +214,7 @@ export default function MicCalibrator({ variant = "light" }: MicCalibratorProps)
               </div>
               <button
                 onClick={handleClose}
-                className="flex items-center justify-center size-7 rounded-full text-[#7f6f66] hover:bg-primary/10 hover:text-primary transition-colors"
+                className="flex items-center justify-center size-7 rounded-full text-primary/55 hover:bg-primary/10 hover:text-primary transition-colors"
               >
                 <MaterialIcon name="close" className="text-[18px]" />
               </button>
@@ -217,18 +224,18 @@ export default function MicCalibrator({ variant = "light" }: MicCalibratorProps)
               {/* Device selector — shown when multiple mics detected */}
               {devices.length > 1 && (
                 <div>
-                  <p className="text-[10px] text-[#7f6f66] uppercase tracking-widest mb-1.5">
+                  <p className="text-[10px] text-primary/55 uppercase tracking-widest mb-1.5">
                     {t("preparation.micDevice")}
                   </p>
-                  <div className="flex items-center gap-2 bg-white/50 border border-primary/15 rounded-xl px-3 py-2">
+                  <div className="flex items-center gap-2 brand-surface-soft border border-primary/15 rounded-xl px-3 py-2">
                     <MaterialIcon
                       name="settings_input_component"
-                      className="text-[#9c8880] text-base shrink-0"
+                      className="text-primary/50 text-base shrink-0"
                     />
                     <select
                       value={selectedDevice}
                       onChange={(e) => handleDeviceChange(e.target.value)}
-                      className="flex-1 min-w-0 text-xs text-[#7f6f66] bg-transparent focus:outline-none"
+                      className="flex-1 min-w-0 text-xs text-primary/55 bg-transparent focus:outline-none"
                     >
                       {devices.map((d, i) => (
                         <option key={d.deviceId} value={d.deviceId}>
@@ -243,7 +250,7 @@ export default function MicCalibrator({ variant = "light" }: MicCalibratorProps)
               {/* ── Combined gain slider + level meter ── */}
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-[10px] text-[#7f6f66] uppercase tracking-widest">
+                  <p className="text-[10px] text-primary/55 uppercase tracking-widest">
                     {t("preparation.micLevel")}
                   </p>
                   <span className="text-[11px] font-semibold text-primary tabular-nums">
@@ -254,7 +261,7 @@ export default function MicCalibrator({ variant = "light" }: MicCalibratorProps)
                 {/* The bar: track + level fill + range thumb all stacked */}
                 <div className="relative flex items-center h-6">
                   {/* Track background */}
-                  <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 rounded-full bg-[#ede8e5]" />
+                  <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 rounded-full bg-primary/10" />
 
                   {/* Level fill — animated via DOM ref */}
                   <div
@@ -269,7 +276,7 @@ export default function MicCalibrator({ variant = "light" }: MicCalibratorProps)
 
                   {/* Custom visible thumb — positioned from slider value */}
                   <div
-                    className="absolute top-1/2 -translate-y-1/2 size-[22px] rounded-full bg-white border-2 border-[#996f56] shadow-[0_1px_6px_rgba(153,111,86,0.35)] pointer-events-none z-20"
+                    className="absolute top-1/2 -translate-y-1/2 size-[22px] rounded-full bg-white border-2 border-primary shadow-[0_1px_6px_rgba(var(--brand-primary-rgb),0.35)] pointer-events-none z-20"
                     style={{
                       left: `calc(${sliderValue}% - ${(sliderValue / 100) * 22}px)`,
                     }}
@@ -288,10 +295,10 @@ export default function MicCalibrator({ variant = "light" }: MicCalibratorProps)
 
                 {/* Min / Max labels */}
                 <div className="flex justify-between mt-1.5 px-0.5">
-                  <span className="text-[10px] text-[#b0a49e]">
+                  <span className="text-[10px] text-primary/40">
                     {t("preparation.micMin")}
                   </span>
-                  <span className="text-[10px] text-[#b0a49e]">
+                  <span className="text-[10px] text-primary/40">
                     {t("preparation.micMax")}
                   </span>
                 </div>
@@ -302,7 +309,7 @@ export default function MicCalibrator({ variant = "light" }: MicCalibratorProps)
                   className={`text-xs font-medium mt-2 h-4 ${
                     micState === "active" ? "" : "invisible"
                   }`}
-                  style={{ color: "#9c8880" }}
+                  style={{ color: idleColorRef.current }}
                 >
                   {t("preparation.micSilent")}
                 </p>

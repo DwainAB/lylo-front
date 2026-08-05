@@ -103,7 +103,7 @@ export default function PrinterModal({ onClose, onSelect, selected }: Props) {
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg border text-sm font-medium transition-all ${
                   selected === loc
                     ? "bg-primary text-white border-primary shadow-md"
-                    : "bg-white/40 text-primary border-primary/15 hover:bg-primary/5"
+                    : "brand-surface-softer text-primary border-primary/15 hover:bg-primary/5"
                 }`}
               >
                 <div className="flex items-center gap-2.5">

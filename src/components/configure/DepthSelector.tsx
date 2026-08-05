@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { activeBrand } from "@/lib/brand";
 
 interface DepthSelectorProps {
   value: string;
@@ -12,16 +13,25 @@ interface DepthSelectorProps {
 export default function DepthSelector({ value, onChange }: DepthSelectorProps) {
   const { t } = useTranslation();
   const [showInfo, setShowInfo] = useState(false);
+  const isEster = activeBrand.id === "ester";
 
-  const depths = [
-    { value: "1", label: "1" },
-    { value: "4", label: "4" },
-    { value: "12", label: "12" },
-  ];
+  const depths = isEster
+    ? [{ value: "4", label: "4" }]
+    : [
+        { value: "1", label: "1" },
+        { value: "4", label: "4" },
+        { value: "12", label: "12" },
+      ];
+
+  useEffect(() => {
+    if (isEster && value !== "4") {
+      onChange("4");
+    }
+  }, [isEster, value, onChange]);
 
   return (
     <section className="relative">
-      <h3 className="text-text-dark text-xs font-bold uppercase tracking-widest leading-tight mb-1.5 flex items-center gap-2">
+      <h3 className="text-surface text-xs font-bold uppercase tracking-widest leading-tight mb-1.5 flex items-center gap-2">
         <MaterialIcon name="query_stats" className="text-sm" />
         {t("configure.questionCountTitle")}&nbsp;<button
           type="button"
@@ -29,7 +39,7 @@ export default function DepthSelector({ value, onChange }: DepthSelectorProps) {
           onClick={() => setShowInfo((v) => !v)}
           onMouseEnter={() => setShowInfo(true)}
           onMouseLeave={() => setShowInfo(false)}
-          className="text-text-dark transition-colors"
+          className="text-surface transition-colors"
         >
           <MaterialIcon name="info" className="text-[14px]" />
         </button>
@@ -37,13 +47,13 @@ export default function DepthSelector({ value, onChange }: DepthSelectorProps) {
 
       {/* Tooltip */}
       {showInfo && (
-        <div className="absolute z-20 top-6 right-0 w-60 bg-white border border-primary/15 rounded-lg shadow-lg p-3 text-[11px] text-primary/80 leading-relaxed">
-          <div className="absolute -top-1.5 right-2 w-2.5 h-2.5 bg-white border-l border-t border-primary/15 rotate-45" />
+        <div className="absolute z-20 top-6 right-0 w-60 brand-surface border border-primary/15 rounded-lg shadow-lg p-3 text-[11px] text-primary/80 leading-relaxed">
+          <div className="absolute -top-1.5 right-2 w-2.5 h-2.5 brand-surface border-l border-t border-primary/15 rotate-45" />
           {t("configure.depthInfo")}
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className={`grid gap-2 ${isEster ? "grid-cols-1" : "grid-cols-3"}`}>
         {depths.map((depth) => (
           <label key={depth.value} className="group relative cursor-pointer">
             <input
@@ -54,7 +64,7 @@ export default function DepthSelector({ value, onChange }: DepthSelectorProps) {
               onChange={() => onChange(depth.value)}
               className="peer hidden"
             />
-            <div className="flex flex-col items-center justify-center gap-1 py-2 rounded-lg border-2 border-primary/10 bg-white/50 text-primary/60 transition-all group-hover:bg-primary/5 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-lg">
+            <div className="flex flex-col items-center justify-center gap-1 py-2 rounded-lg border-2 border-primary/10 brand-surface-soft text-primary/60 transition-all group-hover:bg-primary/5 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-lg">
               <span className="text-sm font-bold">{depth.label}</span>
             </div>
           </label>

@@ -158,7 +158,7 @@ export default function ConfigPanel() {
               <button
                 type="button"
                 onClick={() => setAvatar((v) => !v)}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-primary/15 bg-white/40 hover:bg-primary/5 transition-all"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-primary/15 brand-surface-softer hover:bg-primary/5 transition-all"
               >
                 <div className="flex items-center gap-2.5">
                   <MaterialIcon name={avatar ? "videocam" : "videocam_off"} className="text-primary text-[18px]" />
@@ -170,7 +170,7 @@ export default function ConfigPanel() {
                   <div className={`absolute top-0.5 size-4 rounded-full bg-white shadow transition-transform duration-200 ${avatar ? "translate-x-4" : "translate-x-0.5"}`} />
                 </div>
               </button>
-              <p className="text-[10px] text-[#9c8880] leading-relaxed px-1">
+              <p className="text-[10px] text-primary/50 leading-relaxed px-1">
                 {t("configure.avatarHint")}
               </p>
             </div>
@@ -183,7 +183,7 @@ export default function ConfigPanel() {
               <button
                 type="button"
                 onClick={toggleFullscreen}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-primary/15 bg-white/40 hover:bg-primary/5 transition-all"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-primary/15 brand-surface-softer hover:bg-primary/5 transition-all"
               >
                 <div className="flex items-center gap-2.5">
                   <MaterialIcon name={isFullscreen ? "fullscreen_exit" : "fullscreen"} className="text-primary text-[18px]" />
@@ -202,7 +202,7 @@ export default function ConfigPanel() {
               <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
                 {t("configure.emailTitle")}
               </p>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-primary/15 bg-white/40">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-primary/15 brand-surface-softer">
                 <MaterialIcon name="mail" className="text-primary text-[18px] shrink-0" />
                 <input
                   type="email"
@@ -212,7 +212,7 @@ export default function ConfigPanel() {
                   className="flex-1 bg-transparent text-xs font-medium text-primary placeholder:text-primary/35 outline-none"
                 />
               </div>
-              <p className="text-[10px] text-[#9c8880] leading-relaxed px-1">
+              <p className="text-[10px] text-primary/50 leading-relaxed px-1">
                 {t("configure.emailHint")}
               </p>
             </div>
@@ -223,7 +223,7 @@ export default function ConfigPanel() {
             <button
               type="button"
               onClick={() => setShowPrinterModal(true)}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-primary/15 bg-white/40 hover:bg-primary/5 transition-all"
+              className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-primary/15 brand-surface-softer hover:bg-primary/5 transition-all"
             >
               <div className="flex items-center gap-2.5">
                 <MaterialIcon name="print" className="text-primary text-[18px]" />
@@ -256,7 +256,7 @@ export default function ConfigPanel() {
                 <button
                   type="button"
                   onClick={toggleFullscreen}
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-primary/15 bg-white/40 hover:bg-primary/5 transition-all"
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-primary/15 brand-surface-softer hover:bg-primary/5 transition-all"
                 >
                   <div className="flex items-center gap-2.5">
                     <MaterialIcon name={isFullscreen ? "fullscreen_exit" : "fullscreen"} className="text-primary text-[18px]" />
@@ -274,7 +274,7 @@ export default function ConfigPanel() {
               <button
                 type="button"
                 onClick={() => setShowPrinterModal(true)}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-primary/15 bg-white/40 hover:bg-primary/5 transition-all"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-primary/15 brand-surface-softer hover:bg-primary/5 transition-all"
               >
                 <div className="flex items-center gap-2.5">
                   <MaterialIcon name="print" className="text-primary text-[18px]" />
@@ -303,7 +303,7 @@ export default function ConfigPanel() {
                   className={`flex-1 py-2.5 rounded-lg border-2 text-sm font-bold transition-all ${
                     participantCount === n
                       ? "border-primary bg-primary text-white shadow-md"
-                      : "border-primary/15 bg-white/40 text-primary/70 hover:border-primary/40 hover:bg-primary/5"
+                      : "border-primary/15 brand-surface-softer text-primary/70 hover:border-primary/40 hover:bg-primary/5"
                   }`}
                 >
                   {n}

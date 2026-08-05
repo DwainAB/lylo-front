@@ -30,7 +30,7 @@ export default function ConfigurePage() {
 
 
   return (
-    <div className="relative h-dvh w-full flex flex-col bg-stone-50 overflow-hidden">
+    <div className="relative h-dvh w-full flex flex-col bg-background-light overflow-hidden">
       <Navbar showActions={false} transparent />
 
       <main className="flex-1 flex flex-col items-center justify-center px-3 sm:px-6 py-4 pb-8 [@media(max-height:620px)]:py-1 [@media(max-height:620px)]:pb-2 relative overflow-hidden">

@@ -42,7 +42,7 @@ export default function ConnectionTest() {
       {/* ── Trigger button ── */}
       <button
         onClick={handleOpen}
-        className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-primary/15 bg-white/40 hover:bg-primary/5 hover:border-primary/30 transition-all group"
+        className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-primary/15 brand-surface-softer hover:bg-primary/5 hover:border-primary/30 transition-all group"
       >
         <div className="flex items-center gap-2.5">
           <MaterialIcon name="network_check" className="text-primary text-[18px]" />
@@ -69,7 +69,7 @@ export default function ConnectionTest() {
               </div>
               <button
                 onClick={handleClose}
-                className="flex items-center justify-center size-7 rounded-full text-[#7f6f66] hover:bg-primary/10 hover:text-primary transition-colors"
+                className="flex items-center justify-center size-7 rounded-full text-primary/55 hover:bg-primary/10 hover:text-primary transition-colors"
               >
                 <MaterialIcon name="close" className="text-[18px]" />
               </button>
@@ -81,16 +81,16 @@ export default function ConnectionTest() {
               {status === "pinging" && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <p className="text-[11px] text-[#7f6f66] uppercase tracking-widest">{t("preparation.connPhaseLatency")}</p>
+                    <p className="text-[11px] text-primary/55 uppercase tracking-widest">{t("preparation.connPhaseLatency")}</p>
                     <span className="text-[11px] font-semibold text-primary tabular-nums">{pingProgress}%</span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-[#ede8e5] overflow-hidden">
+                  <div className="h-2 w-full rounded-full bg-primary/10 overflow-hidden">
                     <div
                       className="h-full rounded-full bg-primary transition-all duration-300"
                       style={{ width: `${pingProgress}%` }}
                     />
                   </div>
-                  <p className="text-[10px] text-[#9c8880]">{t("preparation.connPhasePingDesc")}</p>
+                  <p className="text-[10px] text-primary/50">{t("preparation.connPhasePingDesc")}</p>
                 </div>
               )}
 
@@ -101,7 +101,7 @@ export default function ConnectionTest() {
                     <div className="size-5 rounded-full border-2 border-primary/25 border-t-primary animate-spin shrink-0" />
                     <p className="text-sm text-primary">{t("preparation.connPhaseDownload")}</p>
                   </div>
-                  <p className="text-[10px] text-[#9c8880]">{t("preparation.connPhaseDownloadDesc")}</p>
+                  <p className="text-[10px] text-primary/50">{t("preparation.connPhaseDownloadDesc")}</p>
                 </div>
               )}
 
@@ -140,26 +140,26 @@ export default function ConnectionTest() {
 
                   {/* Metrics */}
                   <div className="grid grid-cols-3 gap-3 text-center">
-                    <div className="bg-white/50 rounded-xl p-3 border border-primary/10">
-                      <p className="text-[9px] text-[#9c8880] uppercase tracking-wider mb-1">{t("preparation.connDownload")}</p>
+                    <div className="brand-surface-soft rounded-xl p-3 border border-primary/10">
+                      <p className="text-[9px] text-primary/50 uppercase tracking-wider mb-1">{t("preparation.connDownload")}</p>
                       <p className="text-base font-bold text-primary tabular-nums leading-none">
                         {result.downloadMbps}
                       </p>
-                      <p className="text-[9px] text-[#b0a49e] mt-0.5">Mbps</p>
+                      <p className="text-[9px] text-primary/40 mt-0.5">Mbps</p>
                     </div>
-                    <div className="bg-white/50 rounded-xl p-3 border border-primary/10">
-                      <p className="text-[9px] text-[#9c8880] uppercase tracking-wider mb-1">{t("preparation.connLatency")}</p>
+                    <div className="brand-surface-soft rounded-xl p-3 border border-primary/10">
+                      <p className="text-[9px] text-primary/50 uppercase tracking-wider mb-1">{t("preparation.connLatency")}</p>
                       <p className="text-base font-bold text-primary tabular-nums leading-none">
                         {result.avgLatency}
                       </p>
-                      <p className="text-[9px] text-[#b0a49e] mt-0.5">ms</p>
+                      <p className="text-[9px] text-primary/40 mt-0.5">ms</p>
                     </div>
-                    <div className="bg-white/50 rounded-xl p-3 border border-primary/10">
-                      <p className="text-[9px] text-[#9c8880] uppercase tracking-wider mb-1">{t("preparation.connLoss")}</p>
+                    <div className="brand-surface-soft rounded-xl p-3 border border-primary/10">
+                      <p className="text-[9px] text-primary/50 uppercase tracking-wider mb-1">{t("preparation.connLoss")}</p>
                       <p className="text-base font-bold text-primary tabular-nums leading-none">
                         {result.packetLoss}
                       </p>
-                      <p className="text-[9px] text-[#b0a49e] mt-0.5">%</p>
+                      <p className="text-[9px] text-primary/40 mt-0.5">%</p>
                     </div>
                   </div>
 
@@ -167,7 +167,7 @@ export default function ConnectionTest() {
                   <div className="flex items-center justify-between pt-1">
                     <button
                       onClick={handleRetry}
-                      className="text-[11px] text-[#9c8880] hover:text-primary transition-colors underline underline-offset-2"
+                      className="text-[11px] text-primary/50 hover:text-primary transition-colors underline underline-offset-2"
                     >
                       {t("preparation.connRetry")}
                     </button>

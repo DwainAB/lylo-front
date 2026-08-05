@@ -64,7 +64,7 @@ export default function PreparationPage() {
           <p className="text-primary font-semibold text-lg">
             {t("preparation.connecting")}
           </p>
-          <p className="text-[#7f6f66] text-sm mt-1">
+          <p className="text-primary/60 text-sm mt-1">
             {t("preparation.pleaseWait")}
           </p>
         </div>
@@ -93,7 +93,7 @@ export default function PreparationPage() {
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-primary">
               {t("preparation.title")}
             </h1>
-            <p className="text-[#7f6f66] max-w-md mx-auto text-base">
+            <p className="text-primary/60 max-w-md mx-auto text-base">
               {t("preparation.subtitle")}
             </p>
           </div>
@@ -106,7 +106,7 @@ export default function PreparationPage() {
                 <h3 className="font-bold text-primary text-sm uppercase tracking-wide">
                   {t("preparation.speakTitle")}
                 </h3>
-                <p className="text-xs text-[#7f6f66] mt-1 leading-relaxed">
+                <p className="text-xs text-primary/60 mt-1 leading-relaxed">
                   {t("preparation.speakDesc")}
                 </p>
               </div>
@@ -117,7 +117,7 @@ export default function PreparationPage() {
                 <h3 className="font-bold text-primary text-sm uppercase tracking-wide">
                   {t("preparation.quietTitle")}
                 </h3>
-                <p className="text-xs text-[#7f6f66] mt-1 leading-relaxed">
+                <p className="text-xs text-primary/60 mt-1 leading-relaxed">
                   {t("preparation.quietDesc")}
                 </p>
               </div>
@@ -128,7 +128,7 @@ export default function PreparationPage() {
                 <h3 className="font-bold text-primary text-sm uppercase tracking-wide">
                   {t("preparation.connectionTitle")}
                 </h3>
-                <p className="text-xs text-[#7f6f66] mt-1 leading-relaxed">
+                <p className="text-xs text-primary/60 mt-1 leading-relaxed">
                   {t("preparation.connectionDesc")}
                 </p>
               </div>
@@ -141,7 +141,7 @@ export default function PreparationPage() {
           <div className="flex justify-center mb-3">
             {sessionData && <BottomBar />}
           </div>
-          <p className="text-center text-[10px] sm:text-xs text-[#7f6f66] uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium opacity-60">
+          <p className="text-center text-[10px] sm:text-xs text-primary/60 uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium opacity-60">
             {t("preparation.footer")}
           </p>
         </footer>

@@ -65,7 +65,7 @@ export default function LanguagePicker() {
 
   return (
     <section>
-      <h3 className="text-text-dark text-xs font-bold uppercase tracking-widest leading-tight mb-1.5 flex items-center gap-2">
+      <h3 className="text-surface text-xs font-bold uppercase tracking-widest leading-tight mb-1.5 flex items-center gap-2">
         <MaterialIcon name="record_voice_over" className="text-sm" />
         {t("configure.languageTitle")}
       </h3>
@@ -73,7 +73,7 @@ export default function LanguagePicker() {
       {/* Trigger */}
       <button
         onClick={openModal}
-        className="w-full flex items-center justify-between px-3 py-2 rounded-lg border-2 border-primary/10 bg-white/50 text-primary hover:bg-primary/5 hover:border-primary/25 transition-all group cursor-pointer"
+        className="w-full flex items-center justify-between px-3 py-2 rounded-lg border-2 border-primary/10 brand-surface-soft text-primary hover:bg-primary/5 hover:border-primary/25 transition-all group cursor-pointer"
       >
         <div className="flex items-center gap-4">
           <span className="text-2xl leading-none">{currentLang.flag}</span>
@@ -103,7 +103,7 @@ export default function LanguagePicker() {
 
           {/* Card */}
           <div
-            className={`relative w-full max-w-md rounded-2xl p-8 shadow-2xl border border-primary/10 bg-[#fdfaf7] transition-all duration-300 ${
+            className={`relative w-full max-w-md rounded-2xl p-8 shadow-2xl border border-primary/10 brand-surface transition-all duration-300 ${
               visible ? "scale-100 translate-y-0" : "scale-95 translate-y-6"
             }`}
             onClick={(e) => e.stopPropagation()}
@@ -136,7 +136,7 @@ export default function LanguagePicker() {
                     className={`relative flex flex-col items-center gap-3 p-5 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
                       isSelected
                         ? "border-primary bg-primary text-white shadow-xl scale-[1.03]"
-                        : "border-primary/10 bg-white/80 text-primary hover:border-primary/30 hover:bg-primary/5 hover:scale-[1.01]"
+                        : "border-primary/10 brand-surface-soft text-primary hover:border-primary/30 hover:bg-primary/5 hover:scale-[1.01]"
                     }`}
                   >
                     {isSelected && (

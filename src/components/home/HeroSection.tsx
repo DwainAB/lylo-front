@@ -8,6 +8,7 @@ import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { persistLanguage } from "@/lib/language";
+import { activeBrand } from "@/lib/brand";
 
 export default function HeroSection() {
   const router = useRouter();
@@ -40,12 +41,12 @@ export default function HeroSection() {
       <div className="relative z-10 px-6 text-center max-w-4xl mx-auto">
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <Image src="/logo-sdp.png" alt="Logo SDP" width={72} height={72} style={{ width: "auto", height: "auto" }} />
+          <Image src={activeBrand.logo} alt={`Logo ${activeBrand.name}`} width={72} height={72} style={{ width: "auto", height: "auto" }} />
         </div>
 
         {/* Title */}
         <h1 className="text-white font-light tracking-tight mb-4 font-display flex flex-col items-center leading-tight">
-          <span className="text-4xl md:text-5xl lg:text-7xl">Lylo</span>
+          <span className="text-4xl md:text-5xl lg:text-7xl">{activeBrand.name}</span>
           <span className="text-xl md:text-2xl lg:text-3xl font-medium">{locale === "en" ? "by" : "par"}</span>
           <span className="text-4xl md:text-5xl lg:text-7xl">{t("home.title")}</span>
         </h1>

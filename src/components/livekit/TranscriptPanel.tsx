@@ -46,7 +46,7 @@ export default function TranscriptPanel({ open, onToggle }: TranscriptPanelProps
           className="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 space-y-3"
         >
           {transcripts.length === 0 ? (
-            <p className="text-xs text-[#7f6f66] text-center mt-8 italic">
+            <p className="text-xs text-primary/60 text-center mt-8 italic">
               {t("transcript.empty")}
             </p>
           ) : (
