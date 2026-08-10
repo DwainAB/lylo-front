@@ -8,6 +8,7 @@ interface CatalogFormulaCardProps {
   heartNotes?: string[];
   baseNotes?: string[];
   matchReason?: string;
+  imageUrl?: string;
   variant?: "default" | "comparison";
   className?: string;
 }
@@ -41,6 +42,7 @@ export default function CatalogFormulaCard({
   heartNotes = [],
   baseNotes = [],
   matchReason,
+  imageUrl,
   variant = "default",
   className = "",
 }: CatalogFormulaCardProps) {
@@ -48,42 +50,50 @@ export default function CatalogFormulaCard({
 
   return (
     <div
-      className={`min-w-0 brand-surface border rounded-xl card-shadow flex flex-col transition-transform hover:scale-[1.01] ${
-        isComparison ? "border-primary/20 p-3 sm:p-4" : "border-secondary/30 p-2 sm:p-3"
+      className={`min-w-0 brand-surface border rounded-xl card-shadow flex flex-col transition-transform hover:scale-[1.01] overflow-hidden ${
+        isComparison ? "border-primary/20" : "border-secondary/30"
       } ${className}`}
     >
-      <div className={`${isComparison ? "mb-3 pb-2.5 border-b border-primary/10" : "mb-1 sm:mb-2"}`}>
-        {isComparison && (
-          <p className="brand-text text-[0.62rem] sm:text-[0.68rem] text-primary/70 text-center mb-2">
-            {brand}
-          </p>
-        )}
-        <h2
-          className={`luxury-title text-center shrink-0 ${
-            isComparison ? "text-lg sm:text-xl leading-tight" : "text-base sm:text-lg"
-          }`}
-          style={{ color: "#fff" }}
-        >
-          {name}
-        </h2>
-        {family && (
-          <p className="text-center text-[0.7rem] text-primary/50 mt-1">{family}</p>
-        )}
-      </div>
+      {imageUrl && (
+        <div className="w-full aspect-square shrink-0 bg-black/5 flex items-center justify-center overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={imageUrl} alt={`${brand} — ${name}`} className="w-full h-full object-contain" loading="lazy" />
+        </div>
+      )}
+      <div className={`${isComparison ? "p-3 sm:p-4" : "p-2 sm:p-3"}`}>
+        <div className={`${isComparison ? "mb-3 pb-2.5 border-b border-primary/10" : "mb-1 sm:mb-2"}`}>
+          {isComparison && (
+            <p className="brand-text text-[0.62rem] sm:text-[0.68rem] text-primary/70 text-center mb-2">
+              {brand}
+            </p>
+          )}
+          <h2
+            className={`luxury-title text-center shrink-0 ${
+              isComparison ? "text-lg sm:text-xl leading-tight" : "text-base sm:text-lg"
+            }`}
+            style={{ color: "#fff" }}
+          >
+            {name}
+          </h2>
+          {family && (
+            <p className="text-center text-[0.7rem] text-primary/50 mt-1">{family}</p>
+          )}
+        </div>
 
-      <div
-        className={`text-sm ${
-          isComparison
-            ? "flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-1 flex flex-col gap-2"
-            : "flex flex-col gap-1 sm:gap-2"
-        }`}
-      >
-        {matchReason && (
-          <p className="text-xs sm:text-sm text-surface opacity-80 italic mb-1">{matchReason}</p>
-        )}
-        <NoteList label="Notes de tête" notes={topNotes} />
-        <NoteList label="Notes de cœur" notes={heartNotes} />
-        <NoteList label="Notes de fond" notes={baseNotes} />
+        <div
+          className={`text-sm ${
+            isComparison
+              ? "flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-1 flex flex-col gap-2"
+              : "flex flex-col gap-1 sm:gap-2"
+          }`}
+        >
+          {matchReason && (
+            <p className="text-xs sm:text-sm text-surface opacity-80 italic mb-1">{matchReason}</p>
+          )}
+          <NoteList label="Notes de tête" notes={topNotes} />
+          <NoteList label="Notes de cœur" notes={heartNotes} />
+          <NoteList label="Notes de fond" notes={baseNotes} />
+        </div>
       </div>
     </div>
   );

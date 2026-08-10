@@ -10,6 +10,7 @@ import {
 } from "react";
 import { MOCK_FORMULAS, MOCK_QUESTIONS } from "@/lib/mockData";
 import { persistLanguage, resolveStoredLanguage } from "@/lib/language";
+import { activeBrand } from "@/lib/brand";
 
 export const DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === "true";
 
@@ -58,17 +59,29 @@ export interface FormulaSize {
 }
 
 export interface Formula {
-  profile: string;
-  description: string;
-  score: number;
-  top_notes: string[];
-  heart_notes: string[];
-  base_notes: string[];
-  sizes: {
+  // Lylo — formule générée sur-mesure
+  profile?: string;
+  description?: string;
+  score?: number;
+  top_notes?: string[];
+  heart_notes?: string[];
+  base_notes?: string[];
+  sizes?: {
     "10ml": FormulaSize;
     "30ml": FormulaSize;
     "50ml": FormulaSize;
   };
+  // Ester — parfum sélectionné dans le catalogue
+  source?: "catalog";
+  brand?: string;
+  name?: string;
+  family?: string;
+  match_reason?: string;
+  image_url?: string;
+}
+
+export function isCatalogFormula(formula: Formula): boolean {
+  return formula.source === "catalog";
 }
 
 export interface Choice {
@@ -188,7 +201,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const res = await fetch(`${API_BASE}/api/session/start`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ language, voice_gender, question_count, mode, input_mode, email, avatar }),
+      body: JSON.stringify({ language, voice_gender, question_count, mode, input_mode, brand: activeBrand.id, email, avatar }),
     });
 
     if (res.status === 403) {

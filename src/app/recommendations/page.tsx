@@ -7,17 +7,55 @@ import AvatarSection from "@/components/interaction/AvatarSection";
 import AvatarVideo from "@/components/interaction/AvatarVideo";
 
 import FormulaCard from "@/components/recommendations/FormulaCard";
+import CatalogFormulaCard from "@/components/recommendations/CatalogFormulaCard";
 import FormulaQrCode from "@/components/recommendations/FormulaQrCode";
 import nextDynamic from "next/dynamic";
 const BottomBar = nextDynamic(() => import("@/components/livekit/BottomBar"), { ssr: false });
 import { useTranslation } from "@/i18n/LanguageContext";
-import { useSession, DEV_MODE } from "@/context/SessionContext";
+import { useSession, DEV_MODE, isCatalogFormula, Formula } from "@/context/SessionContext";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { resolveStoredLanguage } from "@/lib/language";
 import { createShareableFormula } from "@/lib/shareableFormula";
 import { SizeOption } from "@/components/recommendations/SizeToggle";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+
+function renderFormula(
+  formula: Formula,
+  opts: {
+    variant: "default" | "comparison";
+    className?: string;
+    selectedSize: SizeOption;
+    onSelectedSizeChange: (size: SizeOption) => void;
+  }
+) {
+  if (isCatalogFormula(formula)) {
+    return (
+      <CatalogFormulaCard
+        brand={formula.brand ?? ""}
+        name={formula.name ?? ""}
+        family={formula.family}
+        topNotes={formula.top_notes}
+        heartNotes={formula.heart_notes}
+        baseNotes={formula.base_notes}
+        matchReason={formula.match_reason}
+        imageUrl={formula.image_url}
+        variant={opts.variant}
+        className={opts.className}
+      />
+    );
+  }
+  return (
+    <FormulaCard
+      name={formula.profile ?? ""}
+      sizes={formula.sizes!}
+      variant={opts.variant}
+      className={opts.className}
+      selectedSize={opts.selectedSize}
+      onSelectedSizeChange={opts.onSelectedSizeChange}
+    />
+  );
+}
 
 export default function RecommendationsPage() {
   const router = useRouter();
@@ -36,10 +74,10 @@ export default function RecommendationsPage() {
 
   const handlePrint = async () => {
     const formula = sessionFormulas[0];
-    if (!formula || !printerLocation) return;
+    if (!formula || !printerLocation || isCatalogFormula(formula)) return;
     setPrintStatus("printing");
     try {
-      const size = formula.sizes[selectedSize];
+      const size = formula.sizes![selectedSize];
       const res = await fetch(`${API_BASE}/printers/print-formula`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -62,13 +100,10 @@ export default function RecommendationsPage() {
     }
   };
 
-  const allFormulas = sessionFormulas.map((f, i) => ({
-    key: `formula-${i}`,
-    name: f.profile,
-    sizes: f.sizes,
-  }));
+  const isCatalog = sessionFormulas.length > 0 && isCatalogFormula(sessionFormulas[0]);
+  const allFormulas = sessionFormulas.map((f, i) => ({ key: `formula-${i}`, formula: f }));
 
-  const formulas = DEV_MODE && devSingleFormula ? [allFormulas[0]] : allFormulas;
+  const formulas = DEV_MODE && devSingleFormula ? allFormulas.slice(0, 1) : allFormulas;
   const isSingle = formulas.length === 1;
   const showResumeButton = DEV_MODE && devSingleFormula;
   const selectedFormula = sessionFormulas[0];
@@ -131,15 +166,12 @@ export default function RecommendationsPage() {
             <div className="w-full max-w-[920px] flex flex-row gap-2.5 sm:gap-3 h-[470px]">
 
               {/* Carte notes (50 %) — flex-1 min-h-0 min-w-0 déjà dans FormulaCard */}
-              {formulas[0] && (
-                <FormulaCard
-                  name={formulas[0].name}
-                  sizes={formulas[0].sizes}
-                  className="flex-[1.05]"
-                  selectedSize={selectedSize}
-                  onSelectedSizeChange={setSelectedSize}
-                />
-              )}
+              {formulas[0] && renderFormula(formulas[0].formula, {
+                variant: "default",
+                className: "flex-[1.05]",
+                selectedSize,
+                onSelectedSizeChange: setSelectedSize,
+              })}
 
               {/* Carte avatar + actions (50 %) — mêmes flex-1 min-h-0 min-w-0 */}
               <div className="flex-[0.9] min-h-0 min-w-0 bg-white border border-secondary/30 rounded-xl card-shadow flex flex-col items-center justify-center gap-3 p-3.5 sm:p-4 overflow-hidden">
@@ -163,8 +195,8 @@ export default function RecommendationsPage() {
                   </button>
                 )}
 
-                {/* Bouton Imprimer */}
-                {printerLocation && (
+                {/* Bouton Imprimer (indisponible en mode catalogue — pas de formule à imprimer) */}
+                {printerLocation && !isCatalog && (
                   printStatus === "done" ? (
                     <div className="flex items-center gap-2 text-sm text-green-700">
                       <MaterialIcon name="check_circle" className="text-[18px]" />
@@ -188,9 +220,9 @@ export default function RecommendationsPage() {
                   <p className="text-xs text-red-500 text-center">Erreur d&apos;impression.</p>
                 )}
 
-                {selectedFormula && (
+                {selectedFormula && !isCatalogFormula(selectedFormula) && (
                   <FormulaQrCode
-                    formula={createShareableFormula(selectedFormula.profile, selectedSize, selectedFormula.sizes)}
+                    formula={createShareableFormula(selectedFormula.profile!, selectedSize, selectedFormula.sizes!)}
                     language={language}
                     buttonLabel={t("recommendations.qrButton")}
                     title={t("recommendations.qrTitle")}
@@ -233,13 +265,14 @@ export default function RecommendationsPage() {
               {/* Cartes */}
               <div className="min-w-0 grid grid-cols-1 xl:grid-cols-2 gap-3 sm:gap-4 items-start">
                 {formulas.length > 0 ? (
-                  formulas.map((formula) => (
-                    <FormulaCard
-                      key={formula.key}
-                      name={formula.name}
-                      sizes={formula.sizes}
-                      variant="comparison"
-                    />
+                  formulas.map((item) => (
+                    <div key={item.key}>
+                      {renderFormula(item.formula, {
+                        variant: "comparison",
+                        selectedSize,
+                        onSelectedSizeChange: setSelectedSize,
+                      })}
+                    </div>
                   ))
                 ) : (
                   <p className="text-gray-400 text-center text-lg font-light self-center flex-1">

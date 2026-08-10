@@ -35,6 +35,7 @@ interface Formula {
   name?: string;
   family?: string;
   match_reason?: string;
+  image_url?: string;
 }
 
 function isCatalogFormula(formula: Formula): boolean {
@@ -60,6 +61,7 @@ function renderFormula(
         heartNotes={formula.heart_notes}
         baseNotes={formula.base_notes}
         matchReason={formula.match_reason}
+        imageUrl={formula.image_url}
         variant={opts.variant}
         className={opts.className}
       />
