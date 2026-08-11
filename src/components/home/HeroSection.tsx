@@ -5,12 +5,27 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 import MaterialIcon from "@/components/ui/MaterialIcon";
-import { useTranslation } from "@/i18n/LanguageContext";
+import { useTranslation, type Locale } from "@/i18n/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { persistLanguage } from "@/lib/language";
 import { activeBrand } from "@/lib/brand";
 
 const isEster = activeBrand.id === "ester";
+
+const ESTER_INTRO_AUDIO_BY_LOCALE: Record<Locale, string> = {
+  en: "/EL-EN.mp3",
+  fr: "/EL-FR.mp3",
+  nl: "/EL-NL.mp3",
+  it: "/EL-IT.mp3",
+  es: "/EL-ES.mp3",
+  de: "/EL-AL.mp3",
+  ar: "/EL-CH.mp3",
+};
+
+const LYLO_INTRO_AUDIO_BY_LOCALE: Partial<Record<Locale, string>> = {
+  en: "/intro-girl-en.wav",
+  fr: "/intro-girl-fr.wav",
+};
 
 export default function HeroSection() {
   const router = useRouter();
@@ -26,7 +41,9 @@ export default function HeroSection() {
       setIsPlaying(false);
       return;
     }
-    const audioFile = locale === "en" ? "/intro-boy-en.wav" : "/intro-girl-fr.wav";
+    const audioFile = isEster
+      ? ESTER_INTRO_AUDIO_BY_LOCALE[locale] ?? ESTER_INTRO_AUDIO_BY_LOCALE.en
+      : LYLO_INTRO_AUDIO_BY_LOCALE[locale] ?? LYLO_INTRO_AUDIO_BY_LOCALE.en!;
     const audio = new Audio(audioFile);
     audioRef.current = audio;
     setIsPlaying(true);
