@@ -6,6 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useSession, DEV_MODE } from "@/context/SessionContext";
+import { activeBrand } from "@/lib/brand";
 import AvatarVideo from "@/components/interaction/AvatarVideo";
 import nextDynamic from "next/dynamic";
 const BottomBar = nextDynamic(() => import("@/components/livekit/BottomBar"), { ssr: false });
@@ -94,7 +95,7 @@ export default function PreparationPage() {
               {t("preparation.title")}
             </h1>
             <p className="text-primary/60 max-w-md mx-auto text-base">
-              {t("preparation.subtitle")}
+              {t(activeBrand.id === "ester" ? "preparation.subtitleCatalog" : "preparation.subtitle")}
             </p>
           </div>
 

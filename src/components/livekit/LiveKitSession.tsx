@@ -10,6 +10,7 @@ import {
 } from "@livekit/components-react";
 import { RoomEvent, ParticipantEvent, TranscriptionSegment, Participant, RoomOptions } from "livekit-client";
 import { useSession } from "@/context/SessionContext";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 function DataChannelListener() {
   const { handleDataMessage } = useSession();
@@ -142,6 +143,7 @@ function TranscriptionListener() {
 }
 
 function AudioUnlockButton() {
+  const { t } = useTranslation();
   const room = useRoomContext();
   const { mergedProps, canPlayAudio } = useStartAudio({
     room,
@@ -158,7 +160,7 @@ function AudioUnlockButton() {
         {...mergedProps}
         className="pointer-events-auto rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-opacity hover:opacity-90"
       >
-        Activer l&apos;audio
+        {t("interaction.enableAudio")}
       </button>
     </div>
   );

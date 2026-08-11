@@ -14,15 +14,15 @@ import PrinterModal from "./PrinterModal";
 import { useTranslation } from "@/i18n/LanguageContext";
 
 export const PARTICIPANT_COLORS = [
-  { id: "rouge",   label: "Rouge",   bg: "#FFADAD", text: "#7A1A1A" },
-  { id: "vert",    label: "Vert",    bg: "#B5EAD7", text: "#1A5C3A" },
-  { id: "bleu",    label: "Bleu",    bg: "#AEC6F8", text: "#1A2E5C" },
-  { id: "jaune",   label: "Jaune",   bg: "#FFEAA7", text: "#5C4A00" },
-  { id: "violet",  label: "Violet",  bg: "#D4BFFF", text: "#3A1A6B" },
-  { id: "orange",  label: "Orange",  bg: "#FFD6A5", text: "#6B3000" },
-  { id: "rose",    label: "Rose",    bg: "#FFCCE0", text: "#6B0038" },
-  { id: "turquoise", label: "Turquoise", bg: "#B5F0F0", text: "#0A4A4A" },
-];
+  { id: "rouge",   labelKey: "configure.colorRouge",     bg: "#FFADAD", text: "#7A1A1A" },
+  { id: "vert",    labelKey: "configure.colorVert",       bg: "#B5EAD7", text: "#1A5C3A" },
+  { id: "bleu",    labelKey: "configure.colorBleu",       bg: "#AEC6F8", text: "#1A2E5C" },
+  { id: "jaune",   labelKey: "configure.colorJaune",      bg: "#FFEAA7", text: "#5C4A00" },
+  { id: "violet",  labelKey: "configure.colorViolet",     bg: "#D4BFFF", text: "#3A1A6B" },
+  { id: "orange",  labelKey: "configure.colorOrange",     bg: "#FFD6A5", text: "#6B3000" },
+  { id: "rose",    labelKey: "configure.colorRose",       bg: "#FFCCE0", text: "#6B0038" },
+  { id: "turquoise", labelKey: "configure.colorTurquoise", bg: "#B5F0F0", text: "#0A4A4A" },
+] as const;
 
 export default function ConfigPanel() {
   const router = useRouter();
@@ -178,7 +178,7 @@ export default function ConfigPanel() {
             {/* Fullscreen toggle */}
             <div className="space-y-1.5">
               <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
-                Affichage
+                {t("configure.displayTitle")}
               </p>
               <button
                 type="button"
@@ -188,7 +188,7 @@ export default function ConfigPanel() {
                 <div className="flex items-center gap-2.5">
                   <MaterialIcon name={isFullscreen ? "fullscreen_exit" : "fullscreen"} className="text-primary text-[18px]" />
                   <span className="text-xs font-semibold text-primary">
-                    {isFullscreen ? "Quitter le plein écran" : "Plein écran"}
+                    {isFullscreen ? t("configure.fullscreenExit") : t("configure.fullscreenEnter")}
                   </span>
                 </div>
                 <div className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${isFullscreen ? "bg-primary" : "bg-primary/20"}`}>
@@ -228,7 +228,7 @@ export default function ConfigPanel() {
               <div className="flex items-center gap-2.5">
                 <MaterialIcon name="print" className="text-primary text-[18px]" />
                 <span className="text-xs font-semibold text-primary">
-                  {printerLocation ? <span className="capitalize">{printerLocation}</span> : "Choisir une imprimante"}
+                  {printerLocation ? <span className="capitalize">{printerLocation}</span> : t("configure.choosePrinter")}
                 </span>
               </div>
               {printerLocation && (
@@ -261,7 +261,7 @@ export default function ConfigPanel() {
                   <div className="flex items-center gap-2.5">
                     <MaterialIcon name={isFullscreen ? "fullscreen_exit" : "fullscreen"} className="text-primary text-[18px]" />
                     <span className="text-xs font-semibold text-primary">
-                      {isFullscreen ? "Quitter le plein écran" : "Plein écran"}
+                      {isFullscreen ? t("configure.fullscreenExit") : t("configure.fullscreenEnter")}
                     </span>
                   </div>
                   <div className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${isFullscreen ? "bg-primary" : "bg-primary/20"}`}>
@@ -279,7 +279,7 @@ export default function ConfigPanel() {
                 <div className="flex items-center gap-2.5">
                   <MaterialIcon name="print" className="text-primary text-[18px]" />
                   <span className="text-xs font-semibold text-primary">
-                    {printerLocation ? <span className="capitalize">{printerLocation}</span> : "Choisir une imprimante"}
+                    {printerLocation ? <span className="capitalize">{printerLocation}</span> : t("configure.choosePrinter")}
                   </span>
                 </div>
                 {printerLocation && (
@@ -292,7 +292,7 @@ export default function ConfigPanel() {
           {/* ── Nombre de personnes ── */}
           <div className="space-y-2">
             <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
-              Nombre de personnes
+              {t("configure.participantCountTitle")}
             </p>
             <div className="flex gap-2">
               {[1, 2, 3, 4].map((n) => (
@@ -316,7 +316,7 @@ export default function ConfigPanel() {
           {participantCount > 1 && (
             <div className="space-y-3">
               <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
-                Couleur de chaque participant
+                {t("configure.participantColorTitle")}
               </p>
               {Array.from({ length: participantCount }).map((_, idx) => {
                 const chosen = selectedColors[idx] ?? "";
@@ -324,7 +324,7 @@ export default function ConfigPanel() {
                 return (
                   <div key={idx} className="space-y-1.5">
                     <p className="text-[11px] text-primary/50 font-medium px-0.5">
-                      Participant {idx + 1}
+                      {t("configure.participantLabel").replace("{n}", String(idx + 1))}
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {PARTICIPANT_COLORS.map((color) => {
@@ -346,7 +346,7 @@ export default function ConfigPanel() {
                               isSelected ? "ring-2 ring-offset-1" : "hover:scale-105"
                             } disabled:cursor-not-allowed`}
                           >
-                            {color.label}
+                            {t(color.labelKey)}
                           </button>
                         );
                       })}
@@ -357,7 +357,7 @@ export default function ConfigPanel() {
 
               {!colorsValid && (
                 <p className="text-[11px] text-amber-600 font-medium">
-                  Chaque participant doit choisir une couleur différente.
+                  {t("configure.participantColorError")}
                 </p>
               )}
             </div>

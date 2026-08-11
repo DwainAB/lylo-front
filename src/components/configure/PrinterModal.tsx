@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export default function PrinterModal({ onClose, onSelect, selected }: Props) {
+  const { t } = useTranslation();
   const [locations, setLocations] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -59,7 +61,7 @@ export default function PrinterModal({ onClose, onSelect, selected }: Props) {
           <div className="flex items-center gap-2">
             <MaterialIcon name="print" className="text-primary text-[20px]" />
             <h2 className="text-sm font-bold text-primary uppercase tracking-[0.15em]">
-              Imprimante
+              {t("printerModal.title")}
             </h2>
           </div>
           <button
@@ -71,7 +73,7 @@ export default function PrinterModal({ onClose, onSelect, selected }: Props) {
         </div>
 
         <p className="text-[11px] text-primary/60 font-medium">
-          Choisissez l&apos;emplacement de l&apos;imprimante à utiliser pour imprimer les formules.
+          {t("printerModal.description")}
         </p>
 
         {/* Content */}
@@ -84,13 +86,13 @@ export default function PrinterModal({ onClose, onSelect, selected }: Props) {
         {error && (
           <div className="flex items-center gap-2 text-red-500 text-xs py-2">
             <MaterialIcon name="error" className="text-[16px]" />
-            Impossible de charger les imprimantes.
+            {t("printerModal.loadError")}
           </div>
         )}
 
         {!loading && !error && locations.length === 0 && (
           <p className="text-xs text-primary/50 text-center py-4">
-            Aucune imprimante disponible.
+            {t("printerModal.noPrinters")}
           </p>
         )}
 
@@ -127,7 +129,7 @@ export default function PrinterModal({ onClose, onSelect, selected }: Props) {
           disabled={!selected}
           className="w-full bg-primary hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-2.5 rounded-lg transition-all text-sm"
         >
-          Confirmer
+          {t("printerModal.confirm")}
         </button>
       </div>
     </div>

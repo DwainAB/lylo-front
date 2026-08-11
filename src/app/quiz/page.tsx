@@ -49,8 +49,10 @@ function BigButton({ label, selected, onClick }: { label: string; selected: bool
 
 // ── Bannière couleur ─────────────────────────────────────────────────────
 function ColorTurnBanner({ colorId }: { colorId: string }) {
+  const { t } = useTranslation();
   const def = PARTICIPANT_COLORS.find((c) => c.id === colorId);
   if (!def) return null;
+  const colorLabel = t(def.labelKey);
   return (
     <div
       className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl text-sm font-bold tracking-wide"
@@ -60,7 +62,7 @@ function ColorTurnBanner({ colorId }: { colorId: string }) {
         className="inline-block size-3 rounded-full"
         style={{ backgroundColor: def.text }}
       />
-      {def.label.charAt(0).toUpperCase() + def.label.slice(1)}, à votre tour
+      {t("quiz.yourTurn").replace("{name}", colorLabel.charAt(0).toUpperCase() + colorLabel.slice(1))}
     </div>
   );
 }
@@ -120,7 +122,7 @@ export default function QuizPage() {
     if (step !== "questionnaire") return;
     setLoading(true);
     fetch(`${API_BASE}/api/questions?count=${questionCount}&language=${language}`)
-      .then((r) => { if (!r.ok) throw new Error("Erreur chargement"); return r.json(); })
+      .then((r) => { if (!r.ok) throw new Error(t("quiz.errorLoadingQuestions")); return r.json(); })
       .then((data) => setQuestions(Array.isArray(data) ? data : data.questions ?? []))
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -285,12 +287,12 @@ export default function QuizPage() {
           answers: finalAnswers,
         }),
       });
-      if (!res.ok) throw new Error("Erreur génération");
+      if (!res.ok) throw new Error(t("quiz.errorGenerating"));
       const data = await res.json();
       localStorage.setItem("quiz_formulas", JSON.stringify(data.formulas ?? []));
       router.push("/quiz/results");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur inconnue");
+      setError(e instanceof Error ? e.message : t("quiz.errorUnknown"));
       setGenerating(false);
     }
   };
@@ -316,12 +318,12 @@ export default function QuizPage() {
           })),
         }),
       });
-      if (!res.ok) throw new Error("Erreur génération multi");
+      if (!res.ok) throw new Error(t("quiz.errorGeneratingMulti"));
       const data = await res.json();
       localStorage.setItem("quiz_multi_results", JSON.stringify(data.participants ?? []));
       router.push("/quiz/results");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur inconnue");
+      setError(e instanceof Error ? e.message : t("quiz.errorUnknown"));
       setGenerating(false);
     }
   };
@@ -582,7 +584,7 @@ export default function QuizPage() {
             return (
               <button onClick={handleConfirm}
                 className="bg-primary hover:bg-primary/90 text-white font-bold px-10 py-3 rounded-xl shadow-md transition-all hover:scale-[1.02]">
-                {isVeryLast ? t("quiz.submit") : t("quiz.next")}
+                {isVeryLast ? t(activeBrand.id === "ester" ? "quiz.submitCatalog" : "quiz.submit") : t("quiz.next")}
               </button>
             );
           })()}

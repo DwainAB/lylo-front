@@ -138,11 +138,11 @@ export default function BottomBar() {
         {/* Gauche : Stop / Reprendre */}
         <div className="w-9 sm:w-11 flex justify-center shrink-0">
           {interrupted ? (
-            <button onClick={handleResumeListen} className={iconBtn} title="Reprendre">
+            <button onClick={handleResumeListen} className={iconBtn} title={t("interaction.resume")}>
               <MaterialIcon name="play_circle" className="text-[22px] sm:text-[26px]" />
             </button>
           ) : canInterrupt ? (
-            <button onClick={handleInterrupt} className={iconBtn} title="Stop">
+            <button onClick={handleInterrupt} className={iconBtn} title={t("interaction.stop")}>
               <MaterialIcon name="stop_circle" className="text-[22px] sm:text-[26px]" />
             </button>
           ) : (
@@ -158,7 +158,7 @@ export default function BottomBar() {
             <button
               onClick={handleResume}
               className="flex items-center gap-1.5 cursor-pointer hover:opacity-70 transition-opacity"
-              title="J'ai une question"
+              title={t("interaction.resumeQuestion")}
             >
               <MaterialIcon name="mic" className="text-[15px] shrink-0 animate-pulse" />
               <span className="text-[11px] tracking-wider font-medium lowercase truncate">
@@ -177,14 +177,14 @@ export default function BottomBar() {
           <button
             onClick={handleMicToggle}
             className={`${iconBtn} ${muted ? "text-red-500 hover:bg-red-50" : "hover:bg-primary/10"}`}
-            title={muted ? "Activer le micro" : "Couper le micro"}
+            title={muted ? t("interaction.micEnable") : t("interaction.micDisable")}
           >
             <MaterialIcon name={muted ? "mic_off" : "mic"} className="text-[22px] sm:text-[26px]" />
           </button>
           <button
             onClick={() => setTranscriptOpen((p) => !p)}
             className={`${iconBtn} hover:bg-primary/10`}
-            title="Conversation"
+            title={t("transcript.title")}
           >
             <MaterialIcon name={transcriptOpen ? "close" : "chat"} className="text-[22px] sm:text-[26px]" />
           </button>

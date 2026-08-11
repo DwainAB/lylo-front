@@ -15,6 +15,7 @@ const BottomBar = nextDynamic(() => import("@/components/livekit/BottomBar"), { 
 import GeneratingLoader from "@/components/livekit/GeneratingLoader";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useSession, DEV_MODE } from "@/context/SessionContext";
+import { activeBrand } from "@/lib/brand";
 
 export default function InteractionPage() {
   const { t } = useTranslation();
@@ -36,7 +37,11 @@ export default function InteractionPage() {
   const avatarUrl = persona === "male" ? "/avatar-h.jpg" : "/avatar-f.jpg";
   const avatarEnabled = typeof window !== "undefined" ? localStorage.getItem("avatar") !== "false" : true;
 
-  if (sessionState === "generating_formulas") {
+  // En mode ester, "asking_intensity" est un signal transitoire avant la
+  // recherche catalogue — l'agent ne pose pas la question frais/mix/puissant
+  // (non pertinente pour un produit existant), donc on affiche directement
+  // le loader plutôt que le sélecteur d'intensité Lylo.
+  if (sessionState === "generating_formulas" || (sessionState === "asking_intensity" && activeBrand.id === "ester")) {
     return <GeneratingLoader />;
   }
 

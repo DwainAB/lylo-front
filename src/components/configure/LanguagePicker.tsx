@@ -6,22 +6,29 @@ import { useTranslation } from "@/i18n/LanguageContext";
 import { persistLanguage, resolveStoredLanguage } from "@/lib/language";
 
 type AvatarLocale = "fr" | "en";
+type PickerLocale = AvatarLocale | "de" | "nl" | "it" | "es" | "ar";
 
 interface Language {
-  code: AvatarLocale;
+  code: PickerLocale;
   nativeName: string;
   englishName: string;
   flag: string;
   region: string;
+  available: boolean;
 }
 
 const LANGUAGES: Language[] = [
-  { code: "fr", nativeName: "Français", englishName: "French", flag: "🇫🇷", region: "France" },
-  { code: "en", nativeName: "English", englishName: "English", flag: "🇬🇧", region: "United Kingdom" },
+  { code: "fr", nativeName: "Français", englishName: "French", flag: "🇫🇷", region: "France", available: true },
+  { code: "en", nativeName: "English", englishName: "English", flag: "🇬🇧", region: "United Kingdom", available: true },
+  { code: "de", nativeName: "Deutsch", englishName: "German", flag: "🇩🇪", region: "Deutschland", available: false },
+  { code: "nl", nativeName: "Nederlands", englishName: "Dutch", flag: "🇳🇱", region: "Nederland", available: false },
+  { code: "it", nativeName: "Italiano", englishName: "Italian", flag: "🇮🇹", region: "Italia", available: false },
+  { code: "es", nativeName: "Español", englishName: "Spanish", flag: "🇪🇸", region: "España", available: false },
+  { code: "ar", nativeName: "العربية", englishName: "Arabic", flag: "🇸🇦", region: "العربية", available: false },
 ];
 
 export default function LanguagePicker() {
-  const { t, locale, setLocale } = useTranslation();
+  const { t } = useTranslation();
   const [avatarLocale, setAvatarLocale] = useState<AvatarLocale>("fr");
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -30,10 +37,7 @@ export default function LanguagePicker() {
     const saved = resolveStoredLanguage();
     setAvatarLocale(saved);
     persistLanguage(saved);
-    if (saved !== locale) {
-      setLocale(saved);
-    }
-  }, [locale, setLocale]);
+  }, []);
 
   const currentLang = LANGUAGES.find((l) => l.code === avatarLocale) ?? LANGUAGES[0];
 
@@ -47,10 +51,10 @@ export default function LanguagePicker() {
     setTimeout(() => setOpen(false), 300);
   };
 
-  const handleSelect = (code: AvatarLocale) => {
+  const handleSelect = (code: PickerLocale) => {
+    if (code !== "fr" && code !== "en") return;
     setAvatarLocale(code);
     persistLanguage(code);
-    setLocale(code);
     closeModal();
   };
 
@@ -125,36 +129,43 @@ export default function LanguagePicker() {
               </p>
             </div>
 
-            {/* Language grid */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* Language list */}
+            <div className="flex flex-col gap-2 max-h-[50vh] overflow-y-auto pr-1">
               {LANGUAGES.map((lang) => {
                 const isSelected = avatarLocale === lang.code;
                 return (
                   <button
                     key={lang.code}
                     onClick={() => handleSelect(lang.code)}
-                    className={`relative flex flex-col items-center gap-3 p-5 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
-                      isSelected
-                        ? "border-primary bg-primary text-white shadow-xl scale-[1.03]"
-                        : "border-primary/10 brand-surface-soft text-primary hover:border-primary/30 hover:bg-primary/5 hover:scale-[1.01]"
+                    disabled={!lang.available}
+                    aria-disabled={!lang.available}
+                    className={`relative flex items-center gap-3 px-4 py-2.5 rounded-xl border-2 transition-all duration-200 ${
+                      !lang.available
+                        ? "border-primary/5 brand-surface-soft text-primary/35 opacity-50 cursor-not-allowed"
+                        : isSelected
+                        ? "border-primary bg-primary text-white shadow-xl cursor-pointer"
+                        : "border-primary/10 brand-surface-soft text-primary hover:border-primary/30 hover:bg-primary/5 cursor-pointer"
                     }`}
                   >
-                    {isSelected && (
-                      <div className="absolute top-2.5 right-2.5">
-                        <MaterialIcon name="check_circle" className="text-white/80 text-base" />
-                      </div>
-                    )}
-                    <span className="text-5xl leading-none">{lang.flag}</span>
-                    <div className="text-center">
-                      <div className="text-sm font-bold leading-tight">{lang.nativeName}</div>
+                    <span className={`text-2xl leading-none shrink-0 ${!lang.available ? "grayscale" : ""}`}>{lang.flag}</span>
+                    <div className="flex-1 text-left min-w-0">
+                      <div className="text-sm font-bold leading-tight truncate">{lang.nativeName}</div>
                       <div
-                        className={`text-xs mt-1 font-medium ${
+                        className={`text-xs font-medium truncate ${
                           isSelected ? "text-white/65" : "text-primary/45"
                         }`}
                       >
                         {lang.region}
                       </div>
                     </div>
+                    {!lang.available && (
+                      <span className="shrink-0 px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-[8px] font-bold uppercase tracking-wide">
+                        {t("configure.languageComingSoon")}
+                      </span>
+                    )}
+                    {isSelected && (
+                      <MaterialIcon name="check_circle" className="text-white/80 text-base shrink-0" />
+                    )}
                   </button>
                 );
               })}
@@ -164,7 +175,7 @@ export default function LanguagePicker() {
             <div className="flex items-center gap-3 my-6">
               <span className="flex-1 h-px bg-primary/10" />
               <span className="text-[10px] uppercase tracking-[0.2em] text-primary/30 font-bold">
-                {LANGUAGES.length} {t("configure.languageAvailable")}
+                {LANGUAGES.filter((l) => l.available).length} {t("configure.languageAvailable")}
               </span>
               <span className="flex-1 h-px bg-primary/10" />
             </div>

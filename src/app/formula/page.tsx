@@ -78,9 +78,9 @@ function SharedFormulaContent() {
 
       <div className="rounded-2xl border border-primary/10 bg-white p-5 shadow-sm">
         <div className="mb-4 border-b border-primary/10 pb-3 text-center">
-          <p className="brand-text text-[0.62rem] text-primary/70">Formule recommandee</p>
+          <p className="brand-text text-[0.62rem] text-primary/70">{t("formula.recommendedFormula")}</p>
           <h2 className="luxury-title mt-2 text-2xl text-primary">{formula.profile}</h2>
-          <p className="mt-2 text-xs text-primary/55">Version {formula.size}</p>
+          <p className="mt-2 text-xs text-primary/55">{t("formula.version")} {formula.size}</p>
         </div>
 
         <div className="space-y-3">
@@ -95,9 +95,10 @@ function SharedFormulaContent() {
 }
 
 function SharedFormulaFallback() {
+  const { t } = useTranslation();
   return (
     <div className="w-full rounded-2xl border border-primary/10 bg-white/85 p-6 text-center shadow-sm">
-      <h1 className="text-xl font-semibold text-primary">Chargement...</h1>
+      <h1 className="text-xl font-semibold text-primary">{t("formula.loading")}</h1>
     </div>
   );
 }

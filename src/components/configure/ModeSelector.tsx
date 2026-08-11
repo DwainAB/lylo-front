@@ -24,7 +24,7 @@ export default function ModeSelector({ value, onChange }: ModeSelectorProps) {
         <MaterialIcon name="tune" className="text-sm" />
         {t("configure.modeTitle")}&nbsp;<button
           type="button"
-          aria-label="En savoir plus sur les modes"
+          aria-label={t("configure.modeAriaLabel")}
           onClick={() => setShowInfo((v) => !v)}
           onMouseEnter={() => setShowInfo(true)}
           onMouseLeave={() => setShowInfo(false)}

@@ -13,6 +13,9 @@ import { FormulaSize } from "@/context/SessionContext";
 import { PARTICIPANT_COLORS } from "@/components/configure/ConfigPanel";
 import { persistLanguage, resolveStoredLanguage } from "@/lib/language";
 import { createShareableFormula } from "@/lib/shareableFormula";
+import { activeBrand } from "@/lib/brand";
+
+const isEster = activeBrand.id === "ester";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
@@ -170,14 +173,14 @@ function SoloResults() {
         <div className="text-center">
           <div className="inline-flex items-center gap-2 mb-2">
             <span className="h-px w-6 bg-primary/40" />
-            <span className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">{t("quiz.resultsLabel")}</span>
+            <span className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">{t(isEster ? "quiz.resultsLabelCatalog" : "quiz.resultsLabel")}</span>
             <span className="h-px w-6 bg-primary/40" />
           </div>
           <h1 className="text-primary tracking-tight text-2xl sm:text-3xl font-bold mb-1.5 font-display">
-            {chosen === null ? t("quiz.resultsTitle") : t("quiz.resultsTitleChosen")}
+            {chosen === null ? t(isEster ? "quiz.resultsTitleCatalog" : "quiz.resultsTitle") : t(isEster ? "quiz.resultsTitleChosenCatalog" : "quiz.resultsTitleChosen")}
           </h1>
           <p className="text-primary/60 text-xs sm:text-sm font-medium">
-            {chosen === null ? t("quiz.resultsSubtitle") : t("quiz.resultsSubtitleChosen")}
+            {chosen === null ? t(isEster ? "quiz.resultsSubtitleCatalog" : "quiz.resultsSubtitle") : t("quiz.resultsSubtitleChosen")}
           </p>
         </div>
 
@@ -231,12 +234,12 @@ function SoloResults() {
                 </div>
               ))}
             </div>
-            <p className="text-xs text-primary/40 text-center">Appuie sur l&apos;autre carte pour changer de choix</p>
+            <p className="text-xs text-primary/40 text-center">{t("quizResults.tapOtherCard")}</p>
             <div className="w-full flex flex-wrap gap-2.5 items-center justify-center">
               {!isCatalogFormula(selectedFormula) && printerLocation && (
                 printStatus === "done" ? (
                   <div className="flex items-center gap-2 text-sm text-green-700">
-                    <MaterialIcon name="check_circle" className="text-[18px]" /> Imprimé
+                    <MaterialIcon name="check_circle" className="text-[18px]" /> {t("quizResults.printed")}
                   </div>
                 ) : (
                   <button
@@ -252,7 +255,7 @@ function SoloResults() {
                   </button>
                 )
               )}
-              {printStatus === "error" && <p className="text-xs text-red-500">Erreur d&apos;impression.</p>}
+              {printStatus === "error" && <p className="text-xs text-red-500">{t("quizResults.printError")}</p>}
               {!isCatalogFormula(selectedFormula) && (
                 <FormulaQrCode
                   formula={createShareableFormula(
@@ -434,7 +437,7 @@ function MultiResults() {
             <div className="flex items-center gap-2">
               <span className="inline-block size-3 rounded-full" style={{ backgroundColor: colorDef?.text ?? "#333" }} />
               <span className="font-bold text-sm tracking-wide text-primary">
-                {colorDef?.label ?? participant.color}, choisis ta formule
+                {t("quizResults.chooseYourFormula").replace("{name}", colorDef ? t(colorDef.labelKey) : participant.color)}
               </span>
             </div>
             <span className="text-xs text-primary/40">{currentIdx + 1} / {participants.length}</span>
@@ -481,13 +484,13 @@ function MultiResults() {
             {chosen === null ? (
               <div className="bg-white/80 rounded-full px-4 py-1.5 shadow-sm">
                 <p className="text-xs font-medium text-primary/50">
-                  Appuie sur ta formule préférée
+                  {t("quizResults.tapPreferredFormula")}
                 </p>
               </div>
             ) : (
               <div className="bg-white rounded-full px-4 py-1.5 shadow-sm flex items-center gap-2 text-sm font-semibold text-primary">
                 <MaterialIcon name="check_circle" className="text-[18px]" />
-                Sélectionné — passage au suivant…
+                {t("quizResults.selectedNext")}
               </div>
             )}
           </div>
@@ -506,10 +509,10 @@ function MultiResults() {
         {/* Header compact */}
         <div className="shrink-0 text-center">
           <h1 className="text-primary tracking-tight text-xl font-bold font-display">
-            Vos formules
+            {t("quizResults.yourFormulas")}
           </h1>
           <p className="text-primary/50 text-xs">
-            Appuyez sur "Changer" pour modifier une sélection
+            {t("quizResults.tapChangeToModify")}
           </p>
         </div>
 
@@ -531,7 +534,7 @@ function MultiResults() {
                 >
                   <div className="flex items-center gap-1.5">
                     <span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: colorDef?.text ?? "#333" }} />
-                    <span className="font-bold text-xs">{colorDef?.label ?? participant.color}</span>
+                    <span className="font-bold text-xs">{colorDef ? t(colorDef.labelKey) : participant.color}</span>
                   </div>
                   {ref
                     ? <span className="text-[10px] font-mono opacity-60">{ref}</span>
@@ -540,7 +543,7 @@ function MultiResults() {
                         onClick={() => handleChange(participant.color)}
                         className="text-[10px] font-semibold underline opacity-60 hover:opacity-100"
                       >
-                        Changer
+                        {t("quizResults.change")}
                       </button>
                     )
                   }
@@ -559,7 +562,7 @@ function MultiResults() {
                     formula={createShareableFormula(formula.profile, selectedSize, formula.sizes!)}
                     language={language as "fr" | "en"}
                     buttonLabel={t("recommendations.qrButton")}
-                    title={`${t("recommendations.qrTitle")} · ${colorDef?.label ?? participant.color}`}
+                    title={`${t("recommendations.qrTitle")} · ${colorDef ? t(colorDef.labelKey) : participant.color}`}
                     subtitle={t("recommendations.qrSubtitle")}
                     closeLabel={t("recommendations.qrClose")}
                   />
@@ -581,21 +584,23 @@ function MultiResults() {
                 ? <div className="size-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                 : <MaterialIcon name="save" className="text-[18px]" />
               }
-              Valider
+              {t("quizResults.validate")}
             </button>
           ) : (
             <div className="flex items-center gap-2 text-sm text-green-700 font-semibold">
               <MaterialIcon name="check_circle" className="text-[18px]" />
-              Enregistré
+              {t("quizResults.saved")}
             </div>
           )}
-          {saveStatus === "error" && <p className="text-xs text-red-500">Erreur enregistrement.</p>}
+          {saveStatus === "error" && <p className="text-xs text-red-500">{t("quizResults.saveError")}</p>}
 
           {printerLocation && saveStatus === "saved" && (
             printStatus === "done" ? (
               <div className="flex items-center gap-2 text-sm text-green-700 font-semibold">
                 <MaterialIcon name="check_circle" className="text-[18px]" />
-                {participants.length} feuille{participants.length > 1 ? "s" : ""} imprimée{participants.length > 1 ? "s" : ""}
+                {t("quizResults.sheetsPrinted")
+                  .replace("{count}", String(participants.length))
+                  .replaceAll("{plural}", participants.length > 1 ? "s" : "")}
               </div>
             ) : (
               <button
@@ -607,11 +612,11 @@ function MultiResults() {
                   ? <div className="size-4 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
                   : <MaterialIcon name="print" className="text-[18px]" />
                 }
-                Imprimer les {participants.length} formules
+                {t("quizResults.printAllFormulas").replace("{count}", String(participants.length))}
               </button>
             )
           )}
-          {printStatus === "error" && <p className="text-xs text-red-500">Erreur d&apos;impression.</p>}
+          {printStatus === "error" && <p className="text-xs text-red-500">{t("quizResults.printError")}</p>}
 
           <button
             onClick={() => { localStorage.removeItem("quiz_multi_results"); localStorage.removeItem("participant_colors"); router.push("/"); }}

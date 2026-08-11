@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useMaybeRoomContext, useParticipants } from "@livekit/components-react";
 import { Track } from "livekit-client";
 import { useSession } from "@/context/SessionContext";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 interface AvatarVideoProps {
   fallbackUrl: string;
@@ -11,6 +12,7 @@ interface AvatarVideoProps {
 }
 
 function AvatarVideoStream({ fallbackUrl }: AvatarVideoProps) {
+  const { t } = useTranslation();
   const participants = useParticipants();
   const { avatarDisabled } = useSession();
   const avatarParticipant = participants.find(p => p.identity === "bey-avatar-agent");
@@ -50,7 +52,7 @@ function AvatarVideoStream({ fallbackUrl }: AvatarVideoProps) {
       {!avatarDisabled && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-black/30 backdrop-blur-sm">
           <div className="size-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
-          <span className="text-white text-[10px] font-medium tracking-wide">Chargement...</span>
+          <span className="text-white text-[10px] font-medium tracking-wide">{t("interaction.loading")}</span>
         </div>
       )}
     </div>

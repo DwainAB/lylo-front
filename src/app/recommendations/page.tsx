@@ -17,6 +17,9 @@ import MaterialIcon from "@/components/ui/MaterialIcon";
 import { resolveStoredLanguage } from "@/lib/language";
 import { createShareableFormula } from "@/lib/shareableFormula";
 import { SizeOption } from "@/components/recommendations/SizeToggle";
+import { activeBrand } from "@/lib/brand";
+
+const isEster = activeBrand.id === "ester";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
@@ -120,7 +123,7 @@ export default function RecommendationsPage() {
           <div className="shrink-0 flex flex-col items-center gap-1 mt-1 sm:mt-3 mb-2 sm:mb-3 [@media(max-height:580px)]:hidden">
             <AvatarSection name="" role="" imageUrl={avatarUrl} avatarEnabled={avatarEnabled} />
             <h3 className="text-xl sm:text-2xl md:text-3xl font-extralight tracking-tight text-center max-w-2xl leading-tight mt-1 sm:mt-2">
-              {t("recommendations.title")}
+              {t(isEster ? "recommendations.titleCatalog" : "recommendations.title")}
             </h3>
           </div>
         )}
@@ -191,7 +194,7 @@ export default function RecommendationsPage() {
                 {showResumeButton && (
                   <button className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-full bg-white/90 backdrop-blur-sm text-primary text-xs sm:text-sm font-medium border border-primary/25 cursor-pointer shadow-lg shadow-primary/10 hover:bg-white hover:border-primary/40 transition-all">
                     <MaterialIcon name="mic" className="text-[18px]" />
-                    J&apos;ai une question
+                    {t("recommendationsPage.resumeQuestion")}
                   </button>
                 )}
 
@@ -200,7 +203,7 @@ export default function RecommendationsPage() {
                   printStatus === "done" ? (
                     <div className="flex items-center gap-2 text-sm text-green-700">
                       <MaterialIcon name="check_circle" className="text-[18px]" />
-                      Imprimé
+                      {t("recommendationsPage.printed")}
                     </div>
                   ) : (
                     <button
@@ -212,12 +215,12 @@ export default function RecommendationsPage() {
                         ? <div className="size-4 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
                         : <MaterialIcon name="print" className="text-[18px]" />
                       }
-                      Imprimer
+                      {t("recommendationsPage.print")}
                     </button>
                   )
                 )}
                 {printStatus === "error" && (
-                  <p className="text-xs text-red-500 text-center">Erreur d&apos;impression.</p>
+                  <p className="text-xs text-red-500 text-center">{t("recommendationsPage.printError")}</p>
                 )}
 
                 {selectedFormula && !isCatalogFormula(selectedFormula) && (
@@ -253,10 +256,10 @@ export default function RecommendationsPage() {
 
             <div className="shrink-0 text-center max-w-3xl mx-auto">
               <p className="brand-text text-[0.62rem] sm:text-[0.68rem] text-primary/70 mb-2">
-                Vos recommandations
+                {t("recommendationsPage.yourRecommendations")}
               </p>
               <h3 className="text-lg sm:text-2xl md:text-3xl font-extralight tracking-tight text-primary leading-tight">
-                Comparez les deux formules en toute lisibilité
+                {t("recommendationsPage.compareFormulas")}
               </h3>
             </div>
 
@@ -276,7 +279,7 @@ export default function RecommendationsPage() {
                   ))
                 ) : (
                   <p className="text-gray-400 text-center text-lg font-light self-center flex-1">
-                    {t("recommendations.noFormulas")}
+                    {t(isEster ? "recommendations.noFormulasCatalog" : "recommendations.noFormulas")}
                   </p>
                 )}
               </div>

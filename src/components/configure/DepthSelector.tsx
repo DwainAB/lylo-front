@@ -35,7 +35,7 @@ export default function DepthSelector({ value, onChange }: DepthSelectorProps) {
         <MaterialIcon name="query_stats" className="text-sm" />
         {t("configure.questionCountTitle")}&nbsp;<button
           type="button"
-          aria-label="En savoir plus sur la profondeur d'analyse"
+          aria-label={t("configure.depthAriaLabel")}
           onClick={() => setShowInfo((v) => !v)}
           onMouseEnter={() => setShowInfo(true)}
           onMouseLeave={() => setShowInfo(false)}

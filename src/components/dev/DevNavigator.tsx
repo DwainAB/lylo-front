@@ -3,17 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { DEV_MODE } from "@/context/SessionContext";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 const PAGES = [
-  { label: "Accueil", href: "/" },
-  { label: "Config", href: "/configure" },
-  { label: "Prépa", href: "/preparation" },
-  { label: "Interaction", href: "/interaction" },
-  { label: "Résultats", href: "/recommendations" },
-];
+  { labelKey: "devNav.home", href: "/" },
+  { labelKey: "devNav.config", href: "/configure" },
+  { labelKey: "devNav.prep", href: "/preparation" },
+  { labelKey: "devNav.interaction", href: "/interaction" },
+  { labelKey: "devNav.results", href: "/recommendations" },
+] as const;
 
 export default function DevNavigator() {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   if (!DEV_MODE) return null;
 
@@ -22,7 +24,7 @@ export default function DevNavigator() {
       <span className="text-[9px] font-bold uppercase tracking-widest text-yellow-400 mr-2 shrink-0">
         DEV
       </span>
-      {PAGES.map(({ label, href }) => (
+      {PAGES.map(({ labelKey, href }) => (
         <Link
           key={href}
           href={href}
@@ -32,7 +34,7 @@ export default function DevNavigator() {
               : "text-white/60 hover:text-white hover:bg-white/10"
           }`}
         >
-          {label}
+          {t(labelKey)}
         </Link>
       ))}
     </div>

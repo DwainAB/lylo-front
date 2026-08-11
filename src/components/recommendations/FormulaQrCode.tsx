@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { AppLanguage } from "@/lib/language";
 import { buildFormulaShareUrl, ShareableFormula } from "@/lib/shareableFormula";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 interface FormulaQrCodeProps {
   formula: ShareableFormula;
@@ -23,6 +24,7 @@ export default function FormulaQrCode({
   subtitle,
   closeLabel,
 }: FormulaQrCodeProps) {
+  const { t } = useTranslation();
   const [shareUrl, setShareUrl] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -96,7 +98,7 @@ export default function FormulaQrCode({
             </div>
 
             <p className="mt-3 text-center text-[11px] text-primary/50">
-              Si vous testez en local, configurez `NEXT_PUBLIC_APP_URL` avec l&apos;URL publique du front.
+              {t("formulaQr.localDevHint")}
             </p>
           </div>
         </div>

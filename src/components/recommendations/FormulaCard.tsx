@@ -113,7 +113,7 @@ export default function FormulaCard({
       <div className={`${isComparison ? "mb-3 pb-2.5 border-b border-primary/10" : "mb-1 sm:mb-2"}`}>
         {isComparison && (
           <p className="brand-text text-[0.62rem] sm:text-[0.68rem] text-primary/70 text-center mb-2">
-            Formule recommandee
+            {t("formula.recommendedFormula")}
           </p>
         )}
         <h2

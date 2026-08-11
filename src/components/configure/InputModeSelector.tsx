@@ -27,7 +27,7 @@ export default function InputModeSelector({ value, onChange }: InputModeSelector
         <MaterialIcon name="settings_input_component" className="text-sm" />
         {t("configure.inputModeTitle")}&nbsp;<button
           type="button"
-          aria-label="En savoir plus sur le mode de réponse"
+          aria-label={t("configure.inputModeAriaLabel")}
           onClick={() => setShowInfo((v) => !v)}
           onMouseEnter={() => setShowInfo(true)}
           onMouseLeave={() => setShowInfo(false)}

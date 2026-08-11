@@ -10,6 +10,8 @@ import { useAuth } from "@/context/AuthContext";
 import { persistLanguage } from "@/lib/language";
 import { activeBrand } from "@/lib/brand";
 
+const isEster = activeBrand.id === "ester";
+
 export default function HeroSection() {
   const router = useRouter();
   const { t, locale } = useTranslation();
@@ -39,31 +41,46 @@ export default function HeroSection() {
 
       {/* Content */}
       <div className="relative z-10 px-6 text-center max-w-4xl mx-auto">
-        {/* Logo */}
-        <div className="flex justify-center mb-6">
-          <Image src={activeBrand.logo} alt={`Logo ${activeBrand.name}`} width={72} height={72} style={{ width: "auto", height: "auto" }} />
-        </div>
+        {isEster ? (
+          /* Logo (Estée Lauder, large, no text title) */
+          <div className="flex justify-center mb-8">
+            <Image src={activeBrand.logo} alt="Logo Estée Lauder" width={801} height={101} className="w-[280px] md:w-[400px] lg:w-[520px] h-auto" priority />
+          </div>
+        ) : (
+          <>
+            {/* Logo */}
+            <div className="flex justify-center mb-6">
+              <Image src={activeBrand.logo} alt={`Logo ${activeBrand.name}`} width={72} height={72} style={{ width: "auto", height: "auto" }} />
+            </div>
 
-        {/* Title */}
-        <h1 className="text-white font-light tracking-tight mb-4 font-display flex flex-col items-center leading-tight">
-          <span className="text-4xl md:text-5xl lg:text-7xl">{activeBrand.name}</span>
-          <span className="text-xl md:text-2xl lg:text-3xl font-medium">{locale === "en" ? "by" : "par"}</span>
-          <span className="text-4xl md:text-5xl lg:text-7xl">{t("home.title")}</span>
-        </h1>
+            {/* Title */}
+            <h1 className="text-white font-light tracking-tight mb-4 font-display flex flex-col items-center leading-tight">
+              <span className="text-4xl md:text-5xl lg:text-7xl">{activeBrand.name}</span>
+              <span className="text-xl md:text-2xl lg:text-3xl font-medium">{t("home.byWord")}</span>
+              <span className="text-4xl md:text-5xl lg:text-7xl">{t("home.title")}</span>
+            </h1>
+          </>
+        )}
 
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold tracking-widest uppercase mb-6">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-          </span>
-          {t("home.badge")}
-        </div>
+        {isEster ? (
+          <p className="text-white/80 text-base md:text-lg font-light mb-6 max-w-xl mx-auto">
+            {t("home.esterTagline")}
+          </p>
+        ) : (
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold tracking-widest uppercase mb-6">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+            </span>
+            {t("home.badge")}
+          </div>
+        )}
 
         {/* CTA Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-4">
           {user ? (
-            <Button variant="primary" size="lg" className="shadow-2xl shadow-black/20 hover:scale-[1.02]" onClick={() => { persistLanguage(locale); router.push("/configure"); }}>
+            <Button variant="primary" size="lg" className="shadow-2xl shadow-black/20 hover:scale-[1.02]" onClick={() => { persistLanguage(locale === "en" ? "en" : "fr"); router.push("/configure"); }}>
               <MaterialIcon name="auto_awesome" />
               {t("home.getStarted")}
             </Button>
@@ -87,7 +104,7 @@ export default function HeroSection() {
       {/* Floating tech element */}
       <div className="absolute bottom-10 left-10 hidden lg:block">
         <div className="p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 text-white/60 text-[10px] tracking-widest uppercase">
-          {t("home.floatingLabel")}
+          {isEster ? t("home.esterFloatingLabel") : t("home.floatingLabel")}
         </div>
       </div>
     </div>

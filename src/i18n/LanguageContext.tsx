@@ -3,10 +3,19 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import en from "./locales/en.json";
 import fr from "./locales/fr.json";
+import de from "./locales/de.json";
+import nl from "./locales/nl.json";
+import it from "./locales/it.json";
+import es from "./locales/es.json";
+import ar from "./locales/ar.json";
 
-export type Locale = "en" | "fr";
+export type Locale = "en" | "fr" | "de" | "nl" | "it" | "es" | "ar";
 
-const translations: Record<Locale, Record<string, unknown>> = { en, fr };
+export const SUPPORTED_LOCALES: Locale[] = ["fr", "en", "de", "nl", "it", "es", "ar"];
+
+const RTL_LOCALES: Locale[] = ["ar"];
+
+const translations: Record<Locale, Record<string, unknown>> = { en, fr, de, nl, it, es, ar };
 
 interface LanguageContextType {
   locale: Locale;
@@ -31,7 +40,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem("locale") as Locale | null;
-    if (saved && (saved === "en" || saved === "fr")) {
+    if (saved && SUPPORTED_LOCALES.includes(saved)) {
       setLocale(saved);
     }
   }, []);
@@ -39,6 +48,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     localStorage.setItem("locale", locale);
     document.documentElement.lang = locale;
+    document.documentElement.dir = RTL_LOCALES.includes(locale) ? "rtl" : "ltr";
   }, [locale]);
 
   const t = (key: string): string => resolve(translations[locale], key);
