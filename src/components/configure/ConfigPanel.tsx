@@ -12,6 +12,7 @@ import InputModeSelector from "./InputModeSelector";
 import ConnectionTest from "@/components/preparation/ConnectionTest";
 import PrinterModal from "./PrinterModal";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { activeBrand } from "@/lib/brand";
 
 export const PARTICIPANT_COLORS = [
   { id: "rouge",   labelKey: "configure.colorRouge",     bg: "#FFADAD", text: "#7A1A1A" },
@@ -72,6 +73,7 @@ export default function ConfigPanel() {
   };
 
   const isQuiz = inputMode === "quiz";
+  const isEster = activeBrand.id === "ester";
 
   const colorsValid =
     !isQuiz ||
@@ -113,10 +115,10 @@ export default function ConfigPanel() {
     selectedColors.filter((_, i) => i !== idx);
 
   return (
-    <div className="glass-panel w-full max-w-2xl rounded-xl shadow-xl relative z-10 border border-primary/5 p-4 sm:p-6 space-y-4 sm:space-y-5">
+    <div className="glass-panel custom-scrollbar w-full max-w-2xl rounded-xl shadow-xl relative z-10 border border-primary/5 p-4 sm:p-6 space-y-4 sm:space-y-5 [@media(max-height:620px)]:p-3 [@media(max-height:620px)]:space-y-2.5 [@media(max-height:620px)]:max-h-[calc(100dvh-6rem)] [@media(max-height:620px)]:overflow-y-auto">
 
       {/* ── Header ── */}
-      <div className="text-center">
+      <div className="text-center [@media(max-height:620px)]:hidden">
         <div className="inline-flex items-center gap-2 mb-1.5">
           <span className="h-px w-6 bg-primary/40" />
           <span className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">
@@ -137,10 +139,10 @@ export default function ConfigPanel() {
 
       {/* ── Two columns — masqué en mode visuel ── */}
       {!isQuiz && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5 [@media(max-height:620px)]:gap-2">
 
           {/* Left */}
-          <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-3 sm:space-y-4 [@media(max-height:620px)]:space-y-1.5">
             <LanguagePicker />
             <PersonaSelector value={persona} onChange={setPersona} />
             <DepthSelector value={depth} onChange={setDepth} />
@@ -148,7 +150,7 @@ export default function ConfigPanel() {
           </div>
 
           {/* Right */}
-          <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-3 sm:space-y-4 [@media(max-height:620px)]:space-y-1.5">
 
             {/* Avatar toggle */}
             <div className="space-y-1.5">
@@ -198,79 +200,31 @@ export default function ConfigPanel() {
             </div>
 
             {/* Email recap */}
-            <div className="space-y-1.5">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
-                {t("configure.emailTitle")}
-              </p>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-primary/15 brand-surface-softer">
-                <MaterialIcon name="mail" className="text-primary text-[18px] shrink-0" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t("configure.emailPlaceholder")}
-                  className="flex-1 bg-transparent text-xs font-medium text-primary placeholder:text-primary/35 outline-none"
-                />
+            {!isEster && (
+              <div className="space-y-1.5">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
+                  {t("configure.emailTitle")}
+                </p>
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-primary/15 brand-surface-softer">
+                  <MaterialIcon name="mail" className="text-primary text-[18px] shrink-0" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={t("configure.emailPlaceholder")}
+                    className="flex-1 bg-transparent text-xs font-medium text-primary placeholder:text-primary/35 outline-none"
+                  />
+                </div>
+                <p className="text-[10px] text-primary/50 leading-relaxed px-1">
+                  {t("configure.emailHint")}
+                </p>
               </div>
-              <p className="text-[10px] text-primary/50 leading-relaxed px-1">
-                {t("configure.emailHint")}
-              </p>
-            </div>
+            )}
 
             <ConnectionTest />
 
             {/* Printer selector */}
-            <button
-              type="button"
-              onClick={() => setShowPrinterModal(true)}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-primary/15 brand-surface-softer hover:bg-primary/5 transition-all"
-            >
-              <div className="flex items-center gap-2.5">
-                <MaterialIcon name="print" className="text-primary text-[18px]" />
-                <span className="text-xs font-semibold text-primary">
-                  {printerLocation ? <span className="capitalize">{printerLocation}</span> : t("configure.choosePrinter")}
-                </span>
-              </div>
-              {printerLocation && (
-                <MaterialIcon name="check_circle" className="text-primary text-[16px]" />
-              )}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ── Mode visuel : uniquement langue + profondeur + multi-participants ── */}
-      {isQuiz && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div className="space-y-4">
-              <LanguagePicker />
-              <DepthSelector value={depth} onChange={setDepth} />
-            </div>
-            <div className="space-y-4">
-              {/* Fullscreen toggle */}
-              <div className="space-y-1.5">
-                <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
-                  Affichage
-                </p>
-                <button
-                  type="button"
-                  onClick={toggleFullscreen}
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-primary/15 brand-surface-softer hover:bg-primary/5 transition-all"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <MaterialIcon name={isFullscreen ? "fullscreen_exit" : "fullscreen"} className="text-primary text-[18px]" />
-                    <span className="text-xs font-semibold text-primary">
-                      {isFullscreen ? t("configure.fullscreenExit") : t("configure.fullscreenEnter")}
-                    </span>
-                  </div>
-                  <div className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${isFullscreen ? "bg-primary" : "bg-primary/20"}`}>
-                    <div className={`absolute top-0.5 size-4 rounded-full bg-white shadow transition-transform duration-200 ${isFullscreen ? "translate-x-4" : "translate-x-0.5"}`} />
-                  </div>
-                </button>
-              </div>
-
-              {/* Printer selector */}
+            {!isEster && (
               <button
                 type="button"
                 onClick={() => setShowPrinterModal(true)}
@@ -286,11 +240,65 @@ export default function ConfigPanel() {
                   <MaterialIcon name="check_circle" className="text-primary text-[16px]" />
                 )}
               </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Mode visuel : uniquement langue + profondeur + multi-participants ── */}
+      {isQuiz && (
+        <div className="space-y-4 [@media(max-height:620px)]:space-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 [@media(max-height:620px)]:gap-2">
+            <div className="space-y-4 [@media(max-height:620px)]:space-y-1.5">
+              <LanguagePicker />
+              <DepthSelector value={depth} onChange={setDepth} />
+            </div>
+            <div className="space-y-4 [@media(max-height:620px)]:space-y-1.5">
+              {/* Fullscreen toggle */}
+              <div className="space-y-1.5 [@media(max-height:620px)]:space-y-1">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold [@media(max-height:620px)]:hidden">
+                  Affichage
+                </p>
+                <button
+                  type="button"
+                  onClick={toggleFullscreen}
+                  className="w-full flex items-center justify-between px-3 py-2 [@media(max-height:620px)]:py-1.5 rounded-lg border border-primary/15 brand-surface-softer hover:bg-primary/5 transition-all"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <MaterialIcon name={isFullscreen ? "fullscreen_exit" : "fullscreen"} className="text-primary text-[18px]" />
+                    <span className="text-xs font-semibold text-primary">
+                      {isFullscreen ? t("configure.fullscreenExit") : t("configure.fullscreenEnter")}
+                    </span>
+                  </div>
+                  <div className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${isFullscreen ? "bg-primary" : "bg-primary/20"}`}>
+                    <div className={`absolute top-0.5 size-4 rounded-full bg-white shadow transition-transform duration-200 ${isFullscreen ? "translate-x-4" : "translate-x-0.5"}`} />
+                  </div>
+                </button>
+              </div>
+
+              {/* Printer selector */}
+              {!isEster && (
+                <button
+                  type="button"
+                  onClick={() => setShowPrinterModal(true)}
+                  className="w-full flex items-center justify-between px-3 py-2 [@media(max-height:620px)]:py-1.5 rounded-lg border border-primary/15 brand-surface-softer hover:bg-primary/5 transition-all"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <MaterialIcon name="print" className="text-primary text-[18px]" />
+                    <span className="text-xs font-semibold text-primary">
+                      {printerLocation ? <span className="capitalize">{printerLocation}</span> : t("configure.choosePrinter")}
+                    </span>
+                  </div>
+                  {printerLocation && (
+                    <MaterialIcon name="check_circle" className="text-primary text-[16px]" />
+                  )}
+                </button>
+              )}
             </div>
           </div>
 
           {/* ── Nombre de personnes ── */}
-          <div className="space-y-2">
+          <div className="space-y-2 [@media(max-height:620px)]:space-y-1">
             <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 font-bold">
               {t("configure.participantCountTitle")}
             </p>
@@ -300,7 +308,7 @@ export default function ConfigPanel() {
                   key={n}
                   type="button"
                   onClick={() => setParticipantCount(n)}
-                  className={`flex-1 py-2.5 rounded-lg border-2 text-sm font-bold transition-all ${
+                  className={`flex-1 py-2.5 [@media(max-height:620px)]:py-1.5 rounded-lg border-2 text-sm font-bold transition-all ${
                     participantCount === n
                       ? "border-primary bg-primary text-white shadow-md"
                       : "border-primary/15 brand-surface-softer text-primary/70 hover:border-primary/40 hover:bg-primary/5"
@@ -369,7 +377,7 @@ export default function ConfigPanel() {
       <button
         disabled={!isFormComplete}
         onClick={handleContinue}
-        className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2.5 sm:py-3 rounded-lg shadow-xl transition-all hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+        className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2.5 sm:py-3 [@media(max-height:620px)]:py-2 rounded-lg shadow-xl transition-all hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
       >
         <span>{t("configure.start")}</span>
         <MaterialIcon name="arrow_forward" />

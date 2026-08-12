@@ -35,11 +35,17 @@ export default function TranscriptPanel({ open, onToggle }: TranscriptPanelProps
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        {/* Flèche de fermeture, centrée verticalement, sur le bord gauche du panneau */}
+        {/* Flèche de fermeture, centrée verticalement, sur le bord gauche du panneau.
+            Masquée quand le panneau est fermé : sinon elle dépasse du bord de l'écran
+            (elle est positionnée à -20px du panneau, qui lui est hors-écran) et donne
+            l'illusion que le panneau est déjà ouvert. */}
         <button
           onClick={onToggle}
           aria-label={t("transcript.title")}
-          className="absolute top-1/2 -left-5 -translate-y-1/2 size-10 flex items-center justify-center rounded-full bg-white/90 border border-primary/15 shadow-lg text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+          tabIndex={open ? 0 : -1}
+          className={`absolute top-1/2 -left-5 -translate-y-1/2 size-10 flex items-center justify-center rounded-full bg-white/90 border border-primary/15 shadow-lg text-primary hover:bg-primary/10 transition-all duration-300 ease-in-out cursor-pointer ${
+            open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
         >
           <span className="material-symbols-outlined text-[20px]">chevron_right</span>
         </button>

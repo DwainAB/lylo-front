@@ -31,7 +31,7 @@ export default function DepthSelector({ value, onChange }: DepthSelectorProps) {
 
   return (
     <section className="relative">
-      <h3 className="text-surface text-xs font-bold uppercase tracking-widest leading-tight mb-1.5 flex items-center gap-2">
+      <h3 className="text-surface text-xs font-bold uppercase tracking-widest leading-tight mb-1.5 [@media(max-height:620px)]:mb-1 flex items-center gap-2">
         <MaterialIcon name="query_stats" className="text-sm" />
         {t("configure.questionCountTitle")}&nbsp;<button
           type="button"
@@ -64,7 +64,7 @@ export default function DepthSelector({ value, onChange }: DepthSelectorProps) {
               onChange={() => onChange(depth.value)}
               className="peer hidden"
             />
-            <div className="flex flex-col items-center justify-center gap-1 py-2 rounded-lg border-2 border-primary/10 brand-surface-soft text-primary/60 transition-all group-hover:bg-primary/5 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-lg">
+            <div className="flex flex-col items-center justify-center gap-1 py-2 [@media(max-height:620px)]:py-1.5 rounded-lg border-2 border-primary/10 brand-surface-soft text-primary/60 transition-all group-hover:bg-primary/5 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-lg">
               <span className="text-sm font-bold">{depth.label}</span>
             </div>
           </label>
