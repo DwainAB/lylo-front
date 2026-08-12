@@ -81,9 +81,14 @@ export default function HeroSection() {
 
         {/* Badge */}
         {isEster ? (
-          <p className="text-white/80 text-base md:text-lg font-light mb-6 max-w-xl mx-auto">
-            {t("home.esterTagline")}
-          </p>
+          <>
+            <p className="text-white/80 text-base md:text-lg font-light mb-2 max-w-xl mx-auto">
+              {t("home.esterTagline")}
+            </p>
+            <p className="text-white/60 text-sm md:text-base font-light mb-6 max-w-xl mx-auto">
+              {t("home.esterFloatingLabel")}
+            </p>
+          </>
         ) : (
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold tracking-widest uppercase mb-6">
             <span className="relative flex h-2 w-2">

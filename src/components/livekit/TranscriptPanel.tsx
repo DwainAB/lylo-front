@@ -22,7 +22,7 @@ export default function TranscriptPanel({ open, onToggle }: TranscriptPanelProps
 
   return (
     <div
-      className={`fixed top-0 right-0 h-full w-[85vw] sm:w-80 z-40 transform transition-transform duration-300 ease-in-out ${
+      className={`fixed top-0 right-0 h-full w-[85vw] sm:w-80 z-[60] transform transition-transform duration-300 ease-in-out ${
         open ? "translate-x-0" : "translate-x-full"
       }`}
     >

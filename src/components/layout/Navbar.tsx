@@ -12,6 +12,8 @@ import { useAuth } from "@/context/AuthContext";
 import LoginModal from "@/components/auth/LoginModal";
 import { activeBrand } from "@/lib/brand";
 
+const isEster = activeBrand.id === "ester";
+
 interface NavbarProps {
   showActions?: boolean;
   transparent?: boolean;
@@ -35,6 +37,12 @@ export default function Navbar({ showActions = true, transparent = false }: Navb
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3" onClick={handleLogoClick}>
             <Image src={activeBrand.logo} alt={`Logo ${activeBrand.name}`} width={activeBrand.navLogoSize} height={activeBrand.navLogoSize} style={{ width: "auto", height: "auto" }} />
+            {isEster && (
+              <div className="flex items-center gap-2">
+                <span className="text-primary text-xs font-semibold">v1.0</span>
+                <span className="text-primary/60 text-[10px] font-medium uppercase tracking-wide">By Lylo AI</span>
+              </div>
+            )}
             {!showActions && (
               <span className="text-primary/50 hover:text-primary text-xs font-medium uppercase tracking-widest transition-colors">
                 {t("nav.home")}
