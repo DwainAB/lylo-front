@@ -124,11 +124,13 @@ export default function HeroSection() {
       </div>
 
       {/* Floating tech element */}
-      <div className="absolute bottom-10 left-10 hidden lg:block">
-        <div className="p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 text-white/60 text-[10px] tracking-widest uppercase">
-          {isEster ? t("home.esterFloatingLabel") : t("home.floatingLabel")}
+      {!isEster && (
+        <div className="absolute bottom-10 left-10 hidden lg:block">
+          <div className="p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 text-white/60 text-[10px] tracking-widest uppercase">
+            {t("home.floatingLabel")}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
