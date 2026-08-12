@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useTranslation } from "@/i18n/LanguageContext";
 
@@ -9,15 +9,19 @@ interface InputModeSelectorProps {
   onChange: (value: "voice" | "click" | "quiz") => void;
 }
 
+// Hybride temporairement masqué
 export default function InputModeSelector({ value, onChange }: InputModeSelectorProps) {
   const { t } = useTranslation();
   const [showInfo, setShowInfo] = useState(false);
 
   const options = [
     { value: "voice" as const, label: t("configure.inputModeVoice") },
-    { value: "click" as const, label: t("configure.inputModeClick") },
     { value: "quiz" as const, label: t("configure.inputModeQuiz") },
   ];
+
+  useEffect(() => {
+    if (value === "click") onChange("voice");
+  }, [value, onChange]);
 
   const infoLines = t("configure.inputModeInfo").split("\n\n");
 
@@ -47,7 +51,7 @@ export default function InputModeSelector({ value, onChange }: InputModeSelector
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-2.5">
+      <div className="grid grid-cols-2 gap-2.5">
         {options.map((option) => (
           <label key={option.value} className="group relative cursor-pointer">
             <input
