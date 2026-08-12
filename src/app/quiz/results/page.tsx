@@ -185,12 +185,16 @@ function SoloResults() {
         </div>
 
         {chosen === null && (
-          <div className="w-full flex flex-row justify-center gap-4 sm:gap-6">
+          <div className="w-full grid grid-cols-1 min-[380px]:grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-6 justify-items-center">
             {formulas.map((formula, i) => (
               <div
                 key={i}
                 onClick={() => handleChoose(i)}
-                className="w-[300px] sm:w-[340px] h-[min(68vh,720px)] cursor-pointer rounded-xl border-2 border-transparent hover:border-primary transition-all hover:scale-[1.02] overflow-hidden relative shadow-md"
+                className={`w-full max-w-[340px] h-[min(58vh,720px)] sm:h-[min(68vh,720px)] cursor-pointer rounded-xl border-2 border-transparent hover:border-primary transition-all hover:scale-[1.02] overflow-hidden relative shadow-md ${
+                  formulas.length === 3 && i === 2
+                    ? "min-[380px]:col-span-2 min-[380px]:mx-auto min-[380px]:w-1/2 sm:col-span-1 sm:w-full"
+                    : ""
+                }`}
               >
                 {renderFormula(formula, {
                   variant: "comparison",
@@ -205,12 +209,16 @@ function SoloResults() {
 
         {chosen !== null && selectedFormula && (
           <>
-            <div className="w-full flex flex-row justify-center gap-4 sm:gap-6">
+            <div className="w-full grid grid-cols-1 min-[380px]:grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-6 justify-items-center">
               {formulas.map((formula, i) => (
                 <div
                   key={i}
                   onClick={() => { setChosen(null); }}
-                  className={`w-[280px] sm:w-[320px] h-[min(56vh,620px)] rounded-xl border-2 overflow-hidden relative shadow-md transition-all duration-300 ${
+                  className={`w-full max-w-[320px] h-[min(48vh,620px)] sm:h-[min(56vh,620px)] rounded-xl border-2 overflow-hidden relative shadow-md transition-all duration-300 ${
+                    formulas.length === 3 && i === 2
+                      ? "min-[380px]:col-span-2 min-[380px]:mx-auto min-[380px]:w-1/2 sm:col-span-1 sm:w-full"
+                      : ""
+                  } ${
                     chosen === i
                       ? "border-primary scale-[1.02] cursor-default"
                       : "border-transparent opacity-30 scale-[0.97] cursor-pointer"
@@ -444,12 +452,12 @@ function MultiResults() {
           </div>
 
           {/* Les 2 formules côte à côte — centrées, taille fixe */}
-          <div className="flex-1 flex flex-row items-center justify-center gap-4 sm:gap-6 min-h-0">
+          <div className="flex-1 grid grid-cols-2 items-center justify-items-center gap-2 sm:gap-6 min-h-0">
             {participant.formulas.map((formula, i) => (
               <div
                 key={i}
                 onClick={() => chosen === null && handleSelect(i)}
-                className={`w-[300px] sm:w-[340px] h-[min(66vh,680px)] rounded-xl border-2 overflow-hidden relative shadow-md transition-all duration-300 ${
+                className={`w-full max-w-[300px] sm:max-w-[340px] h-[min(50vh,680px)] min-[480px]:h-[min(66vh,680px)] rounded-xl border-2 overflow-hidden relative shadow-md transition-all duration-300 ${
                   chosen === null ? "cursor-pointer hover:scale-[1.02]" : ""
                 } ${
                   chosen === i

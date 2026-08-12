@@ -21,19 +21,19 @@ export default function SizeToggle({ selected, onSelect }: SizeToggleProps) {
 
   return (
     <div
-      className="shrink-0 mt-3 pt-3 sm:mt-4 sm:pt-4 border-t border-secondary/20 flex items-center justify-between"
+      className="shrink-0 mt-2 pt-2 sm:mt-4 sm:pt-4 border-t border-secondary/20 flex flex-col sm:flex-row items-center justify-between gap-1"
       onClick={(event) => event.stopPropagation()}
     >
-      <span className="text-xs font-medium text-gray-400">
+      <span className="text-[0.6rem] sm:text-xs font-medium text-gray-400 shrink-0">
         {t("recommendations.selectSize")}
       </span>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-0.5 sm:gap-2">
         {SIZES.map((size) => (
           <button
             key={size}
             type="button"
             onClick={(event) => handleSelect(event, size)}
-            className={`px-3 py-1.5 [@media(max-height:680px)]:py-1 rounded-full text-xs font-bold transition-colors cursor-pointer ${
+            className={`px-1 sm:px-3 py-0.5 sm:py-1.5 [@media(max-height:680px)]:py-1 rounded-full text-[0.6rem] sm:text-xs font-bold transition-colors cursor-pointer ${
               selected === size
                 ? "bg-primary text-white"
                 : "bg-secondary/10 text-gray-500 hover:bg-secondary/20"

@@ -266,10 +266,17 @@ export default function RecommendationsPage() {
             <div className="flex flex-col gap-4">
 
               {/* Cartes */}
-              <div className="min-w-0 grid grid-cols-1 xl:grid-cols-2 gap-3 sm:gap-4 items-start">
+              <div className="min-w-0 grid grid-cols-1 min-[480px]:grid-cols-2 gap-2 sm:gap-4 items-start">
                 {formulas.length > 0 ? (
-                  formulas.map((item) => (
-                    <div key={item.key}>
+                  formulas.map((item, index) => (
+                    <div
+                      key={item.key}
+                      className={
+                        formulas.length % 2 === 1 && index === formulas.length - 1
+                          ? "min-[480px]:col-span-2 min-[480px]:max-w-[calc(50%-0.5rem)] min-[480px]:mx-auto"
+                          : ""
+                      }
+                    >
                       {renderFormula(item.formula, {
                         variant: "comparison",
                         selectedSize,
