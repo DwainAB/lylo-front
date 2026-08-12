@@ -43,11 +43,6 @@ export default function Navbar({ showActions = true, transparent = false }: Navb
                 <span className="text-primary/60 text-[10px] font-medium uppercase tracking-wide">By Lylo AI</span>
               </div>
             )}
-            {!showActions && (
-              <span className="text-primary/50 hover:text-primary text-xs font-medium uppercase tracking-widest transition-colors">
-                {t("nav.home")}
-              </span>
-            )}
           </Link>
 
           {/* Right side */}
