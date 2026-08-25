@@ -35,6 +35,21 @@ export default function HeroSection() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const handlePlayAudio = () => {
+    // TODO(diagnostic-bluetooth): log temporaire — liste les devices audio au moment précis
+    // où l'intro (qui sort bien dans le casque) est lancée, pour comparer avec l'état vu
+    // pendant une session LiveKit. À retirer une fois le diagnostic terminé.
+    if (navigator.mediaDevices?.enumerateDevices) {
+      navigator.mediaDevices
+        .enumerateDevices()
+        .then((devices) => {
+          const outputs = devices
+            .filter((d) => d.kind === "audiooutput")
+            .map((d) => ({ id: d.deviceId, label: d.label || "(vide)" }));
+          console.log("[Intro][diag] audiooutput devices (lecture intro wav):", outputs);
+        })
+        .catch((err) => console.warn("[Intro][diag] enumerateDevices a échoué:", err));
+    }
+
     if (isPlaying && audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
