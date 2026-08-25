@@ -181,6 +181,16 @@ function BluetoothOutputEnforcer() {
         const realOutputs = outputs.filter(
           (d) => d.deviceId !== "default" && d.deviceId !== "communications"
         );
+        // TODO(diagnostic-bluetooth): log temporaire pour comparer prod vs ngrok — à retirer
+        // une fois le comportement de setSinkId confirmé côté tablette.
+        console.log(
+          "[LiveKit][diag] outputs:",
+          outputs.map((d) => ({ id: d.deviceId, label: d.label || "(vide)" })),
+          "| realOutputs:",
+          realOutputs.map((d) => ({ id: d.deviceId, label: d.label || "(vide)" })),
+          "| currentSink:",
+          room.getActiveDevice("audiooutput")
+        );
         if (realOutputs.length === 0) return;
 
         // Cas nominal : le label du device est disponible (permission micro déjà accordée
