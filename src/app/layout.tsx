@@ -6,6 +6,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import LiveKitSession from "@/components/livekit/LiveKitSession";
 import DevNavigator from "@/components/dev/DevNavigator";
+import ConsoleLogViewer from "@/components/dev/ConsoleLogViewer";
 import { activeBrand } from "@/lib/brand";
 import "./globals.css";
 
@@ -48,6 +49,7 @@ export default function RootLayout({
                 <LiveKitSession>
                   {children}
                   <DevNavigator />
+                  <ConsoleLogViewer />
                 </LiveKitSession>
               </SessionProvider>
             </AuthProvider>
