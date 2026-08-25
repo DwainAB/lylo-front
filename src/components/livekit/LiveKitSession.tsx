@@ -176,10 +176,27 @@ function BluetoothOutputEnforcer() {
       try {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const outputs = devices.filter((d) => d.kind === "audiooutput");
-        if (outputs.length === 0) return;
+        // "default"/"communications" sont des alias virtuels ajoutés par Chrome, pas de vrais
+        // périphériques : on ne veut que les entrées physiques pour repérer le casque.
+        const realOutputs = outputs.filter(
+          (d) => d.deviceId !== "default" && d.deviceId !== "communications"
+        );
+        if (realOutputs.length === 0) return;
 
-        const bluetoothDevice = outputs.find((d) => isLikelyBluetooth(d.label));
-        const target = bluetoothDevice ?? null;
+        // Cas nominal : le label du device est disponible (permission micro déjà accordée
+        // pour cette origine) → on peut identifier le casque par son nom.
+        let target = realOutputs.find((d) => isLikelyBluetooth(d.label));
+
+        // Cas dégradé : labels vides (permission tout juste accordée, pas encore propagée
+        // à enumerateDevices — fréquent sur un domaine de prod jamais visité auparavant, par
+        // opposition à un domaine ngrok déjà autorisé sur cette tablette). On ne peut plus
+        // identifier le casque par son nom ; s'il n'y a qu'un seul device de sortie non-défaut,
+        // c'est très probablement lui (le haut-parleur interne est en général exposé comme
+        // "default" et n'apparaît pas séparément une fois un device externe connecté).
+        if (!target && realOutputs.length === 1 && !realOutputs[0].label) {
+          target = realOutputs[0];
+        }
+
         if (!target) return;
 
         const currentSink = room.getActiveDevice("audiooutput");
@@ -192,14 +209,16 @@ function BluetoothOutputEnforcer() {
       }
     };
 
-    // Tentative initiale à la connexion.
-    applyOutputDevice();
-
-    // L'OS peut re-router l'audio juste après l'activation du micro (bascule A2DP → HFP) :
-    // on réessaie une fois de plus après un court délai.
-    const retryTimeout = setTimeout(() => {
-      if (!cancelled) applyOutputDevice();
-    }, 1500);
+    // Plusieurs tentatives espacées : à la connexion, les labels des devices peuvent ne pas
+    // encore être disponibles (permission micro tout juste accordée, pas encore propagée à
+    // enumerateDevices), et l'OS re-route souvent l'audio juste après l'activation du micro
+    // (bascule A2DP → HFP). On réessaie donc plusieurs fois plutôt qu'une seule.
+    const scheduleAttempts = [0, 800, 1800, 3500];
+    const timeouts = scheduleAttempts.map((delay) =>
+      setTimeout(() => {
+        if (!cancelled) applyOutputDevice();
+      }, delay)
+    );
 
     // Et on réagit à tout changement de devices en cours de session (reconnexion casque, etc.)
     const onDeviceChange = () => applyOutputDevice();
@@ -207,7 +226,7 @@ function BluetoothOutputEnforcer() {
 
     return () => {
       cancelled = true;
-      clearTimeout(retryTimeout);
+      timeouts.forEach(clearTimeout);
       navigator.mediaDevices?.removeEventListener?.("devicechange", onDeviceChange);
     };
   }, [room]);
