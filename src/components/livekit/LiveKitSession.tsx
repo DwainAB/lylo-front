@@ -142,6 +142,79 @@ function TranscriptionListener() {
   return null;
 }
 
+/**
+ * Force la sortie audio (RoomAudioRenderer) sur un casque/enceinte Bluetooth au lieu du
+ * haut-parleur interne par défaut choisi par l'OS.
+ *
+ * Pourquoi c'est nécessaire : dès que la page capture le micro (LiveKitRoom audio={true}),
+ * l'OS bascule le Bluetooth du profil A2DP (sortie seule, haute qualité) vers HFP/mains-libres
+ * (entrée+sortie). Beaucoup de tablettes gèrent mal ce switch et retombent sur le haut-parleur
+ * interne pour la sortie, même si le device Bluetooth reste connecté. On corrige ça en
+ * sélectionnant explicitement le device de sortie via setSinkId (room.switchActiveDevice),
+ * au lieu de laisser le navigateur choisir seul.
+ */
+function BluetoothOutputEnforcer() {
+  const room = useRoomContext();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const isLikelyBluetooth = (label: string) => {
+      const l = label.toLowerCase();
+      return (
+        l.includes("bluetooth") ||
+        l.includes("headset") ||
+        l.includes("casque") ||
+        l.includes("airpods") ||
+        l.includes("earbuds") ||
+        l.includes("buds")
+      );
+    };
+
+    const applyOutputDevice = async () => {
+      if (typeof navigator === "undefined" || !navigator.mediaDevices?.enumerateDevices) return;
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const outputs = devices.filter((d) => d.kind === "audiooutput");
+        if (outputs.length === 0) return;
+
+        const bluetoothDevice = outputs.find((d) => isLikelyBluetooth(d.label));
+        const target = bluetoothDevice ?? null;
+        if (!target) return;
+
+        const currentSink = room.getActiveDevice("audiooutput");
+        if (currentSink === target.deviceId) return;
+
+        console.log("[LiveKit] Sortie audio → device Bluetooth détecté:", target.label || target.deviceId);
+        await room.switchActiveDevice("audiooutput", target.deviceId);
+      } catch (err) {
+        console.warn("[LiveKit] Impossible de forcer la sortie audio sur le casque Bluetooth:", err);
+      }
+    };
+
+    // Tentative initiale à la connexion.
+    applyOutputDevice();
+
+    // L'OS peut re-router l'audio juste après l'activation du micro (bascule A2DP → HFP) :
+    // on réessaie une fois de plus après un court délai.
+    const retryTimeout = setTimeout(() => {
+      if (!cancelled) applyOutputDevice();
+    }, 1500);
+
+    // Et on réagit à tout changement de devices en cours de session (reconnexion casque, etc.)
+    const onDeviceChange = () => applyOutputDevice();
+    navigator.mediaDevices?.addEventListener?.("devicechange", onDeviceChange);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(retryTimeout);
+      navigator.mediaDevices?.removeEventListener?.("devicechange", onDeviceChange);
+    };
+  }, [room]);
+
+  return null;
+}
+
 function AudioUnlockButton() {
   const { t } = useTranslation();
   const room = useRoomContext();
@@ -198,6 +271,7 @@ export default function LiveKitSession({ children }: LiveKitSessionProps) {
     >
       <RoomAudioRenderer />
       <AudioUnlockButton />
+      <BluetoothOutputEnforcer />
       <RoomEventLogger />
       <DataChannelListener />
       <TranscriptionListener />

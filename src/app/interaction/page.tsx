@@ -20,7 +20,7 @@ import { activeBrand } from "@/lib/brand";
 export default function InteractionPage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { sessionState, questionCount, questions, currentQuestionIndex, confirmationData } = useSession();
+  const { sessionState, questionCount, questions, currentQuestionIndex, confirmationData, sessionData } = useSession();
 
   useEffect(() => {
     if (DEV_MODE) return;
@@ -78,7 +78,7 @@ export default function InteractionPage() {
 
         {/* Barre de contrôle */}
         <div className="flex justify-center shrink-0 py-3">
-          <BottomBar />
+          {sessionData && <BottomBar />}
         </div>
       </main>
 

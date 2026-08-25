@@ -63,7 +63,7 @@ function renderFormula(
 export default function RecommendationsPage() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { formulas: sessionFormulas, endSession, agentName } = useSession();
+  const { formulas: sessionFormulas, endSession, agentName, sessionData } = useSession();
   const [printStatus, setPrintStatus] = useState<"idle" | "printing" | "done" | "error">("idle");
   const [selectedSize, setSelectedSize] = useState<SizeOption>("30ml");
 
@@ -116,7 +116,7 @@ export default function RecommendationsPage() {
     <div className="relative flex min-h-dvh w-full flex-col overflow-x-hidden overflow-y-auto">
       <Navbar showActions={false} transparent />
 
-      <main className="flex-1 flex flex-col px-3 sm:px-5 pt-2 sm:pt-3 pb-6 max-w-6xl mx-auto w-full relative z-10">
+      <main className="flex-1 flex flex-col px-3 sm:px-5 pt-2 sm:pt-3 pb-6 max-w-[1400px] mx-auto w-full relative z-10">
 
         {/* ── Avatar + Titre ── visible uniquement en vue 2 formules ── */}
         {!isSingle && (
@@ -305,7 +305,7 @@ export default function RecommendationsPage() {
         )}
 
         <div className="flex justify-center shrink-0 py-3">
-          <BottomBar />
+          {sessionData && <BottomBar />}
         </div>
       </main>
 
